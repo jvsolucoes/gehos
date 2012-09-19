@@ -1,0 +1,57 @@
+<?php
+$usuario = Zend_Auth::getInstance()->getIdentity();
+
+if (@$usuario) {
+?>
+    <div id="smoothmenu" class="ddsmoothmenu">
+        <ul>
+            <?php
+            $aplicacao = Aplicacao::buscarNome($this->aplicacao['module']);
+            
+            $models = AplicacaoModulo::buscarPricipal($aplicacao->codAplicacao);
+            foreach ($models as $principal) {
+                
+                $menuFilho = Modulo::listarModuloFilho($aplicacao->codAplicacao, $principal->codModulo);
+                
+                if ($menuFilho) {
+                    
+                    var_dump($menuFilho);
+                    
+                    if (Usuario::validarModulo($aplicacao->codAplicacao, $menuFilho->codModulo)) {
+                    ?>
+                        <li> 
+                            <a href="#"><?php echo $principal->nomeModulo; ?></a>
+                                <?php
+                                if ($menuFilho) {
+                                ?>
+                                    <ul>
+                                        <?php
+                                        $subMenuFilho = Modulo::listarModuloFilho($aplicacao->codAplicacao, $principal->codModulo);
+
+                                            if ($subMenuFilho) {
+                                                if (Usuario::validarModulo($aplicacao->codAplicacao, $subMenuFilho->codModulo)) {
+                                                ?>
+                                                    <li> 
+                                                        <a href="#"><?php echo $menuFilho->nomeModulo; ?></a>
+                                                    </li>
+                                                <?php
+                                                }
+                                            }
+                                        ?>
+                                    </ul>
+                                <?php
+                                }
+                                ?>
+                        </li>
+                    <?php
+                    }
+                }
+                
+            }
+            ?>
+            
+        </ul>
+    </div>
+<?php 
+}
+?>

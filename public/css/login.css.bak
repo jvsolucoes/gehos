@@ -1,0 +1,63 @@
+html, body {
+	text-align: center;
+	margin: 0;
+	padding: 0;
+	font: 10pt Verdana, Geneva, sans-serif;
+	background: #fff;
+}		
+#logo {
+	margin: 70px 0 45px 0;
+}
+#loginForm {
+	background: url('../i/bg_login2.gif') top left repeat-x;
+	padding-top: 5px;
+	height: 250px;
+	border: 1px solid #ccc;
+	text-align: center;
+}
+#inputSenha {
+	text-align: center;
+}
+#inputConfirmSenha {
+	text-align: center;
+}
+#esqSenha
+{
+	background: #f0f0f0;
+	padding-top: 5px;
+	height: 250px;
+	border: 1px solid #ccc;
+	text-align: center;
+}
+#sombra {
+	position: relative;
+	top: -1px;
+	height: 20px;
+	background: url('../i/sombra_b.gif') top left repeat-x;
+}
+input {
+	height: 28px;
+	width: 300px;
+	border: 1px solid #aaa;
+	font-size: 11pt;
+}
+#inputUser {
+	text-align: center;
+}
+#inputPass {
+	text-align: center;
+}
+#inputEmail{
+	text-align: center;
+	width: 380px;
+}
+#loginInfo {
+	color: #555;
+}
+.hintColor {
+	color: #aaa;
+}
+table > tbody > tr > td {
+	padding-top: 10px;
+	font-weight: bold;
+}

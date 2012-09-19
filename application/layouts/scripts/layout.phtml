@@ -1,0 +1,117 @@
+﻿<?php
+$usuario = Zend_Auth::getInstance()->getIdentity();
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>P&aacute;gina Inicial @ gehos</title>
+        <link rel="shortcut icon" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/logo2.ico" type="image/x-icon" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/gehos.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/ddsmoothmenu.css" />
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/def-min.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/autocomplete.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery-1.5.2.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jcolor.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/menu.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/tabs.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/ajax.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/blink.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/fmCadastro.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/fmList.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/ai.scroll.js"></script>
+        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/ddsmoothmenu.js"></script>
+        
+
+        <script type="text/javascript">
+//            $(window).resize(function () {
+//                $("#program").height($(window).height()-66);
+//            });
+            $().ready(function() {
+//                $("#program").height($(window).height()-66);
+                $("input, select, textarea").attr("autocomplete", "off");
+                
+            });
+            
+            ddsmoothmenu.init({
+                mainmenuid: "smoothmenu", //menu DIV id
+                orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
+                classname: 'ddsmoothmenu', //class added to menu's outer DIV
+                //customtheme: ["#1c5a80", "#18374a"],
+                contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
+            })
+            
+            function mudarFoco(inputInicial) {
+                $('input').live("keyup", function(e) {
+                    /* ENTER PRESSED*/
+                    if (e.keyCode == 13) {
+                        /* FOCUS ELEMENT */
+                        var inputs = $(this).parents("form").eq(0).find(":input");
+                        var idx = inputs.index(this);
+
+                        if (idx == inputs.length - 1) {
+                            inputs[inputInicial].select()
+                        } else {
+                            inputs[idx + 1].focus(); //  handles submit buttons
+                            inputs[idx + 1].select();
+                        }
+                        return false;
+                    }
+
+                    if (e.keyCode == 40) {
+                        var inputs = $(this).parents("form").eq(0).find(":input");
+                        var idx = inputs.index(this);
+
+                        if (idx == inputs.length - 1) {
+                            inputs[inputInicial - 1].focus()
+                        } else {
+                            inputs[idx + 1].focus(); //  handles submit buttons
+                            inputs[idx + 1].select();
+                        }
+                        return false;
+                    }
+
+                    if (e.keyCode == 38) {
+                        var inputs = $(this).parents("form").eq(0).find(":input");
+                        var idx = inputs.index(this);
+
+                        if (idx < inputs.length - 1) {
+                            inputs[inputs.length - 1].select()
+                        } else {
+                            inputs[idx - 1].focus(); //  handles submit buttons
+                            inputs[idx - 1].select();
+                        }
+                        return false;
+                    }
+                });
+            }
+            
+        </script>
+    </head>
+
+    <body>
+        <?php
+        if ($usuario) {
+            echo $this->render("menu.phtml");
+        ?>
+            <div id="tabs" class="tabBar">
+        
+            </div>
+            <div id="program" class="noPadding">
+            </div>
+        <?php
+        } 
+        ?>
+        
+        <?php
+        //if ($usuario) {
+        ?>
+            <div>
+                <?php echo $this->layout()->content; ?>
+            </div>
+        <?php
+        //}
+        ?>
+    </body>
+</html>
