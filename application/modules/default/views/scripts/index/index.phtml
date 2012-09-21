@@ -1,43 +1,70 @@
-<style>
-    a:link,
-    a:visited
-    {
-        color: #0398CA;
-    }
-
-    span#zf-name
-    {
-        color: #91BE3F;
-    }
-
-    div#welcome
-    {
-        color: #FFFFFF;
-        background-image: url(http://framework.zend.com/images/bkg_header.jpg);
-        width:  600px;
-        height: 400px;
-        border: 2px solid #444444;
-        overflow: hidden;
-        text-align: center;
-    }
-
-    div#more-information
-    {
-        background-image: url(http://framework.zend.com/images/bkg_body-bottom.gif);
-        height: 100%;
-    }
-</style>
-<div id="welcome">
-    <h1>Welcome to the <span id="zf-name">Zend Framework!</span></h1>
-
-    <h3>This is your project's main page</h3>
-
-    <div id="more-information">
-        <p><img src="http://framework.zend.com/images/PoweredBy_ZF_4LightBG.png" /></p>
-        <p>
-            Helpful Links: <br />
-            <a href="http://framework.zend.com/">Zend Framework Website</a> |
-            <a href="http://framework.zend.com/manual/en/">Zend Framework Manual</a>
-        </p>
-    </div>
-</div>
+<table class="menu border"><tbody>
+        <tr>
+            <td style="padding: 0">
+                <table class="menu">
+                    <tbody>
+                        <tr>
+                            <td class="menuItem" id="fmMenuItem1" 
+                                onmouseover="fmMenuShow('fmMenuItem1','fmMenuSubItem1');" 
+                                onmouseout="fmMenuStartTimer();" >
+                                Recepção                                                    </td>
+                            <td class="menuItem" id="fmMenuItem6" 
+                                onmouseover="fmMenuShow('fmMenuItem6','fmMenuSubItem6');" 
+                                onmouseout="fmMenuStartTimer();" >
+                                Configurações                                                    </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="submenu" id="fmMenuSubItem1">
+                    <ul>
+                        <li onmouseover="fmMenuClearTimer();" 
+                            onmouseout="fmMenuStartTimer();" 
+                            onclick="def.modalBox(['OK'],'Em Desenvolvimento','Este m&oacute;dulo est&aacute; em fase de desenvolvimento.');">
+                            Agendamento                                                            </li>
+                        <li onmouseover="fmMenuClearTimer();" 
+                            onmouseout="fmMenuStartTimer();" 
+                            onclick="fmTabNew('geral','atendimento.php','Atendimento');">
+                            Atendimento                                                            </li>
+                    </ul>
+                </div>
+                <div class="submenu" id="fmMenuSubItem6">
+                    <ul>
+                        <li class="hasSubMenu" id="fmMenuSubItem_46"
+                            onmouseover="fmMenuSubShow('fmMenuSubItem_46','fmMenuSubSubItem46');" 
+                            onmouseout="fmMenuStartTimer();" 
+                            onclick="def.modalBox(['OK'],'Em Desenvolvimento','Este m&oacute;dulo est&aacute; em fase de desenvolvimento.');">
+                            Cadastros                                                            </li>
+                        <li onmouseover="fmMenuClearTimer();" 
+                            onmouseout="fmMenuStartTimer();" 
+                            onclick="def.modalBox(['OK'],'Em Desenvolvimento','Este m&oacute;dulo est&aacute; em fase de desenvolvimento.');">
+                            Alertas automáticos                                                            </li>
+                        <li onmouseover="fmMenuClearTimer();" 
+                            onmouseout="fmMenuStartTimer();" 
+                            onclick="def.modalBox(['OK'],'Em Desenvolvimento','Este m&oacute;dulo est&aacute; em fase de desenvolvimento.');">
+                            Regras / Coberturas – Geral                                                            </li>
+                        <li onmouseover="fmMenuClearTimer();" 
+                            onmouseout="fmMenuStartTimer();" 
+                            onclick="def.modalBox(['OK'],'Em Desenvolvimento','Este m&oacute;dulo est&aacute; em fase de desenvolvimento.');">
+                            Cadastro de PCT                                                            </li>
+                    </ul>
+                </div>
+                <div class="submenu" id="fmMenuSubItem46">
+                    <ul>
+                        <li onmouseover="fmMenuClearTimer();" 
+                            onmouseout="fmMenuStartTimer();" 
+                            onclick="fmTabNew('geral','cadastroUsuario.php','Cadastro de Usu&aacute;rio');">
+                            Usuários                                                                    </li>
+                    </ul>
+                </div>    
+            </td>
+            <td id="sep">&nbsp;</td>
+            <td style="padding: 0">
+                <table class="menu">
+                    <tr>
+                        <td class="noPadding rightAlign" id="user" onmouseover="fmMenuShow('user','fmMenuUser');" onmouseout="fmMenuStartTimer();">Administrador@</td>
+                        <td id="logo" class="noPadding"><img src="/Dropbox/FMarques/gehos/public/img/logo_fc2.gif" /></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+</table>

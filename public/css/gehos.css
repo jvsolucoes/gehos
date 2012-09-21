@@ -1,323 +1,324 @@
 @charset "utf-8";
 
 body, html {
-	margin: 0;
-	padding: 0;
-	font: 10pt Verdana, Geneva, sans-serif;
-	height: 100%;
-	overflow-y: hidden;
+    margin: 0;
+    padding: 0;
+    font: 10pt Verdana, Geneva, sans-serif;
+    height: 100%;
+    overflow-y: hidden;
 }
 
 /* CSS para estilização do menu, sub-menu e submenu */
 table.menu {
-	width: 100%;
-	padding: 0;
-	margin: 0;
-	border-spacing: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border-spacing: 0;
 }
 
 .menuItem {
-	height: 35px;
-	background: url('../img/bg_menu2.gif') top left repeat-x;
-	white-space: nowrap;
-	font-weight: bold;
-	font-size: 9pt;
-	color: #fcfcfc;
-	z-index: 100;
+    height: 35px;
+    background: url('../img/bg_menu2.gif') top left repeat-x;
+    white-space: nowrap;
+    font-weight: bold;
+    font-size: 9pt;
+    color: #fcfcfc;
+    z-index: 100;
+    list-style: none;
 }
 .menuItem:hover, .selMenu {
-	background: #ffffff;
-	color: #222;
+    background: #ffffff;
+    color: #222;
 }
 table.menu > tbody > tr > td {
-	margin: 0;
-	padding: 0 15px;
-	z-index: 100;
+    margin: 0;
+    padding: 0 15px;
+    z-index: 100;
 }
 
 table.menu td#sep {
-	width: 100%;
-	padding: 0;
-	background: url('../img/bg_menu2.gif') top left repeat-x;
+    width: 100%;
+    padding: 0;
+    background: url('../img/bg_menu2.gif') top left repeat-x;
 }
 table.menu td#user {
-	height: 35px;
-	background: url('../img/bg_menu2.gif') top left repeat-x;
-	white-space: nowrap;
-	font-weight: bold;
-	font-size: 9pt;
-	color: #f0f0ff;
+    height: 35px;
+    background: url('../img/bg_menu2.gif') top left repeat-x;
+    white-space: nowrap;
+    font-weight: bold;
+    font-size: 9pt;
+    color: #f0f0ff;
 }
 table.menu td#logo {
-	height: 35px;
-	background: url('../img/bg_menu2.gif') top left repeat-x;
+    height: 35px;
+    background: url('../img/bg_menu2.gif') top left repeat-x;
 }
 table.menu td#user:hover {
-	background: #ffffff;
-	color: #222;
+    background: #ffffff;
+    color: #222;
 }
 
 .submenu {
-	position: absolute;
-	display: none;
-	z-index: 100;
+    position: absolute;
+    display: none;
+    z-index: 100;
 }
 
 .submenu > ul {
-	list-style: none;
-	background: url('../img/bg_menuitem.gif') top left repeat-x #f4f4f4;
-	border: 1px solid #c1c1c1;
-	border-top: none;
-	margin: 0;
-	padding: 10px 0 0 0;
-	-webkit-border-radius: 0 7px 7px 7px;
-	-moz-border-radius: 0 7px 7px 7px;
-	border-radius: 0 7px 7px 7px;
+    list-style: none;
+    background: url('../img/bg_menuitem.gif') top left repeat-x #f4f4f4;
+    border: 1px solid #c1c1c1;
+    border-top: none;
+    margin: 0;
+    padding: 10px 0 0 0;
+    -webkit-border-radius: 0 7px 7px 7px;
+    -moz-border-radius: 0 7px 7px 7px;
+    border-radius: 0 7px 7px 7px;
 }
 .submenu > ul > li {
-	padding: 8px 40px 8px 25px;
-	font-size: 9pt;
-	cursor: pointer;
+    padding: 8px 40px 8px 25px;
+    font-size: 9pt;
+    cursor: pointer;
 }
 .submenu > ul > li:hover, .selSubMenu {
-	background: #e0e0e0 !important;
-	color: #222;
+    background: #e0e0e0 !important;
+    color: #222;
 }
 
 .subsubmenu {
-	position: absolute;
-	display: none;
-	z-index: 100;
+    position: absolute;
+    display: none;
+    z-index: 100;
 }
 
 .subsubmenu > ul {
-	list-style: none;
-	background: url('../img/bg_menuitem.gif') top left repeat-x #f4f4f4;
-	border: 1px solid #c1c1c1;
-	border-top: none;
-	margin: 0;
-	padding: 10px 0 0 0;
-	-webkit-border-radius: 0 7px 7px 7px;
-	-moz-border-radius: 0 7px 7px 7px;
-	border-radius: 0 7px 7px 7px;
+    list-style: none;
+    background: url('../img/bg_menuitem.gif') top left repeat-x #f4f4f4;
+    border: 1px solid #c1c1c1;
+    border-top: none;
+    margin: 0;
+    padding: 10px 0 0 0;
+    -webkit-border-radius: 0 7px 7px 7px;
+    -moz-border-radius: 0 7px 7px 7px;
+    border-radius: 0 7px 7px 7px;
 }
 .subsubmenu > ul > li {
-	padding: 8px 40px 8px 25px;
-	font-size: 9pt;
-	cursor: pointer;
+    padding: 8px 40px 8px 25px;
+    font-size: 9pt;
+    cursor: pointer;
 }
 .subsubmenu > ul > li:hover, .selSubSubMenu {
-	background: #e0e0e0 !important;
-	color: #222;
+    background: #e0e0e0 !important;
+    color: #222;
 }
 .hasSubMenu {
-	background-image: url('../img/subMenuPointer.gif');
-	background-position: center right;
-	background-repeat: no-repeat;
+    background-image: url('../img/subMenuPointer.gif');
+    background-position: center right;
+    background-repeat: no-repeat;
 }
 
 /* Outros Estilos */
 
 td.noPadding {
-	padding: 0 !important;	
+    padding: 0 !important;	
 }
 .whiteBg {
-	background: #FFFFFF !important;
+    background: #FFFFFF !important;
 }
 .rightAlign {
-	text-align: right;	
+    text-align: right;	
 }
 
 #content {
-	width: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
-	border: 0;
-	border-spacing: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-spacing: 0;
 }
 #program {
-	position: relative;
-	height: 100%;
-	width: 100%;
-	overflow: auto;
-	background: #f0f0f0;
-	z-index: 98;
-	border-top: 1px solid #d0d0d0;
-	background: #fcfcfc;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    background: #f0f0f0;
+    z-index: 98;
+    border-top: 1px solid #d0d0d0;
+    background: #fcfcfc;
 }
 
 .tabBar {
-	position: relative;
-	background: url('../img/sombra_menu.gif') top left repeat-x #FFFFFF;
-	height: 33px;
-	z-index: 99;
+    position: relative;
+    background: url('../img/sombra_menu.gif') top left repeat-x #FFFFFF;
+    height: 33px;
+    z-index: 99;
 }
 .fmTab_l  {
-	float: left;
-	position: relative;
-	background: url('../img/aba_e.gif') top left no-repeat;
-	top: 9px;
-	height: 24px;
-	padding-left: 4px;
+    float: left;
+    position: relative;
+    background: url('../img/aba_e.gif') top left no-repeat;
+    top: 9px;
+    height: 24px;
+    padding-left: 4px;
 }
 .fmTab_r {
-	float: right;
-	background: url('../img/aba_d.gif') top right no-repeat;
-	height: 24px;
-	padding-right: 4px;
+    float: right;
+    background: url('../img/aba_d.gif') top right no-repeat;
+    height: 24px;
+    padding-right: 4px;
 }
 .fmTab_c {
-	float: left;
-	background: url('../img/aba_c.gif') top left repeat-x;
-	height: 20px;
-	font-size: 9pt;
-	color: #888;
-	font-family: Helvetica; 
-	padding: 4px 2px 0 2px;
-	cursor: pointer;
+    float: left;
+    background: url('../img/aba_c.gif') top left repeat-x;
+    height: 20px;
+    font-size: 9pt;
+    color: #888;
+    font-family: Helvetica; 
+    padding: 4px 2px 0 2px;
+    cursor: pointer;
 }
 .fmTab_ls {
-	float: left;
-	position: relative;
-	top: 10px;
-	background: url('../img/aba_es.gif') top left no-repeat;
-	height: 24px;
-	padding-left: 4px;
-	margin-bottom: -1px;
+    float: left;
+    position: relative;
+    top: 10px;
+    background: url('../img/aba_es.gif') top left no-repeat;
+    height: 24px;
+    padding-left: 4px;
+    margin-bottom: -1px;
 }
 .fmTab_rs {
-	float: right;
-	background: url('../img/aba_ds.gif') top right no-repeat;
-	height: 24px;
-	padding-right: 4px;
+    float: right;
+    background: url('../img/aba_ds.gif') top right no-repeat;
+    height: 24px;
+    padding-right: 4px;
 }
 .fmTab_cs {
-	float: left;
-	background: url('../img/aba_cs.gif') top left repeat-x;
-	height: 20px;
-	font-size: 9pt;
-	color: #888;
-	font-family: Helvetica; 
-	padding: 4px 2px 0 2px;
-	cursor: pointer;
+    float: left;
+    background: url('../img/aba_cs.gif') top left repeat-x;
+    height: 20px;
+    font-size: 9pt;
+    color: #888;
+    font-family: Helvetica; 
+    padding: 4px 2px 0 2px;
+    cursor: pointer;
 }
 .fmTab_x {
-	float: right;
-	background: url('../img/aba_x.gif') top right no-repeat;
-	height: 12px;
-	width: 12px;
-	cursor: pointer;
-	position: relative;
-	top: 1px;
-	right: -2px;
+    float: right;
+    background: url('../img/aba_x.gif') top right no-repeat;
+    height: 12px;
+    width: 12px;
+    cursor: pointer;
+    position: relative;
+    top: 1px;
+    right: -2px;
 }
 .fmTab_x:hover {
-	background: url('../img/aba_xs.gif') top right no-repeat;
+    background: url('../img/aba_xs.gif') top right no-repeat;
 }
 .fmTabProg {
-	height: 100%;
-	width: 100%;
-	overflow-y: auto;
-	overflow-x: hidden;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 .defModalWindow {
-	width: 300px;
-	background: #f0f0f0;
-	border-radius: 5px;
-	border-bottom: 2px solid #222;
-	border-right: 2px solid #222;
+    width: 300px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    border-bottom: 2px solid #222;
+    border-right: 2px solid #222;
 }
 .defModalTitle {
-	padding: 10px;
-	text-align: center;
-	background: url('../img/bg_menu.gif') top left repeat-x;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    background: url('../img/bg_menu.gif') top left repeat-x;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    font-weight: bold;
 }
 .defModalContent {
-	padding: 10px;
-	text-align: left;
+    padding: 10px;
+    text-align: left;
 }
 .defModalButtons {
-	padding: 10px;
-	text-align: center;
+    padding: 10px;
+    text-align: center;
 }
-	
-	
+
+
 .btn_e {
-	float: left;
-	height: 37px;
-	background: url('../img/btn_e.gif') top left no-repeat;
-	cursor: pointer;
+    float: left;
+    height: 37px;
+    background: url('../img/btn_e.gif') top left no-repeat;
+    cursor: pointer;
 }
 .btn_d {
-	float: right;
-	height: 37px;
-	background: url('../img/btn_d.gif') top right no-repeat;
-	padding-right: 15px;
-	padding-left: 15px;
-	padding-top: 10px; 
-	cursor: pointer;
+    float: right;
+    height: 37px;
+    background: url('../img/btn_d.gif') top right no-repeat;
+    padding-right: 15px;
+    padding-left: 15px;
+    padding-top: 10px; 
+    cursor: pointer;
 }
 .btn_c {
-	display:inline-block;
-	height: 37px;
-	background: url('../img/btn_c.gif') top left repeat-x;
-	cursor: pointer;
+    display:inline-block;
+    height: 37px;
+    background: url('../img/btn_c.gif') top left repeat-x;
+    cursor: pointer;
 }
 .btn_es {
-	float: left;
-	height: 37px;
-	background: url('../img/btn_es.gif')top left no-repeat;
-	cursor: pointer;
+    float: left;
+    height: 37px;
+    background: url('../img/btn_es.gif')top left no-repeat;
+    cursor: pointer;
 }
 .btn_ds {
-	float: right;
-	height: 37px;
-	background: url('../img/btn_ds.gif') top right no-repeat;
-	padding-right: 15px;
-	padding-left: 15px;
-	padding-top: 10px; 
-	cursor: pointer;
+    float: right;
+    height: 37px;
+    background: url('../img/btn_ds.gif') top right no-repeat;
+    padding-right: 15px;
+    padding-left: 15px;
+    padding-top: 10px; 
+    cursor: pointer;
 }
 .btn_cs {
-	display:inline-block;
-	height: 37px;
-	background: url('../img/btn_cs.gif') top left repeat-x;
-	cursor: pointer;
+    display:inline-block;
+    height: 37px;
+    background: url('../img/btn_cs.gif') top left repeat-x;
+    cursor: pointer;
 }
 .fmList {
-	border-spacing: 0;
-	margin: 0;
-	padding: 0;
-	width: 100%;
+    border-spacing: 0;
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 .fmList0 {
-	background: url('../img/degradeb.gif') top left repeat-x;
-	cursor: pointer;
+    background: url('../img/degradeb.gif') top left repeat-x;
+    cursor: pointer;
 }
 .fmList1 {
-	background: url('../img/degradeb.gif') top left repeat-x;
-	cursor: pointer;
+    background: url('../img/degradeb.gif') top left repeat-x;
+    cursor: pointer;
 }
 .fmList > thead > tr > th {
-	background: #e0e0e0;
+    background: #e0e0e0;
 }
 .fmList0 > * {
-	cursor: pointer;
+    cursor: pointer;
 }
 .fmList1 > * {
-	cursor: pointer;
+    cursor: pointer;
 }
 .acLinha {
-	cursor: pointer;
+    cursor: pointer;
 }
 .acLinha:hover , .acLinhaSel {
-	background: #d0d0d0;
+    background: #d0d0d0;
 }
 .acLinha > td {
-	padding: 4px;
-	font-size: 8pt;
+    padding: 4px;
+    font-size: 8pt;
 }

@@ -8,6 +8,7 @@
 class Functions {
 
     function formataData($data) {
+        
         $temp = explode('/', $data);
         if (count($temp) == 3)
             return $temp[2] . "-" . $temp[1] . "-" . $temp[0];

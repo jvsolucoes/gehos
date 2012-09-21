@@ -16,6 +16,9 @@ class Modulo extends Zend_Db_Table_Abstract {
         $this->_modelModuloAcao = new ModuloAcao();
     }
     
+    const NIVELMENU = 10;
+    const VISIBILIDADEMUNU = 1;
+    
     public static function listar($aplicacao) {
         $modulo = new Modulo();
         $sql = $modulo->getAdapter()->select()
@@ -62,14 +65,36 @@ class Modulo extends Zend_Db_Table_Abstract {
     public static function listarModuloFilho($codAplicacao, $codModuloPai) {
         $modulo = new Modulo();
         $sql = $modulo->getAdapter()->select()
-                                ->from(array("am" => "aplicacao_modulo"), array('am.*'))
+                                ->from(array("am" => "aplicacao_modulo"))
                                 ->join(array("m" => "modulo"), "am.codModulo = m.codModulo", array("m.*"))
                                 ->where("am.codAplicacao = ?", $codAplicacao)
                                 ->where("m.codModuloPai = ?", $codModuloPai);
-
+        
         $result = $modulo->getAdapter()->setFetchMode(Zend_Db::FETCH_OBJ);
-        $result = $modulo->getAdapter()->fetchRow($sql);
-
+        $result = $modulo->getAdapter()->fetchAll($sql);
+        
+        return $result;
+    }
+    
+    public static function listarModuloUser($codPerfil) {
+        $modulo = new Modulo();
+        
+        if ($codPerfil == 1) {
+            $sql = $modulo->getAdapter()->select()
+                                ->from(array("m" => "modulo"), array("m.*"))
+                                ->where("m.nivelModulo = ?", Modulo::NIVELMENU);
+        } else {
+            $sql = $modulo->getAdapter()->select()
+                                ->from(array("m" => "modulo"), array("m.*"))
+                                ->where("m.nivelModulo = ?", Modulo::NIVELMENU)
+                                ->where("m.visibilidadeModulo = ?", Modulo::VISIBILIDADEMUNU);
+        }
+        
+        
+        
+        $result = $modulo->getAdapter()->setFetchMode(Zend_Db::FETCH_OBJ);
+        $result = $modulo->getAdapter()->fetchAll($sql);
+        
         return $result;
     }
 

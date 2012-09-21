@@ -1,33 +1,34 @@
 /*
 	fmTab - Gerenciador de Abas
 	por Dimas Melo Filho
-	Possui integração com o Menu e requer o funções do módulo de Menu fmMenu (menu.js).
+	Possui integraï¿½ï¿½o com o Menu e requer o funï¿½ï¿½es do mï¿½dulo de Menu fmMenu (menu.js).
 	Requer o jquery.
 	
-	** Para fazer: Criar uma versão que não depende do jquery.
+	** Para fazer: Criar uma versï¿½o que nï¿½o depende do jquery.
 */
 
 fmTabCount = 0;
 
 /**
- * Abre uma nova aba. Ao carregar um módulo em uma nova aba, o carregador de módulos chama a função javascript init_nomedomodulo onde
- * nomedomodulo é o nome do arquivo que gera o módulo. OBS: A extensão do nome do módulo é removida no nome da função. Por exemplo,
- * fmTabNew('geral','cadatroEmpresa.php'); carrega o módulo mGeral/cadastroEmpresa.php e chama a sua função init_cadastroEmpresa();
+ * Abre uma nova aba. Ao carregar um mï¿½dulo em uma nova aba, o carregador de mï¿½dulos chama a funï¿½ï¿½o javascript init_nomedomodulo onde
+ * nomedomodulo ï¿½ o nome do arquivo que gera o mï¿½dulo. OBS: A extensï¿½o do nome do mï¿½dulo ï¿½ removida no nome da funï¿½ï¿½o. Por exemplo,
+ * fmTabNew('geral','cadatroEmpresa.php'); carrega o mï¿½dulo mGeral/cadastroEmpresa.php e chama a sua funï¿½ï¿½o init_cadastroEmpresa();
  * 
  * @author Dimas Melo Filho
- * @param  system A qual subsistema pertence o módulo que será carregado na aba. Pode ser: geral, homecare, hospital, clinca, consultorio.
- * @param  modulo Nome do arquivo (dentro da pasta de subsistema) que gera o código do módulo. 
+ * @param  system A qual subsistema pertence o mï¿½dulo que serï¿½ carregado na aba. Pode ser: geral, homecare, hospital, clinca, consultorio.
+ * @param  modulo Nome do arquivo (dentro da pasta de subsistema) que gera o cï¿½digo do mï¿½dulo. 
  */
 function fmTabNew(system, module, tabName) {
 	fmMenuHide();
 	var progAddr = '';
 	var systemLower = system.toLowerCase();
-	if (systemLower == 'geral') progAddr = 'mGeral/' + module;
-	else if (systemLower == 'homecare') progAddr = 'mHomecare/' + module;
-	else if (systemLower == 'hospital') progAddr = 'mHospital/' + module;
-	else if (systemLower == 'clinica') progAddr = 'mClinica/' + module;
-	else if (systemLower == 'consultorio') progAddr = 'mConsultorio/' + module;
-	else if (systemLower == 'manual') progAddr = 'mManual/' + module;
+        if (systemLower == 'geral') progAddr = module;
+//	if (systemLower == 'geral') progAddr = 'mGeral/' + module;
+//	else if (systemLower == 'homecare') progAddr = 'mHomecare/' + module;
+//	else if (systemLower == 'hospital') progAddr = 'mHospital/' + module;
+//	else if (systemLower == 'clinica') progAddr = 'mClinica/' + module;
+//	else if (systemLower == 'consultorio') progAddr = 'mConsultorio/' + module;
+//	else if (systemLower == 'manual') progAddr = 'mManual/' + module;
 	else return false;	
 	var currentTab = fmTabCount++;
 	progAddr += "?tab=" + currentTab;
@@ -41,7 +42,7 @@ function fmTabNew(system, module, tabName) {
 	/* Criar container da nova aba */
 	$("#program").append('<div class="fmTabProg" id="fmTab' + (currentTab) + '"></div>');
 	fmTabShow(currentTab);
-	$('#fmTab'+currentTab).html("&nbsp;&nbsp;&nbsp;<img src=\"i/ajax-loader.gif\" />&nbsp;&nbsp;Carregando aplica&ccedil;&atilde;o. Por favor, aguarde...");		
+	$('#fmTab'+currentTab).html("&nbsp;&nbsp;&nbsp;<img src=\"../../public/img/ajax-loader.gif\" />&nbsp;&nbsp;Carregando aplica&ccedil;&atilde;o. Por favor, aguarde...");		
 	$.ajax(progAddr, {
 		error: function(xhr, errType, errText) {
 			if (errType == "timeout") {
@@ -76,7 +77,7 @@ function fmTabNew(system, module, tabName) {
  * Exibe uma aba e oculta as demais.
  *
  * @author Dimas Melo Filho
- * @param  tabId Número da aba que deve ser exibida.
+ * @param  tabId Nï¿½mero da aba que deve ser exibida.
  */
 function fmTabShow(tabId) {
 	$("#fmTab"+tabId).show();
@@ -91,10 +92,10 @@ function fmTabShow(tabId) {
 }
 
 /**
- * Fecha uma aba e remove seus componentes do formulário.
+ * Fecha uma aba e remove seus componentes do formulï¿½rio.
  *
  * @author Dimas Melo Filho
- * @param  tabId Número da aba que deve ser exibida.
+ * @param  tabId Nï¿½mero da aba que deve ser exibida.
  */
 function fmTabClose(tabId) {
 	var sel = $("#fmTab_l"+tabId).hasClass('fmTab_ls');
@@ -105,7 +106,7 @@ function fmTabClose(tabId) {
 }
 
 /**
- * Mostra a última aba da lista.
+ * Mostra a ï¿½ltima aba da lista.
  *
  * @author Dimas Melo Filho
  */
@@ -117,7 +118,7 @@ function fmTabShowLast() {
 }
 
 /**
- * Passa para a próxima aba.
+ * Passa para a prï¿½xima aba.
  *
  * @author Dimas Melo Filho
  */

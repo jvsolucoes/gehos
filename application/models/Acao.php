@@ -21,6 +21,33 @@ class Acao extends Zend_Db_Table_Abstract {
         return $result;
     }
     
+    public static function listarAutocomplete($nomeAcao) {
+        $acao = new Acao();
+        
+        $sql = $acao->getAdapter()->select()
+                    ->from(array("acao"), array("*"))
+                    ->where("nomeAcao LIKE '%$nomeAcao%'")
+                    ->order("nomeAcao ASC");
+        
+//        $result = $acao->getAdapter()->setFetchMode(Zend_Db::FETCH_OBJ);
+        $result = $acao->getAdapter()->fetchAll($sql);
+
+        return $result;
+    }
+    
+    public static function buscar($codAcao) {
+        $acao = new Acao();
+        
+        $sql = $acao->getAdapter()->select()
+                    ->from(array("acao"), array("*"))
+                    ->where("codAcao = ?", $codAcao);
+        
+//        $result = $acao->getAdapter()->setFetchMode(Zend_Db::FETCH_OBJ);
+        $result = $acao->getAdapter()->fetchRow($sql);
+
+        return $result;
+    }
+    
     public static function buscarPorModulo($modulo) {
         $acao = new Acao();
         $sql = $acao->getAdapter()->select()
@@ -37,24 +64,27 @@ class Acao extends Zend_Db_Table_Abstract {
         return $result;
     }
     
-    public function inserir($dados) {
+    public static function inserir($dados) {
+        $acao = new Acao();
         
-        $this->getAdapter()->beginTransaction();
+        $acao->getAdapter()->beginTransaction();
         
         $data = array(
-            'nomeAcao' => $dados['descricao'],
-            'linkAcao' => Functions::gerarLink($dados['descricao'])
+            'nomeAcao' => $dados['nomeAcao'],
+            'linkAcao' => Functions::gerarLink($dados['nomeAcao'])
         );
         
         try {
-            $this->insert($data);
+            $acao->insert($data);
+            $result = true;
         } catch (Zend_Exception $e) {
-            $this->getAdapter()->rollBack();
+            $acao->getAdapter()->rollBack();
             throw new Zend_Exception("N&atilde;o foi possível cadastrar a ação" . $e->getMessage());
         }
         
-        $this->getAdapter()->commit();
+        $acao->getAdapter()->commit();
         
+        return $result;
     }
     
     public function editar($dados) {

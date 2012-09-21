@@ -3,55 +3,175 @@ $usuario = Zend_Auth::getInstance()->getIdentity();
 
 if (@$usuario) {
 ?>
-    <div id="smoothmenu" class="ddsmoothmenu">
-        <ul>
-            <?php
-            $aplicacao = Aplicacao::buscarNome($this->aplicacao['module']);
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tbody>
+        <tr>
+            <td>
+                <table class="menu border"><tbody>
+                        <tr>
+                            <td style="padding: 0">
+                                <table class="menu">
+                                    <tbody>
+                                        <tr>
+                                            <?php
+                                            $aplicacao = Aplicacao::buscarNome($this->aplicacao['module']);
             
-            $models = AplicacaoModulo::buscarPricipal($aplicacao->codAplicacao);
-            foreach ($models as $principal) {
-                
-                $menuFilho = Modulo::listarModuloFilho($aplicacao->codAplicacao, $principal->codModulo);
-                
-                if ($menuFilho) {
-                    
-                    var_dump($menuFilho);
-                    
-                    if (Usuario::validarModulo($aplicacao->codAplicacao, $menuFilho->codModulo)) {
-                    ?>
-                        <li> 
-                            <a href="#"><?php echo $principal->nomeModulo; ?></a>
-                                <?php
-                                if ($menuFilho) {
-                                ?>
-                                    <ul>
-                                        <?php
-                                        $subMenuFilho = Modulo::listarModuloFilho($aplicacao->codAplicacao, $principal->codModulo);
+                                            $models = AplicacaoModulo::buscarPricipal($aplicacao->codAplicacao);
+                                            foreach ($models as $principal) {
 
-                                            if ($subMenuFilho) {
-                                                if (Usuario::validarModulo($aplicacao->codAplicacao, $subMenuFilho->codModulo)) {
+                                                if (Usuario::validarModulo($aplicacao->codAplicacao, $principal->codModulo)) {
                                                 ?>
-                                                    <li> 
-                                                        <a href="#"><?php echo $menuFilho->nomeModulo; ?></a>
-                                                    </li>
+                                                    <td class="menuItem" id="fmMenuItem<?php echo $principal->codModulo; ?>" 
+                                                        onmouseover="fmMenuShow('fmMenuItem<?php echo $principal->codModulo; ?>','fmMenuSubItem<?php echo $principal->codModulo; ?>');" 
+                                                        onmouseout="fmMenuStartTimer();" >
+                                                        <?php echo $principal->nomeModulo; ?>
+                                                    </td>
                                                 <?php
                                                 }
                                             }
+                                            ?>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <?php
+                                $aplicacao = Aplicacao::buscarNome($this->aplicacao['module']);
+
+                                $models = AplicacaoModulo::buscarPricipal($aplicacao->codAplicacao);
+                                foreach ($models as $principal) {
+
+                                    if (Usuario::validarModulo($aplicacao->codAplicacao, $principal->codModulo)) {
+                                        $menuFilho = Modulo::listarModuloFilho($aplicacao->codAplicacao, $principal->codModulo);
+                                        if ($menuFilho) {
                                         ?>
-                                    </ul>
+                                            <div class="submenu" id="fmMenuSubItem<?php echo $principal->codModulo; ?>">
+                                                <ul>
+                                                <?php    
+                                                foreach ($menuFilho as $mf) {
+                                                    if (Usuario::validarModulo($aplicacao->codAplicacao, $mf->codModulo)) {
+                                                        $subMenuFilho = Modulo::listarModuloFilho($aplicacao->codAplicacao, $mf->codModulo);
+                                                        if ($subMenuFilho) {
+                                                        ?>
+                                                            <li class="hasSubMenu" id="fmMenuSubItem_<?php echo $mf->codModulo; ?>"
+                                                                onmouseover="fmMenuSubShow('fmMenuSubItem_<?php echo $mf->codModulo; ?>','fmMenuSubSubItem<?php echo $mf->codModulo; ?>');" 
+                                                                onmouseout="fmMenuStartTimer();">
+                                                                <?php echo $mf->nomeModulo; ?>
+                                                            </li>
+                                                        <?php
+                                                        } else {
+                                                        ?>
+                                                            <li onmouseover="fmMenuClearTimer();" 
+                                                                onmouseout="fmMenuStartTimer();" 
+                                                                onclick="fmTabNew(
+                                                                    'geral',
+                                                                    '<?php echo $this->url(array("controller" => $mf->linkModulo , "action" => $mf->linkModulo)); ?>',
+                                                                    '<?php echo $mf->nomeModulo; ?>');">
+                                                                <?php echo $mf->nomeModulo; ?>
+                                                            </li>
+                                                        <?php    
+                                                        }
+                                                    }
+                                                }
+                                                ?>
+                                                </ul>
+                                            </div>
+                                            <?php    
+                                            foreach ($menuFilho as $mf) {
+                                                if (Usuario::validarModulo($aplicacao->codAplicacao, $mf->codModulo)) {
+                                                    $subMenuFilho = Modulo::listarModuloFilho($aplicacao->codAplicacao, $mf->codModulo);
+                                                    if ($subMenuFilho) {
+                                                    ?>
+                                                        <div class="submenu" id="fmMenuSubSubItem<?php echo $mf->codModulo; ?>">
+                                                            <ul>
+                                                            <?php
+                                                            foreach ($subMenuFilho as $smf) {
+                                                                if (Usuario::validarModulo($aplicacao->codAplicacao, $smf->codModulo)) {
+                                                                    $subSubMenuFilho = Modulo::listarModuloFilho($aplicacao->codAplicacao, $smf->codModulo);
+                                                                    if ($subSubMenuFilho) {
+                                                                    ?>
+                                                                        <li class="hasSubMenu" id="fmMenuSubItem_<?php echo $mf->codModulo; ?>"
+                                                                            onmouseover="fmMenuSubShow('fmMenuSubItem_<?php echo $mf->codModulo; ?>','fmMenuSubSubItem<?php echo $mf->codModulo; ?>');" 
+                                                                            onmouseout="fmMenuStartTimer();" >
+                                                                            <?php echo $mf->nomeModulo; ?>
+                                                                        </li>
+                                                                    <?php
+                                                                    } else {
+                                                                    ?>
+                                                                        <li onmouseover="fmMenuClearTimer();" 
+                                                                            onmouseout="fmMenuStartTimer();" 
+                                                                            onclick="fmTabNew(
+                                                                                    'geral',
+                                                                                    '<?php echo $this->url(array("controller" => $smf->linkModulo , "action" => $smf->linkModulo)); ?>',
+                                                                                    '<?php echo $smf->nomeModulo; ?>');">
+                                                                            <?php echo $smf->nomeModulo; ?>
+                                                                        </li>
+                                                                    <?php    
+                                                                    }
+                                                                }
+                                                            }
+                                                            ?>
+                                                            </ul>
+                                                        </div>    
+                                                    <?php    
+                                                    }
+                                                }
+                                            }     
+                                        }
+                                    }
+                                }
+                                ?>
+                            </td>
+                            <td id="sep">&nbsp;</td>
+                            <td style="padding: 0">
+                                <table class="menu">
+                                    <tr>
+                                        <td class="noPadding rightAlign" id="user" onmouseover="fmMenuShow('user','fmMenuUser');" onmouseout="fmMenuStartTimer();"><?php echo $usuario->nomeUsuario . "@"; ?></td>
+                                        <td id="logo" class="noPadding">
+                                            <img height="35" width="92" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/LOGO FINAL.png" />
+                                        </td>
+                                    </tr>
+                                </table>
+                                <?php 
+                                $menuUser = Modulo::listarModuloUser($usuario->codPerfil);
+                                if ($menuUser) {
+                                ?>
+                                    <div class="submenu" id="fmMenuUser" style="right: 0; margin-left: -100px">
+                                        <ul>
+                                            <?php
+                                            foreach ($menuUser as $mu) {
+                                                if ($mu->linkModulo == "sair") {
+                                                ?>
+                                                    <li onmouseover="fmMenuClearTimer();" 
+                                                        onmouseout="fmMenuStartTimer();" 
+                                                        onclick="<?php echo $this->url(array("controller" => "index", "action" => $mu->linkModulo)); ?>">
+                                                        <?php echo $mu->nomeModulo; ?>
+                                                    </li>
+                                                <?php
+                                                } else {
+                                                ?>
+                                                    <li onmouseover="fmMenuClearTimer();" 
+                                                        onmouseout="fmMenuStartTimer();" 
+                                                        onclick="fmTabNew(
+                                                                'geral',
+                                                                '<?php echo $this->url(array("controller" => $mu->linkModulo , "action" => $mu->linkModulo)); ?>',
+                                                                '<?php echo $mu->nomeModulo; ?>');">
+                                                        <?php echo $mu->nomeModulo; ?>
+                                                    </li>
+                                                <?php    
+                                                }
+                                            }
+                                            ?>
+                                        </ul>
+                                    </div>
                                 <?php
                                 }
                                 ?>
-                        </li>
-                    <?php
-                    }
-                }
-                
-            }
-            ?>
-            
-        </ul>
-    </div>
-<?php 
+                            </td>
+                        </tr>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<?php
 }
 ?>

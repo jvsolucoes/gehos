@@ -106,7 +106,9 @@ class PerfilAplicacaoModuloAcao extends Zend_Db_Table_Abstract {
                                 ->where("codPerfil = ?", $idPerfil)
                                 ->where("codAplicacao = ?", $idAplicacao)
                                 ->where("codModulo = ?", $idModulo)
-                                ->group("codModulo");        
+                                ->group("codPerfil")
+                                ->group("codAplicacao")
+                                ->group("codModulo");
         
         $result = $app->getAdapter()->setFetchMode(Zend_Db::FETCH_OBJ);
         $result = $app->getAdapter()->fetchRow($sql);

@@ -33,8 +33,8 @@ var ddsmoothmenu={
         offsety:5
     }, //enable shadow?
     showhidedelay: {
-        showdelay: 100, 
-        hidedelay: 200
+        showdelay: 100//, 
+//        hidedelay: 200
     }, //set delay in milliseconds before sub menus appear and disappear, respectively
 
     ///////Stop configuring beyond here///////////////////////////
@@ -132,8 +132,8 @@ var ddsmoothmenu={
                                 left:menuleft+"px", 
                                 width:header._dimensions.subulw+'px'
                                 }).animate({
-                                height:'show',
-                                opacity:'show'
+                                height:'show'//,
+//                                opacity:'show'
                             }, ddsmoothmenu.transition.overtime)
                             if (smoothmenu.shadow.enable && !smoothmenu.css3support){
                                 var shadowleft=header.istopheader? $targetul.offset().left+ddsmoothmenu.shadow.offsetx : menuleft
@@ -161,8 +161,8 @@ var ddsmoothmenu={
                     clearTimeout($targetul.data('timers').showtimer)
                     $targetul.data('timers').hidetimer=setTimeout(function(){
                         $targetul.animate({
-                            height:'hide', 
-                            opacity:'hide'
+                            height:'hide'//, 
+//                            opacity:'hide'
                         }, ddsmoothmenu.transition.outtime)
                         if (smoothmenu.shadow.enable && !smoothmenu.css3support){
                             if (ddsmoothmenu.detectwebkit){ //in WebKit browsers, set first child shadow's opacity to 0, as "overflow:hidden" doesn't work in them

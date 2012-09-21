@@ -8,7 +8,7 @@ $usuario = Zend_Auth::getInstance()->getIdentity();
         <title>P&aacute;gina Inicial @ gehos</title>
         <link rel="shortcut icon" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/logo2.ico" type="image/x-icon" />
         <link rel="stylesheet" rev="stylesheet" type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/gehos.css" />
-        <link rel="stylesheet" rev="stylesheet" type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/ddsmoothmenu.css" />
+<!--        <link rel="stylesheet" rev="stylesheet" type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/ddsmoothmenu.css" />-->
         <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/def-min.js"></script>
         <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/autocomplete.js"></script>
         <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery.js"></script>
@@ -21,26 +21,27 @@ $usuario = Zend_Auth::getInstance()->getIdentity();
         <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/fmCadastro.js"></script>
         <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/fmList.js"></script>
         <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/ai.scroll.js"></script>
-        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/ddsmoothmenu.js"></script>
+<!--        <script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/ddsmoothmenu.js"></script>-->
         
 
         <script type="text/javascript">
 //            $(window).resize(function () {
 //                $("#program").height($(window).height()-66);
 //            });
-            $().ready(function() {
+            $(document).ready(function() {
+                $('input:first').focus();
+                mudarFoco(1);
 //                $("#program").height($(window).height()-66);
                 $("input, select, textarea").attr("autocomplete", "off");
-                
             });
             
-            ddsmoothmenu.init({
-                mainmenuid: "smoothmenu", //menu DIV id
-                orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
-                classname: 'ddsmoothmenu', //class added to menu's outer DIV
-                //customtheme: ["#1c5a80", "#18374a"],
-                contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
-            })
+//            ddsmoothmenu.init({
+//                mainmenuid: "smoothmenu", //menu DIV id
+//                orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
+//                classname: 'ddsmoothmenu', //class added to menu's outer DIV
+//                //customtheme: ["#1c5a80", "#18374a"],
+//                contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
+//            })
             
             function mudarFoco(inputInicial) {
                 $('input').live("keyup", function(e) {
