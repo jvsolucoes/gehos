@@ -1,0 +1,560 @@
+<link type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/cadastros.css" rel="stylesheet" rev="stylesheet"/>
+<style>
+    .<?php tabIdEcho('info') ?> {
+        width: 100%;
+    }
+    .<?php tabIdEcho('info') ?> > tbody > tr > td {
+        padding: 3px;
+        padding-right: 15px;
+    }
+    .<?php tabIdEcho("tela_1_"); ?> {
+        opacity: 0;
+    }
+    .<?php tabIdEcho("th1_"); ?> {
+        font-size: 16pt;
+        font-family: "Palatino Linotype";
+        font-weight: bold;
+        background: url('<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/degraded.gif') top left repeat-x;
+        margin: 0 0 10px -20px;
+        padding: 5px 20px;
+        border-bottom: 1px solid #d7d7d7;
+    }
+    .<?php tabIdEcho("th2_"); ?> {
+        font-size: 16pt;
+        font-family: "Palatino Linotype";
+        font-weight: bold;
+        background: url('<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/degraded.gif') top left repeat-x;
+        margin: 0;
+        padding: 5px 20px;
+        border-bottom: 1px solid #d7d7d7;
+    }
+</style>
+
+<!-- Pesquisa -->
+<div id="<?php tabIdEcho('atend_0_'); ?>" style="overflow: visible; height: 100%; width: 100%; position: relative;">
+    <table style="width: 100%; height: 100%; border-spacing: 0; border: 0; margin: 0; padding: 0; overflow: visible;">
+        <tr height="26">
+            <td valign="top">
+                <div class="<?php //tabIdEcho("dica"); ?>" style="height: 30px;">&nbsp;</div>
+                <div class="<?php //tabIdEcho("dica"); ?>" style="font-size: 16pt; text-align: center;"><!--<img src="i/logo_big.png" />-->
+                    <img id="logo" width="180" height="65" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/LOGO FINAL.png" />
+                </div>
+                <div id="<?php //tabIdEcho('cont'); ?>" style="text-align: center; height: 100%; padding-top: 40px; padding-bottom: 20px; position: relative;">
+                    <input type="text" id="<?php //tabIdEcho("pesquisa"); ?>" style="width: 600px;" />
+                    <img src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/new_file.gif" style="position: relative; left: -20px; top: 3px; cursor: pointer;" onclick="<?php //tabIdEcho("cadastrar"); ?>($('#<?php //tabIdEcho("pesquisa"); ?>').val());"/>
+                </div>
+                <p class="<?php //tabIdEcho("dica"); ?>" style="text-align: center; margin: auto;">Digite o nome ou cpf do paciente, ou tecle esc para criar um novo atendimento.</p>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                <div id="<?php //tabIdEcho("regs"); ?>" style="text-align: left; position: relative; height: 100%; overflow: visible;">
+                    <table style="width: 100%; height: 100%; border-spacing: 0; margin: 0; padding: 0; overflow: visible;">
+                        <tr>
+                            <td class="<?php //tabIdEcho("tela_1_"); ?>" valign="top" style="border-right: 1px solid #e0e0e0; width: 450px; ">
+                                <div style="height: 100%; overflow-y: scroll; overflow-x: hidden; position: relative; padding-right: 10px;"><table id="<?php //tabIdEcho("registros"); ?>" style="width: 450px;"><tbody></tbody></table></div>
+                            </td>
+                            <td class="<?php //tabIdEcho("tela_1_"); ?>" height="100%" valign="top" align="left" style="background: #FFFFFF; position: relative; overflow: visible;">
+                                <div id="<?php //tabIdEcho("info"); ?>" style="padding-left: 20px; border-right: 1px solid #e0e0e0; overflow: hidden;"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<!-- Cadastro de Paciente -->
+<div id="<?php //tabIdEcho('atend_1_'); ?>" style="overflow: visible; height: 100%; width: 100%; position: relative; display: none;">
+    <!-- Campos -->
+    <h1 id="<?php //tabIdEcho("etapa1"); ?>" class="<?php //tabIdEcho("th2_"); ?>"></h1>
+    <form method="post" onsubmit="return false;">
+        <input type="hidden" name="codPessoa" id="<?php //tabIdEcho('codPessoaPaciente'); ?>" value="" />
+        <input type="hidden" name="tipoPessoa" id="<?php //tabIdEcho('tipoPessoa'); ?>" value="P" />
+        <table>
+            <tbody>
+                <tr>
+                    <td colspan="6" class="ts">Dados do Atendimento</td>
+                </tr>
+                <tr>
+                    <td class="tn">Conv&ecirc;nio:</td>
+                    <td><input class="i1" type="text" name="codAnsConvenio" id="<?php //tabIdEcho('convenio'); ?>" /></td>
+                    <td class="tn">Plano:</td>
+                    <td><input class="i1" type="text" name="codPlano" id="<?php //tabIdEcho('plano'); ?>" /></td>
+                    <td class="tn">Matricula:</td>
+                    <td><input class="i1" type="text" name="matrConvPessoa" id="<?php //tabIdEcho('matricula'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td class="tn">Val. Carteira:</td>
+                    <td><input class="i1" type="text" name="valCarteira" id="<?php //tabIdEcho('valCarteira'); ?>" /></td>
+                    <td class="tn">N&uacute;m. Guia:</td>
+                    <td><input class="i1" type="text" name="numGuia" id="<?php //tabIdEcho('numGuia'); ?>" /></td>
+                    <td class="tn">Senha Guia:</td>
+                    <td><input class="i1" type="text" name="senhaGuia" id="<?php //tabIdEcho('senhaGuia'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="ts">Dados Pessoais</td>
+                </tr>
+                <tr>
+                    <td class="tn">Nome:</td>
+                    <td colspan="3"><input class="i3" name="nomePessoa" type="text" id="<?php //tabIdEcho('nome'); ?>"/></td>
+                    <td colspan="2" rowspan="5">
+                        <table height="100%" width="100%"><tbody>
+                                <tr>
+                                    <td width="125"><div style="height: 140px; background: #f7f7f7;"><img src="i/sem_foto.gif" width="125" height="140" border="0" /></div> </td>
+                                    <td width="125"><div style="height: 140px; background: #f7f7f7;"><img src="i/sem_digital.gif" width="125" height="140" border="0" /></div> </td>
+                                </tr>
+                                <tr class="dica">
+                                    <td align="center">Foto do Usu&aacute;rio</td>
+                                    <td align="center">Impress&atilde;o Digital</td>
+                                </tr>
+                            </tbody></table>
+                    </td>                        
+                </tr>
+                <tr>
+                    <td class="tn">Nascimento:</td>
+                    <td><input class="i1" type="text" name="dtNascPessoa" id="<?php //tabIdEcho('nascimento'); ?>" /></td>
+                    <td class="tn">Sexo:</td>
+                    <td><input class="i1" type="text" name="sexoPessoa" id="<?php //tabIdEcho('sexo'); ?>" /></td>
+                </tr>
+                <tr>			
+                    <td class="tn">CPF:</td>
+                    <td><input class="i1" type="text" name="cpfPessoa" id="<?php //tabIdEcho('cpf'); ?>" /></td>
+                    <td class="tn">RG:</td>
+                    <td><input class="i1" type="text" name="rgPessoa" id="<?php //tabIdEcho('rg'); ?>" /></td>
+                </tr>	                   
+                <tr>
+                    <td class="tn">Telefone:</td>
+                    <td><input class="i1" type="text" name="fone1Pessoa" id="<?php //tabIdEcho('fone1'); ?>" /></td>
+                    <td class="tn">Celular:</td>
+                    <td><input class="i1" type="text" name="fone2Pessoa" id="<?php //tabIdEcho('fone2'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td class="tn">E-Mail:</td>
+                    <td colspan="3"><input class="i3" type="text" name="emailPessoa" id="<?php //tabIdEcho('email'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td class="tn">Estado Civil:</td>
+                    <td><input class="i1" type="text" name="estadoCivilPessoa" id="<?php //tabIdEcho('estadoCivil'); ?>" /></td>
+                    <td class="tn">Nacionalidade:</td>
+                    <td><input class="i1" type="text" name="nacionalidadePessoa" id="<?php //tabIdEcho('nacionalidade'); ?>" /></td>
+                    <td class="tn">Naturalidade:</td>
+                    <td><input class="i1" type="text" name="naturalidadePessoa" id="<?php //tabIdEcho('naturalidade'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td class="tn">Profiss&atilde;o:</td>
+                    <td><input class="i1" type="text" name="profissaoPessoa" id="<?php //tabIdEcho('profissao'); ?>" /></td>
+                    <td class="tn">Indicado Por:</td>
+                    <td><input class="i1" type="text" name="quemIndicouPessoa" id="<?php //tabIdEcho('indicadoPor'); ?>" /></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="tn">Nome do Pai:</td>
+                    <td colspan="5"><input class="i5" type="text" name="nomePaiPessoa" id="<?php //tabIdEcho('nomePai'); ?>" /></td>                      
+                </tr>
+                <tr>
+                    <td class="tn">Nome da m&atilde;e:</td>
+                    <td colspan="5">
+                        <input class="i5" type="text" name="nomeMaePessoa" id="<?php //tabIdEcho('nomeMae'); ?>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="ts">Endere&ccedil;o Residencial</td>
+                </tr>
+                <tr>
+                    <td class="tn">CEP:</td>
+                    <td><input class="i1" type="text" name="codCep" id="<?php //tabIdEcho('cep'); ?>" /></td>
+                    <td class="tn">Endere&ccedil;o:</td>
+                    <td colspan="3"><input class="i3" type="text" name="endPessoa" id="<?php //tabIdEcho('endereco'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td class="tn">Bairro:</td>
+                    <td><input class="i1" type="text" name="bairroPessoa" id="<?php //tabIdEcho('bairro'); ?>" /></td>
+                    <td class="tn">Cidade:</td>
+                    <td><input class="i1" type="text" name="codCidade" id="<?php //tabIdEcho('cidade'); ?>" /></td>
+                    <td class="tn">UF:</td>
+                    <td><input class="i1" type="text" name="codUf" id="<?php //tabIdEcho('uf'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td class="tn">N&uacute;mero:</td>
+                    <td><input class="i1" type="text" name="numEndPessoa" id="<?php //tabIdEcho('numero'); ?>" /></td>
+                    <td class="tn">Complemento:</td>
+                    <td colspan="3"><input class="i3" type="text" name="complEndPessoa" id="<?php //tabIdEcho('complemento'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: left;" valign="top">
+                        <input type="checkbox" name="respMesmo" id="<?php //tabIdEcho('respMesmo'); ?>" checked="true" /> O paciente &eacute; o pr&oacute;prio respons&aacute;vel.
+                    </td>
+                    <td colspan="3" style="text-align: right; padding-top: 20px;">
+                        <?php DefButton("Cancelar", tabId("cancelarAtualizacao"), null); ?> &nbsp;
+                        <?php DefButton("Registrar Atendimento", tabId("registrarAtend"), null); ?>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<!-- Responsável -->
+<div id="<?php //tabIdEcho('atend_2_'); ?>" style="overflow: visible; height: 100%; width: 100%; position: relative; display: none;">
+    <h1 id="<?php //tabIdEcho("etapa2"); ?>" class="<?php //tabIdEcho("th2_"); ?>"></h1>
+    <form method="post" onsubmit="return false;">
+        <input type="hidden" name="dtEntAtendimento" id="<?php //tabIdEcho('dtEntradaAtend'); ?>" value="@NOW" />
+        <input type="hidden" name="codAtendimento" id="<?php //tabIdEcho('codAtendimento'); ?>" value="" />
+        <input type="hidden" name="codPessoaPaciente" id="<?php //tabIdEcho('codPacienteAtend'); ?>" value="" />
+        <table>
+            <tbody>
+                <tr>
+                    <td colspan="6" class="ts">Dados Pessoais</td>
+                </tr>
+                <tr>
+                    <td class="tn">Nome:</td>
+                    <td colspan="3"><input class="i3" name="nomeRespAtendimento" type="text" id="<?php //tabIdEcho('nomeR'); ?>"/></td>          
+                    <td class="tn">CPF:</td>
+                    <td><input class="i1" type="text" name="cpfRespAtendimento" id="<?php //tabIdEcho('cpfR'); ?>" /></td>          
+                </tr>
+                <tr>
+                    <td class="tn">Telefone:</td>
+                    <td><input class="i1" type="text" name="fone1RespAtendimento" id="<?php //tabIdEcho('fone1R'); ?>" /></td>
+                    <td class="tn">Celular:</td>
+                    <td><input class="i1" type="text" name="fone2RespAtendimento" id="<?php //tabIdEcho('fone2R'); ?>" /></td>
+                    <td class="tn">E-Mail:</td>
+                    <td colspan="1"><input class="i1" type="text" name="emailRespAtendimento" id="<?php //tabIdEcho('emailR'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="ts">Endere&ccedil;o Residencial</td>
+                </tr>
+                <tr>
+                    <td class="tn">CEP:</td>
+                    <td><input class="i1" type="text" name="codCepRespAtendimento" id="<?php //tabIdEcho('cepR'); ?>" /></td>
+                    <td class="tn">Endere&ccedil;o:</td>
+                    <td colspan="3"><input class="i3" type="text" name="endRespAtendimento" id="<?php //tabIdEcho('enderecoR'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td class="tn">Bairro:</td>
+                    <td><input class="i1" type="text" name="bairroRespAtendimento" id="<?php //tabIdEcho('bairroR'); ?>" /></td>
+                    <td class="tn">Cidade:</td>
+                    <td><input class="i1" type="text" name="codCidadeRespAtendimento" id="<?php //tabIdEcho('cidadeR'); ?>" /></td>
+                    <td class="tn">UF:</td>
+                    <td><input class="i1" type="text" name="codUf" id="<?php //tabIdEcho('ufR'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td class="tn">N&uacute;mero:</td>
+                    <td><input class="i1" type="text" name="numRespAtendimento" id="<?php //tabIdEcho('numeroR'); ?>" /></td>
+                    <td class="tn">Complemento:</td>
+                    <td colspan="3"><input class="i3" type="text" name="complRespAtendimento" id="<?php //tabIdEcho('complementoR'); ?>" /></td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="text-align: right; padding-top: 20px;">
+                        <?php DefButton("Cancelar", tabId("cancelarAtualizacao"), null); ?> &nbsp;
+                        <?php DefButton("Definir Respons&aacute;vel", tabId("registrarResponsavel"), null); ?>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<!-- Emissão de Guia -->
+<div id="<?php //tabIdEcho('atend_3_'); ?>" style="overflow: visible; height: 100%; width: 100%; position: relative; display: none;">
+</div>
+<script type="text/javascript">
+    /**
+     *	Autocomplete 
+     **/
+    new fmAutocomplete({
+        field: document.getElementById('<?php //tabIdEcho('plano'); ?>'), 
+        url: '../ac/acPlano.php', 
+        params: {codAnsConvenio: 'document.getElementById(\'<?php //tabIdEcho('convenio'); ?>\').realValue[0];'},
+        minChars: 0});
+		
+    new fmAutocomplete({
+        field: document.getElementById('<?php //tabIdEcho('convenio'); ?>'), 
+        url: '../ac/acConvenio.php', 
+        minChars: 1});
+		
+    new fmAutocomplete({
+        field: document.getElementById('<?php //tabIdEcho('sexo'); ?>'), 
+        url: '../ac/acSexo.php', 
+        minChars: 0});
+		
+    new fmAutocomplete({
+        field: document.getElementById("<?php //tabIdEcho('cidade'); ?>"), 
+        url: 'ac/acCidade.php', 
+        minChars: 3, selectFn: function (real, vals, cols) { 
+            $('#<?php //tabIdEcho('uf'); ?>').val(cols[1]);
+        }, 
+        pos: 'top'});
+		
+    new fmAutocomplete({
+        field: document.getElementById("<?php //tabIdEcho('estadoCivil'); ?>"), 
+        url: 'ac/acEstadoCivil.php', 
+        minChars: 0});
+	
+    var <?php //tabIdEcho("first"); ?> = true;
+    var <?php //tabIdEcho("displayItem"); ?> = 0;
+    var <?php //tabIdEcho("xhr"); ?> = null;
+    var <?php //tabIdEcho("novoPaciente"); ?> = false;
+	
+    /* Função que exibe uma tela */
+    function ExibeTela(n) {
+        var telas = ['#<?php //tabIdEcho('atend_0_'); ?>','#<?php //tabIdEcho('atend_1_'); ?>','#<?php //tabIdEcho('atend_2_'); ?>','#<?php //tabIdEcho('atend_3_'); ?>'];
+        for (var t = 0; t < telas.length; t++) $(telas[t]).hide();
+        $(telas[n]).show();
+    }
+	
+    /* Quando clicar no botão "Registrar Atendimento" na tela de Dados de Paciente */
+    function <?php //tabIdEcho("registrarAtend"); ?> () {
+        if (<?php //tabIdEcho("novoPaciente"); ?>) {
+<?php //tabIdEcho("cadastroPaciente"); ?>.insert(false);
+                                } else {
+<?php //tabIdEcho("cadastroPaciente"); ?>.update(false);
+                                }
+                                if ($("#<?php //tabIdEcho("respMesmo"); ?>").is(":checked")) {
+<?php //tabIdEcho("CopiarDadosResponsavel"); ?>();
+<?php //tabIdEcho("cadastroAtendimento"); ?>.insert(true);
+                                    ExibeTela(3);
+                                } else {
+                                    ExibeTela(2);
+                                }
+                            }
+	
+                            /* Copiar os dados do Paciente para os Campos do Responsável e Cadastrar o Atendimento com os dados do Responsável */
+                            function <?php //tabIdEcho("CopiarDadosResponsavel"); ?> () {
+                                //'<?php //tabIdEcho('codPessoaPaciente'); ?>'},
+                                $("#<?php //tabIdEcho('codPacienteAtend'); ?>").val($("#<?php //tabIdEcho('codPessoaPaciente'); ?>").val());
+                                $("#<?php //tabIdEcho('nomeR'); ?>").val($('#<?php //tabIdEcho('nome'); ?>').val());
+                                $("#<?php //tabIdEcho('cpfR'); ?>").val($('#<?php //tabIdEcho('cpf'); ?>').val());
+                                $("#<?php //tabIdEcho('fone1R'); ?>").val($('#<?php //tabIdEcho('fone1'); ?>').val());
+                                $("#<?php //tabIdEcho('fone2R'); ?>").val($('#<?php //tabIdEcho('fone2'); ?>').val());
+                                $("#<?php //tabIdEcho('emailR'); ?>").val($('#<?php //tabIdEcho('email'); ?>').val());
+<?php //tabIdEcho("CopiarEnderecoResponsavel"); ?>();
+                    }	
+                    /* Copia o endereço do paciente para o responsável */
+                    function <?php //tabIdEcho("CopiarEnderecoResponsavel"); ?> () {
+                        $("#<?php //tabIdEcho('cepR'); ?>").val($('#<?php //tabIdEcho('cep'); ?>').val());
+                        $("#<?php //tabIdEcho('enderecoR'); ?>").val($('#<?php //tabIdEcho('endereco'); ?>').val());
+                        $("#<?php //tabIdEcho('bairroR'); ?>").val($('#<?php //tabIdEcho('bairro'); ?>').val());
+                        $("#<?php //tabIdEcho('cidadeR'); ?>").val($('#<?php //tabIdEcho('cidade'); ?>').val());
+                        $("#<?php //tabIdEcho('numeroR'); ?>").val($('#<?php //tabIdEcho('numero'); ?>').val());
+                        $("#<?php //tabIdEcho('complementoR'); ?>").val($('#<?php //tabIdEcho('complemento'); ?>').val());
+                    }
+                    /* Executar uma Pesquisa (Quando o usuário digitar) */
+                    function <?php //tabIdEcho("pesquisar"); ?> (txt) {
+                        fmAjax("ajax/consultaPaciente.php",{q: txt, tab: "<?php echo tabNumber(); ?>"}, <?php //tabIdEcho("resultadoPesquisa"); ?>);
+                    }
+                    /* Exibir resultado de uma pesquisa (linhas de resultado) */
+                    function <?php //tabIdEcho("resultadoPesquisa"); ?>(data) {
+<?php //tabIdEcho('lista'); ?>.clear();
+                        var d = JSON.parse(data);
+                        for (var i = 0; i < d.length; i++) <?php //tabIdEcho('lista'); ?>.addRow(d[i], false);
+                    }
+                    /* Iniciar Navegação de campos da tela de dados do paciente */
+                    function <?php //tabIdEcho("fieldNavPaciente"); ?>() {
+                        def.fieldNav(<?php echo tabNumber(); ?>,['<?php //tabIdEcho("convenio"); ?>','<?php //tabIdEcho("plano"); ?>','<?php //tabIdEcho("matricula"); ?>',
+                            '<?php //tabIdEcho("valCarteira"); ?>','<?php //tabIdEcho("numGuia"); ?>','<?php //tabIdEcho("senhaGuia"); ?>','<?php //tabIdEcho("nome"); ?>',
+                            '<?php //tabIdEcho("nascimento"); ?>','<?php //tabIdEcho("sexo"); ?>','<?php //tabIdEcho("cpf"); ?>','<?php //tabIdEcho("rg"); ?>','<?php //tabIdEcho("fone1"); ?>',
+                            '<?php //tabIdEcho("fone2"); ?>','<?php //tabIdEcho("email"); ?>','<?php //tabIdEcho("estadoCivil"); ?>','<?php //tabIdEcho("nacionalidade"); ?>',
+                            '<?php //tabIdEcho("naturalidade"); ?>','<?php //tabIdEcho("profissao"); ?>','<?php //tabIdEcho("indicadoPor"); ?>','<?php //tabIdEcho("nomePai"); ?>',
+                            '<?php //tabIdEcho("nomeMae"); ?>','<?php //tabIdEcho("cep"); ?>','@<?php //tabIdEcho("consultaCepPaciente"); ?>();','<?php //tabIdEcho("endereco"); ?>','<?php //tabIdEcho("bairro"); ?>','<?php //tabIdEcho("cidade"); ?>'
+                            ,'<?php //tabIdEcho("uf"); ?>','<?php //tabIdEcho("numero"); ?>','<?php //tabIdEcho("complemento"); ?>']);
+                    }
+                    /* Função que inicia um novo cadastro */
+                    function <?php //tabIdEcho("cadastrar"); ?>(txt) {
+                        $('#<?php //tabIdEcho("etapa1"); ?>').html("Novo Prontu&aacute;rio Administrativo");
+                        $('#<?php //tabIdEcho("nome"); ?>').val(txt);
+<?php //tabIdEcho("novoPaciente"); ?> = true;
+                        ExibeTela(1);
+<?php //tabIdEcho("fieldNavPaciente"); ?>();
+                    }
+                    /* Função que sai do slide 2 (cadastro) para o slide 1 (pesquisa) */
+                    function <?php //tabIdEcho("cancelarAtualizacao"); ?>() {
+                        ExibeTela(0);
+                        def.fieldNav(<?php echo tabNumber(); ?>,['<?php //tabIdEcho("pesquisa"); ?>']);
+                    }
+                    /* Função chamada ao clicar em um item */
+                    function <?php //tabIdEcho("selItem"); ?>(idPac) {
+                        fmAjax("ajax/infoPaciente.php",{q: idPac}, <?php //tabIdEcho("resultadoSel"); ?>);
+                        $("#<?php //tabIdEcho("info"); ?>").html();
+                    }
+                    /* Função chamada ao retornar do ajax chamado pela função selItem */
+                    function <?php //tabIdEcho("resultadoSel"); ?>(data) {
+                        var pac = JSON.parse(data);
+                        $('#<?php //tabIdEcho("etapa1"); ?>').text("Confira os Dados do Paciente");
+                        $('#<?php //tabIdEcho('codPessoaPaciente'); ?>').val(pac.codPessoa);
+                        $('#<?php //tabIdEcho('nome'); ?>').val(pac.nomePessoa);
+                        $('#<?php //tabIdEcho('nascimento'); ?>').val(pac.dtNascPessoa);
+                        $('#<?php //tabIdEcho('sexo'); ?>').val(pac.sexoPessoa);
+                        $('#<?php //tabIdEcho('cpf'); ?>').val(pac.cpfPessoa);
+                        $('#<?php //tabIdEcho('rg'); ?>').val(pac.rgPessoa);
+                        $('#<?php //tabIdEcho('fone1'); ?>').val(pac.fone1Pessoa);
+                        $('#<?php //tabIdEcho('fone2'); ?>').val(pac.fone2Pessoa);
+                        $('#<?php //tabIdEcho('email'); ?>').val(pac.emailPessoa);
+                        $('#<?php //tabIdEcho('estadocivil'); ?>').val(pac.estadoCivilPessoa);
+                        $('#<?php //tabIdEcho('nacionalidade'); ?>').val(pac.nacionalidadePessoa);
+                        $('#<?php //tabIdEcho('naturalidade'); ?>').val(pac.naturalidadePessoa);
+                        $('#<?php //tabIdEcho('profissao'); ?>').val(pac.profissaoPessoa);
+                        $('#<?php //tabIdEcho('indicadoPor'); ?>').val(pac.quemIndicouPessoa);
+                        $('#<?php //tabIdEcho('nomePai'); ?>').val(pac.nomePaiPessoa);
+                        $('#<?php //tabIdEcho('nomeMae'); ?>').val(pac.nomeMaePessoa);
+                        $('#<?php //tabIdEcho('cep'); ?>').val(pac.codCep);
+                        $('#<?php //tabIdEcho('endereco'); ?>').val(pac.endPessoa);
+                        $('#<?php //tabIdEcho('numero'); ?>').val(pac.numEndPessoa);
+                        $('#<?php //tabIdEcho('complemento'); ?>').val(pac.complEndPessoa);
+                        $('#<?php //tabIdEcho('bairro'); ?>').val(pac.bairroPessoa);
+                        $('#<?php //tabIdEcho('cidade'); ?>').val(pac.cidadePessoa);
+                        $('#<?php //tabIdEcho('uf'); ?>').val(pac.ufPessoa);
+                        $('#<?php //tabIdEcho('matricula'); ?>').val(pac.matrConvPessoa);
+<?php //tabIdEcho("novoPaciente"); ?> = false;
+                        ExibeTela(1);
+<?php //tabIdEcho("fieldNavPaciente"); ?>();
+                    }
+                    /* Função chamada ao passar o mouse sobre um item */
+                    function <?php //tabIdEcho("overItem"); ?>(idPac) {
+                        if (<?php //tabIdEcho("displayItem"); ?> != idPac) {
+<?php //tabIdEcho("displayItem"); ?> = idPac;
+                                    if (<?php //tabIdEcho("xhr"); ?> != null) <?php //tabIdEcho("xhr"); ?>.abort();
+                                    $("#<?php //tabIdEcho("info"); ?>").html('<br /><img style="position: relative; top: 5px;" src="i/ajax-loader.gif">');
+<?php //tabIdEcho("xhr"); ?> = fmAjax("ajax/infoPaciente.php",{q: idPac},<?php //tabIdEcho("resultadoOver"); ?>);
+                                        }
+                                    }
+                                    /* Função chamada ao retornar do ajax chamado pela função selItem 
+                                     * Geração das Informações do Paciente 
+                                     */
+                                    function <?php //tabIdEcho("resultadoOver"); ?>(data) {
+                                        var pac = JSON.parse(data);
+<?php //tabIdEcho("xhr"); ?> = null;
+                        pac.dtNascPessoa = new Date(pac.dtNascPessoa);
+                        pac.dtNascPessoaTxt = String("00" + pac.dtNascPessoa.getDate()).slice(-2) + '/' + String("00" + pac.dtNascPessoa.getMonth()).slice(-2) + '/' + pac.dtNascPessoa.getFullYear();
+                        if (pac.fone1Pessoa.length == 10) pac.fone1Pessoa = '(' + pac.fone1Pessoa.substr(0,2) + ') ' + pac.fone1Pessoa.substr(2,4) + '-' + pac.fone1Pessoa.substr(6,4);
+                        if (pac.fone2Pessoa.length == 10) pac.fone2Pessoa = '(' + pac.fone2Pessoa.substr(0,2) + ') ' + pac.fone2Pessoa.substr(2,4) + '-' + pac.fone2Pessoa.substr(6,4);
+                        pac.cpfPessoa = pac.cpfPessoa.substr(0,3) + '.' + pac.cpfPessoa.substr(3,3) + '.' + pac.cpfPessoa.substr(6,3) + '-' + pac.cpfPessoa.substr(9,2);
+                        var html = '<h1 class="<?php //tabIdEcho("th1_"); ?>">Informa&ccedil;&otilde;es do Paciente</h1><div style="overflow: hidden; position: relative;"><table class="<?php //tabIdEcho('info'); ?>"><tr><td width="80"><b>C&oacute;digo:</b></td><td>' + pac.codPessoa + '</td><td width="80"><b>Nome:</b></td><td>' + pac.nomePessoa + '</td><td rowspan="10" valign="top" align="right"><img style="border: 1px solid #b7b7b7;" src="i/sem_foto.gif" width="100" height="117" /></td></tr>';
+                        html += '<tr><td><b>Nascimento:</b></td><td>' + pac.dtNascPessoaTxt + '</td><td><b>CPF:</b></td><td>' + pac.cpfPessoa + '</td></tr>';
+                        html += '<tr><td><b>RG:</b></td><td>' + pac.rgPessoa + '</td><td><b>Telefone:</b></td><td>' + pac.fone1Pessoa + '</td></tr>';
+                        html += '<tr><td><b>Celular:</b></td><td>' + pac.fone2Pessoa + '</td><td><b>E-Mail:</b></td><td>' + pac.emailPessoa + '</td></tr>';
+                        html += '<tr><td><b>CEP:</b></td><td>' + pac.codCep + '</td><td><b>UF:</b></td><td>' + pac.ufPessoa + '</td></tr>';
+                        html += '<tr><td><b>Cidade:</b></td><td>' + pac.cidadePessoa + '</td><td><b>Bairro:</b></td><td>' + pac.bairroPessoa + '</td></tr>';
+                        html += '<tr><td><b>Endere&ccedil;o:</b></td><td>' + pac.endPessoa + '</td><td><b>N&uacute;mero:</b></td><td>' + pac.numEndPessoa + '</td></tr>';
+                        html += '<tr><td><b>Complemento:</b></td><td colspan="3">' + pac.complEndPessoa + '</td></tr>';
+                        html += '<tr><td><b>Profiss&atilde;o:</b></td><td colspan="3">' + pac.profissaoPessoa + '</td></tr><tr><td colspan="5"></td></tr></table></div>';
+                        $("#<?php //tabIdEcho("info"); ?>").html(html);
+                    }
+	
+                    /* Função chamada ao tirar o mouse de um item */
+                    function <?php //tabIdEcho("outItem"); ?>(e, idPac) {
+                        if (!e) var e = window.event;
+                        var tg = (window.event) ? e.srcElement : e.target;
+                        while (tg != null && tg.nodeName != 'TABLE') tg = tg.parentNode;
+                        if (tg == null) return;
+                        var reltg = (e.relatedTarget) ? e.relatedTarget : e.toElement;
+                        while (reltg != null && reltg != tg) reltg = reltg.parentNode;
+                        if (reltg == null) {
+                            if (<?php //tabIdEcho("displayItem"); ?> == idPac) {
+                                if (<?php //tabIdEcho("xhr"); ?> != null) <?php //tabIdEcho("xhr"); ?>.abort();
+<?php //tabIdEcho("displayItem"); ?> = 0;
+                                                $("#<?php //tabIdEcho("info"); ?>").html('');
+                                            }
+                                        }		
+                                    }
+	
+                                    function <?php //tabIdEcho("pesquisaKeyUp"); ?>(evt, obj) {
+                                        var key = evt.which || evt.keyCode;
+                                        if (key == 27) {
+<?php //tabIdEcho("cadastrar"); ?>();
+                                } else {
+                                    if (obj.value.length >= 2) {
+                                        if (<?php //tabIdEcho("first"); ?>) {
+<?php //tabIdEcho("first"); ?> = false;
+                                                            $("#<?php //tabIdEcho('cont'); ?>").animate({paddingTop: 10, paddingBottom: 10, backgroundColor: "#d0d0d0"});
+                                                            $(".<?php //tabIdEcho("dica"); ?>").animate({height: "toggle", opacity: 0});
+                                                            $("#<?php //tabIdEcho("regs"); ?>").css({borderTop: "1px solid #e0e0e0"});
+                                                            $(".<?php //tabIdEcho("tela_1_"); ?>").animate({opacity: 1});
+                                                        }
+<?php //tabIdEcho("pesquisar"); ?>(obj.value);
+                                            } else {
+                                                if (!<?php //tabIdEcho("first"); ?>) {
+<?php //tabIdEcho("first"); ?> = true;
+                                                            $("#<?php //tabIdEcho("info"); ?>").html('');
+                                                            $("#<?php //tabIdEcho("cont"); ?>").animate({paddingTop: 40, paddingBottom: 20, backgroundColor: "#f0f0f0"});
+                                                            $(".<?php //tabIdEcho("dica"); ?>").animate({height: "toggle", opacity: 1});
+                                                            $("#<?php //tabIdEcho("regs"); ?>").css({borderTop: "none"});
+                                                            $(".<?php //tabIdEcho("tela_1_"); ?>").animate({opacity: 0},null,null,function () { <?php //tabIdEcho('lista'); ?>.clear(); });					
+                                                        }
+                                                    }
+                                                }
+                                            }
+	
+                                            function <?php //tabIdEcho("consultaCepPaciente"); ?>() {
+                                                var cep = $('#<?php //tabIdEcho('cep'); ?>').val();
+                                                if (cep.length == 8) {
+                                                    fmAjax("ajax/consultaCep.php",{q: cep},<?php //tabIdEcho("resultadoCepPaciente"); ?>);
+                                                    return false;
+                                                }
+                                                return true;
+                                            }
+	
+                                            function <?php //tabIdEcho("resultadoCepPaciente"); ?>(data) {
+                                                var cep = JSON.parse(data);
+                                                $('#<?php //tabIdEcho('endereco'); ?>').val(cep.endCep);
+                                                $('#<?php //tabIdEcho('bairro'); ?>').val(cep.nomeBairro);
+                                                $('#<?php //tabIdEcho('cidade'); ?>').attr('realValue',cep.codCidade).val(cep.nomeCidade);
+                                                $('#<?php //tabIdEcho('uf'); ?>').val(cep.codUf);
+                                                $('#<?php //tabIdEcho('numero'); ?>').focus();
+                                            }
+	
+                                            /* Inicializar Lista */
+                                            var <?php //tabIdEcho('lista'); ?> = new fmList(document.getElementById('<?php //tabIdEcho('registros'); ?>'),{},'<?php echo tabNumber(); ?>');
+                                            /* Inicializar Evento keydown */
+                                            def.addEventListener(document.getElementById("<?php //tabIdEcho("pesquisa"); ?>"),'onkeyup',<?php //tabIdEcho("pesquisaKeyUp"); ?>,'ontrue');
+	
+                                            def.fieldNav(<?php echo tabNumber(); ?>,['<?php //tabIdEcho("pesquisa"); ?>']);
+
+                                            /* fmCadastro para atualizar o paciente. */
+                                            var <?php //tabIdEcho('cadastroPaciente'); ?> = new fmCadastro('Cadastro de Paciente','Pessoa',[
+                                                {id: '<?php //tabIdEcho('codPessoaPaciente'); ?>' },
+                                                {id: '<?php //tabIdEcho('nome'); ?>', nameEx:'Nome do paciente', minChars:4, maxChars:40, regex:/ /gi, errorFormat:"Por favor, digite o nome completo do paciente." },
+                                                {id: '<?php //tabIdEcho('convenio'); ?>'},
+                                                {id: '<?php //tabIdEcho('plano'); ?>'},
+                                                {id: '<?php //tabIdEcho('matricula'); ?>'},
+                                                {id: '<?php //tabIdEcho('sexo'); ?>'},
+                                                {id: '<?php //tabIdEcho('nascimento'); ?>', nameEx: 'Data de Nascimento', regex:/\d\d\/\d\d\/\d\d\d\d/gi, errorFormat: "Por favor, informe a data de nascimento no formato dd/mm/yyyy", transform: function(d) { return (d.substr(6,4) + '-' + d.substr(3,2) + '-' + d.substr(0,2)); }},
+                                                {id: '<?php //tabIdEcho('cpf'); ?>'},
+                                                {id: '<?php //tabIdEcho('rg'); ?>'},
+                                                {id: '<?php //tabIdEcho('fone1'); ?>', nameEx:"Telefone de contato",	regex:/^[0-9]{10}|$/, errorFormat:"Erro de preenchimento, telefone composto apenas de dez caracteres num&eacute;ricos."},
+                                                {id: '<?php //tabIdEcho('fone2'); ?>', nameEx:"Telefone de contato alternativo", regex:/^[0-9]{10}|$/, errorFormat:"Erro de preenchimento, telefone composto apenas de dez caracteres num&eacute;ricos."},
+                                                {id: '<?php //tabIdEcho('email'); ?>'},
+                                                {id: '<?php //tabIdEcho('cep'); ?>', nameEx:'CEP do paciente',	regex:/^[0-9]{8}|$/, errorFormat:"Erro de Preenchimento, o cep &eacute; composto apenas por n&uacute;meros, e possui 8 d&iacute;gitos."},
+                                                {id: '<?php //tabIdEcho('endereco'); ?>',	nameEx:"Endere&ccedil;o do paciente", regex:/ /gi, errorFormat:"Por favor, informe seu endere&ccedil;o completo."},
+                                                {id: '<?php //tabIdEcho('numero'); ?>', nameEx:"N&uacute;mero do endere&ccedil;o", regex:/^[0-9]{10}|$/, errorFormat:"Erro de preenchimento, n&uacute;mero do endere&ccedil;o s&oacute; pode conter caracteres num&eacute;ricos."},
+                                                {id: '<?php //tabIdEcho('complemento'); ?>'},
+                                                {id: '<?php //tabIdEcho('bairro'); ?>'},
+                                                {id: '<?php //tabIdEcho('cidade'); ?>'},
+                                                {id: '<?php //tabIdEcho('uf'); ?>', nameEx:"Estado em que se localiza", regex:/^[a-zA-Z]{2}|$/, errorFormat:"Erro de preenchimento, a uf contem dois caracteres alfanum&eacute;ricos."},
+                                                {id: '<?php //tabIdEcho('nacionalidade'); ?>'},
+                                                {id: '<?php //tabIdEcho('naturalidade'); ?>'},
+                                                {id: '<?php //tabIdEcho('estadoCivil'); ?>'},
+                                                {id: '<?php //tabIdEcho('profissao'); ?>'},
+                                                {id: '<?php //tabIdEcho('indicadoPor'); ?>'},
+                                                {id: '<?php //tabIdEcho('nomePai'); ?>'},
+                                                {id: '<?php //tabIdEcho('nomeMae'); ?>'},
+                                                {id: '<?php //tabIdEcho('tipoPessoa'); ?>'}
+                                            ]);
+
+                                            var <?php //tabIdEcho('cadastroAtendimento'); ?> = new fmCadastro('Cadastro de Atendimento','Atendimento',[
+                                                {id: '<?php //tabIdEcho('codPessoaPaciente'); ?>'},
+                                                {id: '<?php //tabIdEcho('nomeR'); ?>'},
+                                                {id: '<?php //tabIdEcho('cpfR'); ?>'},
+                                                {id: '<?php //tabIdEcho('fone1R'); ?>'},
+                                                {id: '<?php //tabIdEcho('fone2R'); ?>'},
+                                                {id: '<?php //tabIdEcho('emailR'); ?>'},
+                                                {id: '<?php //tabIdEcho('cepR'); ?>'},
+                                                {id: '<?php //tabIdEcho('enderecoR'); ?>'},
+                                                {id: '<?php //tabIdEcho('bairroR'); ?>'},
+                                                {id: '<?php //tabIdEcho('cidadeR'); ?>'},
+                                                {id: '<?php //tabIdEcho('numeroR'); ?>'},
+                                                {id: '<?php //tabIdEcho('complementoR'); ?>'},
+                                                {id: '<?php //tabIdEcho('dtEntradaAtend'); ?>'},
+                                                {id: '<?php //tabIdEcho('codAtendimento'); ?>'},
+                                                {id: '<?php //tabIdEcho('codPacienteAtend'); ?>'}
+                                            ]);
+</script>

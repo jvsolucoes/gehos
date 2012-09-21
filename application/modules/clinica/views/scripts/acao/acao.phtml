@@ -1,0 +1,132 @@
+<link type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/cadastros.css" rel="stylesheet" rev="stylesheet"/>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#<?php Tab::tabIdEcho('pesquisa'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisa'); ?>").keyup(function(){
+            var palavra = $(this).val();
+            var input = $("#<?php Tab::tabIdEcho('listarAcaoInput'); ?>").val();
+            
+            if (palavra.length > 2) {
+                $.post(
+                    "<?php echo BASE_URL . '/clinica/acao/listar'; ?>", 
+                    {acao: palavra, input: input},
+                    function(data, status){
+                        if(status == 'success' && $.trim(data) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarAcaoInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarAcao'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarAcaoInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarAcao'); ?>");
+                        }
+                    }
+                ) 
+            }
+        })
+        
+        $("#<?php Tab::tabIdEcho('btn_gravar'); ?>").click(function(){
+            var nomeAcao = $("#<?php Tab::tabIdEcho('nomeAcao'); ?>").val();
+
+            $.post(
+                "<?php echo BASE_URL . '/clinica/acao/cadastrar'; ?>", 
+                {nomeAcao: nomeAcao},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        
+                    } else {
+                        
+                    }
+                }
+            )
+        })
+        
+        $("#acao_<?php Tab::tabIdEcho('listarAcaoInput'); ?>").live("click", function() {
+            var idAcao = $(this).attr('acao');
+            $.post(
+                "<?php echo BASE_URL . '/clinica/acao/buscaracao'; ?>", 
+                {idAcao: idAcao},
+                function(data, status){
+                    
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#<?php Tab::tabIdEcho('idAcao'); ?>").val(idAcao);
+                        $("#<?php Tab::tabIdEcho('nomeAcao'); ?>").val(data.nomeAcao);
+                    } else {
+                        
+                    }
+                },
+                'json'
+            )
+            
+        })
+    })
+</script>
+
+<style type="text/css">
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+    
+    
+    
+</style>
+
+<div id="<?php Tab::tabIdEcho('acao_0_'); ?>">
+    <table>
+        <tr>
+            <td class="ts">Ações Cadastrados</td>
+            <td colspan="6" class="ts">Cadastro de Ações</td>
+        </tr>
+        <!-- LISTA -->
+        <tr>
+            <td class="tdLista" id="" width="300" style="vertical-align:top; ">
+                <!-- Lista -->
+                <table class="lista">
+                    <tbody>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <input type="text" class="pesquisa" name="pesquisa" id="<?php Tab::tabIdEcho('pesquisa'); ?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <div id="<?php Tab::tabIdEcho('listarAcao'); ?>">
+                                    <input type="hidden" id="<?php Tab::tabIdEcho('listarAcaoInput'); ?>" value="<?php Tab::tabIdEcho('listarAcaoInput'); ?>" />
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td style="vertical-align: top;">
+                <form id="formAcao" method="post" onsubmit="return false;" action="<?php echo $this->url(array("controller" => "acao", "action" => "acao")); ?>">
+                    <input type="hidden" name="idAcao" id="<?php Tab::tabIdEcho('idAcao'); ?>" value="" />
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="tn">Nome:</td>
+                                <td>
+                                    <input class="i3" type="text" name="nomeAcao" id="<?php Tab::tabIdEcho('nomeAcao'); ?>" value="" />
+                                </td>
+                            </tr>
+
+                            <!-- Botão do formulário -->
+                            <tr>
+                                <td colspan="4" style="text-align: right; padding-top: 20px;">
+                                    <div class="btn_c">
+                                        <div class="btn_e">
+                                            <div class="btn_d" onmouseover="" onmouseout="" id="<?php Tab::tabIdEcho('btn_gravar'); ?>">
+                                                Gravar
+                                            </div>      
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
