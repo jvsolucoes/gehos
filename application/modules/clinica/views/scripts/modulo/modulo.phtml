@@ -1,0 +1,200 @@
+<?php
+$acoes = $this->acoes;
+?>
+<link type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/cadastros.css" rel="stylesheet" rev="stylesheet"/>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#<?php Tab::tabIdEcho('pesquisa'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisa'); ?>").keyup(function(){
+            var palavra = $(this).val();
+            var input = $("#<?php Tab::tabIdEcho('listarModuloInput'); ?>").val();
+            
+            if (palavra.length > 2) {
+                $.post(
+                    "<?php echo BASE_URL . '/clinica/modulo/listar'; ?>", 
+                    {modulo: palavra, input: input},
+                    function(data, status){
+                        
+                        if(status == 'success' && $.trim(data) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarModuloInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarModulo'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarModuloInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarModulo'); ?>");
+                        }
+                    }
+                ) 
+            }
+        })
+        
+        $("#<?php Tab::tabIdEcho('btn_gravar'); ?>").click(function(){
+            var nomeModulo = $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").val();
+            if (nomeModulo == "") {
+                alert("O campo nome não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").focus();
+                return false;
+            }
+            $.post(
+                "<?php echo BASE_URL . '/clinica/modulo/cadastrar'; ?>", 
+                $("#<?php Tab::tabIdEcho('formModulo'); ?>").serialize(),
+                function(data, status){
+                    alert(data);
+                    alert(data);
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        
+                    } else {
+                        
+                    }
+                }
+            )
+        })
+        
+        $("#excluir_<?php Tab::tabIdEcho('listarModuloInput'); ?>").live("click", function() {
+            var idModulo = $("#modulo_<?php Tab::tabIdEcho('listarModuloInput'); ?>").attr('modulo');
+            
+            $.post(
+                "<?php echo BASE_URL . '/clinica/modulo/excluirmodulo'; ?>", 
+                {idModulo: idModulo},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $(this).parent().remove();
+                        alert(data);
+                    } else {
+                        
+                    }
+                }
+            )
+        })
+        
+        $("#modulo_<?php Tab::tabIdEcho('listarModuloInput'); ?>").live("click", function() {
+            var idModulo = $(this).attr('modulo');
+            
+            $.post(
+                "<?php echo BASE_URL . '/clinica/modulo/buscar'; ?>", 
+                {idModulo: idModulo},
+                function(data, status){
+                    
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#<?php Tab::tabIdEcho('codModulo'); ?>").val(idModulo);
+                        $("#<?php Tab::tabIdEcho('moduloSubmit'); ?>").val("Editar");
+                        $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").val(data[0].nomeModulo);
+                        <?php $getId = Tab::getTabId('acaoModulo'); ?>
+                        for (i = 0; i < data.length; i++) {
+                            $("#<?php echo $getId; ?>_" + data[i].codAcao).attr("checked", true);
+                        }
+                        
+                    } else {
+                        
+                    }
+                },
+                'json'
+            )
+            
+        })
+        
+        
+    })
+    
+    new fmAutocomplete({
+        field: document.getElementById('<?php Tab::tabIdEcho('codModuloPai'); ?>'), 
+        url: '<?php echo BASE_URL . '/clinica/modulo/apmodulo'; ?>', 
+        minChars: 0});
+</script>
+
+<style type="text/css">
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+</style>
+
+<div id="<?php Tab::tabIdEcho('modulo_0_'); ?>">
+    <table>
+        <tr>
+            <td class="ts">Módulos Cadastrados</td>
+            <td colspan="6" class="ts">Cadastro de Módulos</td>
+        </tr>
+        <!-- LISTA -->
+        <tr>
+            <td class="tdLista" id="" width="300" style="vertical-align:top; ">
+                <!-- Lista -->
+                <table class="lista">
+                    <tbody>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <input type="text" class="pesquisa" name="pesquisa" id="<?php Tab::tabIdEcho('pesquisa'); ?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <div id="<?php Tab::tabIdEcho('listarModulo'); ?>">
+                                    <input type="hidden" id="<?php Tab::tabIdEcho('listarModuloInput'); ?>" value="<?php Tab::tabIdEcho('listarModuloInput'); ?>" />
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td style="vertical-align: top;">
+                <form id="<?php Tab::tabIdEcho('formModulo'); ?>" method="post" onsubmit="return false;" action="<?php echo $this->url(array("controller" => "modulo", "action" => "modulo")); ?>">
+                    <input type="hidden" name="codModulo" id="<?php Tab::tabIdEcho('codModulo'); ?>" value="" />
+                    <input type="hidden" name="moduloSubmit" id="<?php Tab::tabIdEcho('moduloSubmit'); ?>" value="" />
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="tn">Nome:</td>
+                                <td>
+                                    <input class="i3" type="text" name="nomeModulo" id="<?php Tab::tabIdEcho('nomeModulo'); ?>" value="" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tn" style="vertical-align: top;">Ações:</td>
+                                <td>
+                                    <?php
+                                    $cont = 0;
+                                    foreach ($acoes as $acao) {
+                                        $display = ($cont % 2 != 0) ? "class='inline-block'" : "";
+                                        $id = Tab::getTabId('acaoModulo');
+                                        ?>
+                                        <div <?php echo $display; ?>>
+                                            <div class="inline-block" style="height: 20px;">
+                                                <input type="checkbox" name="acao[]"
+                                                       id="<?php echo $id . "_" . $acao->codAcao; ?>"
+                                                       value="<?php echo $acao->codAcao; ?>" />
+                                            </div>
+                                            <div class="inline-block"><?php echo $acao->nomeAcao; ?></div>
+                                        </div>
+                                        <?php
+                                        $cont++;
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tn" style="vertical-align: top;">Módulo Pai:</td>
+                                <td>
+                                    <input class="i1" type="text" name="codModuloPai" id="<?php Tab::tabIdEcho('codModuloPai'); ?>" value="" />
+                                </td>
+                            </tr>
+                                
+                            <!-- Botão do formulário -->
+                            <tr>
+                                <td colspan="4" style="text-align: right; padding-top: 20px;">
+                                    <div class="btn_c">
+                                        <div class="btn_e">
+                                            <div class="btn_d" onmouseover="" onmouseout="" id="<?php Tab::tabIdEcho('btn_gravar'); ?>">
+                                                Gravar
+                                            </div>      
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>

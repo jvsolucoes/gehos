@@ -1,0 +1,267 @@
+<link type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/cadastros.css" rel="stylesheet" rev="stylesheet"/>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#<?php Tab::tabIdEcho('pesquisa'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisa'); ?>").keyup(function(){
+            var palavra = $(this).val();
+            var input = $("#<?php Tab::tabIdEcho('listarModuloInput'); ?>").val();
+            
+            if (palavra.length > 2) {
+                $.post(
+                "<?php echo BASE_URL . '/clinica/modulo/listar'; ?>", 
+                {modulo: palavra, input: input},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#div_<?php Tab::tabIdEcho('listarModuloInput'); ?>").remove();
+                        $(data).appendTo("#<?php Tab::tabIdEcho('listarModulo'); ?>");
+                    } else {
+                        $("#div_<?php Tab::tabIdEcho('listarModuloInput'); ?>").remove();
+                        $(data).appendTo("#<?php Tab::tabIdEcho('listarModulo'); ?>");
+                    }
+                }
+            ) 
+            }
+        })
+        
+        $("#<?php Tab::tabIdEcho('btn_gravar'); ?>").click(function(){
+            var nomeModulo = $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").val();
+            if (nomeModulo == "") {
+                alert("O campo nome não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").focus();
+                return false;
+            }
+            $.post(
+            "<?php echo BASE_URL . '/clinica/modulo/cadastrar'; ?>", 
+            $("#<?php Tab::tabIdEcho('formModulo'); ?>").serialize(),
+            function(data, status){
+                alert(data);
+                if(status == 'success' && $.trim(data) != 'naopassou') {
+                        
+                } else {
+                        
+                }
+            }
+        )
+        })
+        
+        $("#excluir_<?php Tab::tabIdEcho('listarModuloInput'); ?>").live("click", function() {
+            var idModulo = $("#modulo_<?php Tab::tabIdEcho('listarModuloInput'); ?>").attr('modulo');
+            
+            $.post(
+            "<?php echo BASE_URL . '/clinica/modulo/excluirmodulo'; ?>", 
+            {idModulo: idModulo},
+            function(data, status){
+                if(status == 'success' && $.trim(data) != 'naopassou') {
+                    $(this).parent().remove();
+                    alert(data);
+                } else {
+                        
+                }
+            }
+        )
+        })
+        
+        $("#modulo_<?php Tab::tabIdEcho('listarModuloInput'); ?>").live("click", function() {
+            var idModulo = $(this).attr('modulo');
+            $.post(
+            "<?php echo BASE_URL . '/clinica/modulo/buscar'; ?>", 
+            {idModulo: idModulo},
+            function(data, status){
+                if(status == 'success' && $.trim(data) != 'naopassou') {
+                    $("#<?php Tab::tabIdEcho('codModulo'); ?>").val(idModulo);
+                    $("#<?php Tab::tabIdEcho('moduloSubmit'); ?>").val("Editar");
+                    $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").val(data.nomeModulo);
+                } else {
+                        
+                }
+            },
+            'json'
+        )
+            
+        })
+        
+        
+    })
+</script> 
+
+<style type="text/css">
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+</style>
+
+<div id="<?php Tab::tabIdEcho('acao_0_'); ?>">
+    <table>
+        <tr>
+            <td class="ts">Pacientes Cadastrados</td>
+            <td colspan="6" class="ts">Dados Pessoais</td>
+        </tr>
+        <tr>
+            <td class="tdLista" id="<?php //tabIdEcho('tdLista'); ?>" width="300" style="vertical-align:top; ">
+                <!-- Lista -->
+                <table class="lista">
+                    <tbody>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <input type="text" <?php //tabIdEcho('pesquisa'); ?> class="pesquisa" name="pesquisa" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td class="tdCampos">
+                <form method="post" onsubmit="return false;">
+                    <input type="hidden" name="codPessoa" id="<?php //tabIdEcho('codPessoaPaciente'); ?>" value="" />
+                    <input type="hidden" name="tipoPessoa" id="<?php //tabIdEcho('tipoPessoa'); ?>" value="P" />
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="tn">Nome:</td>
+                                <td colspan="3"><input class="i3" name="nomePessoa" type="text" id="<?php //tabIdEcho('nome'); ?>"/></td>
+                                <td colspan="2" rowspan="5">
+                                    <table height="100%" width="100%"><tbody>
+                                            <tr>
+                                                <td width="125"><div style="height: 140px; background: #f7f7f7;"><img src="i/sem_foto.gif" width="125" height="140" border="0" /></div> </td>
+                                                <td width="125"><div style="height: 140px; background: #f7f7f7;"><img src="i/sem_digital.gif" width="125" height="140" border="0" /></div> </td>
+                                            </tr>
+                                            <tr class="dica">
+                                                <td align="center">Foto do Usu&aacute;rio</td>
+                                                <td align="center">Impress&atilde;o Digital</td>
+                                            </tr>
+                                        </tbody></table>
+                                </td>                        
+                            </tr>
+                            <tr>
+                                <td class="tn">Nascimento:</td>
+                                <td><input class="i1" type="text" name="dtNascPessoa" id="<?php //tabIdEcho('nascimento'); ?>" /></td>
+                                <td class="tn">Sexo:</td>
+                                <td><input class="i1" type="text" name="sexoPessoa" id="<?php //tabIdEcho('sexo'); ?>" /></td>
+                            </tr>
+                            <tr>			
+                                <td class="tn">CPF:</td>
+                                <td><input class="i1" type="text" name="cpfPessoa" id="<?php //tabIdEcho('cpf'); ?>" /></td>
+                                <td class="tn">RG:</td>
+                                <td><input class="i1" type="text" name="rgPessoa" id="<?php //tabIdEcho('rg'); ?>" /></td>
+                            </tr>	                   
+                            <tr>
+                                <td class="tn">Telefone:</td>
+                                <td><input class="i1" type="text" name="fone1Pessoa" id="<?php //tabIdEcho('fone1'); ?>" /></td>
+                                <td class="tn">Celular:</td>
+                                <td><input class="i1" type="text" name="fone2Pessoa" id="<?php //tabIdEcho('fone2'); ?>" /></td>
+                            </tr>
+                            <tr>
+                                <td class="tn">E-Mail:</td>
+                                <td colspan="3"><input class="i3" type="text" name="emailPessoa" id="<?php //tabIdEcho('email'); ?>" /></td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Estado Civil:</td>
+                                <td><input class="i1" type="text" name="estadoCivilPessoa" id="<?php //tabIdEcho('estadoCivil'); ?>" /></td>
+                                <td class="tn">Nacionalidade:</td>
+                                <td><input class="i1" type="text" name="nacionalidadePessoa" id="<?php //tabIdEcho('nacionalidade'); ?>" /></td>
+                                <td class="tn">Naturalidade:</td>
+                                <td><input class="i1" type="text" name="naturalidadePessoa" id="<?php //tabIdEcho('naturalidade'); ?>" /></td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Profiss&atilde;o:</td>
+                                <td><input class="i1" type="text" name="profissaoPessoa" id="<?php //tabIdEcho('profissao'); ?>" /></td>
+                                <td class="tn">Indicado Por:</td>
+                                <td><input class="i1" type="text" name="quemIndicouPessoa" id="<?php //tabIdEcho('indicadoPor'); ?>" /></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Nome do Pai:</td>
+                                <td colspan="5"><input class="i5" type="text" name="nomePaiPessoa" id="<?php //tabIdEcho('nomePai'); ?>" /></td>                      
+                            </tr>
+                            <tr>
+                                <td class="tn">Nome da m&atilde;e:</td>
+                                <td colspan="5">
+                                    <input class="i5" type="text" name="nomeMaePessoa" id="<?php //tabIdEcho('nomeMae'); ?>" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" class="ts">Endere&ccedil;o Residencial</td>
+                            </tr>
+                            <tr>
+                                <td class="tn">CEP:</td>
+                                <td><input class="i1" type="text" name="codCep" id="<?php //tabIdEcho('cep'); ?>" /></td>
+                                <td class="tn">Endere&ccedil;o:</td>
+                                <td colspan="3"><input class="i3" type="text" name="endPessoa" id="<?php //tabIdEcho('endereco'); ?>" /></td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Bairro:</td>
+                                <td><input class="i1" type="text" name="bairroPessoa" id="<?php //tabIdEcho('bairro'); ?>" /></td>
+                                <td class="tn">Cidade:</td>
+                                <td><input class="i1" type="text" name="codCidade" id="<?php //tabIdEcho('cidade'); ?>" /></td>
+                                <td class="tn">UF:</td>
+                                <td><input class="i1" type="text" name="codUf" id="<?php //tabIdEcho('uf'); ?>" /></td>
+                            </tr>
+                            <tr>
+                                <td class="tn">N&uacute;mero:</td>
+                                <td><input class="i1" type="text" name="numEndPessoa" id="<?php //tabIdEcho('numero'); ?>" /></td>
+                                <td class="tn">Complemento:</td>
+                                <td colspan="3"><input class="i3" type="text" name="complEndPessoa" id="<?php //tabIdEcho('complemento'); ?>" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" style="text-align: right; padding-top: 20px;">
+                                    <?php DefButton("Gravar", tabId("cadastro") . ".insert", null); ?>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </td>
+        </tr>	
+    </table>
+    <script>
+        /**
+         *	Autocomplete 
+         **/
+        new fmAutocomplete({
+            field: document.getElementById('<?php //tabIdEcho('sexo'); ?>'), 
+            url: '../ac/acSexo.php', 
+            minChars: 0});
+		
+        new fmAutocomplete({
+            field: document.getElementById("<?php //tabIdEcho('cidade'); ?>"), 
+            url: 'ac/acCidade.php', 
+            minChars: 3, selectFn: function (real, vals, cols) { 
+                $('#<?php //tabIdEcho('uf'); ?>').val(cols[1]);
+            }, 
+            pos: 'top'});
+		
+        new fmAutocomplete({
+            field: document.getElementById("<?php //tabIdEcho('estadoCivil'); ?>"), 
+            url: 'ac/acEstadoCivil.php', 
+            minChars: 0});
+		
+        /** Iniciar NavegaÃ§Ã£o de campos da tela de dados do paciente */
+        def.fieldNav(<?php echo tabNumber(); ?>,['<?php //tabIdEcho("nome"); ?>','<?php //tabIdEcho("nascimento"); ?>','<?php //tabIdEcho("sexo"); ?>','<?php //tabIdEcho("cpf"); ?>','<?php //tabIdEcho("rg"); ?>','<?php //tabIdEcho("fone1"); ?>','<?php //tabIdEcho("fone2"); ?>','<?php //tabIdEcho("email"); ?>','<?php //tabIdEcho("estadoCivil"); ?>','<?php //tabIdEcho("nacionalidade"); ?>','<?php //tabIdEcho("naturalidade"); ?>','<?php //tabIdEcho("profissao"); ?>','<?php //tabIdEcho("indicadoPor"); ?>','<?php //tabIdEcho("nomePai"); ?>','<?php //tabIdEcho("nomeMae"); ?>','<?php //tabIdEcho("cep"); ?>','@<?php //tabIdEcho("consultaCepPaciente"); ?>();','<?php //tabIdEcho("endereco"); ?>','<?php //tabIdEcho("bairro"); ?>','<?php //tabIdEcho("cidade"); ?>','<?php //tabIdEcho("uf"); ?>','<?php //tabIdEcho("numero"); ?>','<?php //tabIdEcho("complemento"); ?>','@<?php //tabIdEcho('cadastro'); ?>.insert()']);
+        /**
+         *	FunÃ§Ã£o consulta cep do paciente
+         */
+        function <?php //tabIdEcho("consultaCepPaciente"); ?>() {
+            var cep = $('#<?php //tabIdEcho('cep'); ?>').val();
+            if (cep.length == 8) {
+                fmAjax("ajax/consultaCep.php",{q: cep},<?php //tabIdEcho("resultadoCepPaciente"); ?>);
+                return false;
+            }
+            return true;
+        }
+        /**
+         *	Resultado cep  
+         */
+        function <?php //tabIdEcho("resultadoCepPaciente"); ?>(data) {
+            var cep = JSON.parse(data);
+            $('#<?php //tabIdEcho('endereco'); ?>').val(cep.endCep);
+            $('#<?php //tabIdEcho('bairro'); ?>').val(cep.nomeBairro);
+            $('#<?php //tabIdEcho('cidade'); ?>').val(cep.codCidade);
+            $('#<?php //tabIdEcho('uf'); ?>').val(cep.codUf);
+            $('#<?php //tabIdEcho('numero'); ?>').focus();
+        }		
+
+    </script>	
+</div>

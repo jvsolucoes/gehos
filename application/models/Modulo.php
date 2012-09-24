@@ -36,6 +36,19 @@ class Modulo extends Zend_Db_Table_Abstract {
         return $result;
     }
     
+    public static function listarAutocomplete($nomeModulo) {
+        $modulo = new Modulo();
+        
+        $sql = $modulo->getAdapter()->select()
+                    ->from(array("m" => "modulo"), array("m.*"))
+                    ->where("m.nomeModulo LIKE '%$nomeModulo%'")
+                    ->order("m.nomeModulo ASC");
+        
+        $result = $modulo->getAdapter()->fetchAll($sql);
+
+        return $result;
+    }
+    
     public function listarTodos() {
         
         $sql = $this->getAdapter()->select()
@@ -46,6 +59,20 @@ class Modulo extends Zend_Db_Table_Abstract {
         $result = $this->getAdapter()->setFetchMode(Zend_Db::FETCH_OBJ);
         $result = $this->getAdapter()->fetchAll($sql);
         
+        return $result;
+    }
+    
+    public static function buscar($codModulo) {
+        $modulo = new Modulo();
+        
+        $sql = $modulo->getAdapter()->select()
+                    ->from(array("m" => "modulo"), array("m.*"))
+                    ->join(array("ma" => "modulo_acao"), "ma.codModulo = m.codModulo",
+                            array("modulo" => "ma.codModulo", "ma.codAcao"))
+                    ->where("m.codModulo = ?", $codModulo);
+        
+        $result = $modulo->getAdapter()->fetchAll($sql);
+
         return $result;
     }
 
@@ -82,12 +109,16 @@ class Modulo extends Zend_Db_Table_Abstract {
         if ($codPerfil == 1) {
             $sql = $modulo->getAdapter()->select()
                                 ->from(array("m" => "modulo"), array("m.*"))
-                                ->where("m.nivelModulo = ?", Modulo::NIVELMENU);
+                                ->where("m.nivelModulo = ?", Modulo::NIVELMENU)
+                                ->order("m.visibilidadeModulo ASC")
+                                ->order("m.nomeModulo ASC");
         } else {
             $sql = $modulo->getAdapter()->select()
                                 ->from(array("m" => "modulo"), array("m.*"))
                                 ->where("m.nivelModulo = ?", Modulo::NIVELMENU)
-                                ->where("m.visibilidadeModulo = ?", Modulo::VISIBILIDADEMUNU);
+                                ->where("m.visibilidadeModulo = ?", Modulo::VISIBILIDADEMUNU)
+                                ->order("m.visibilidadeModulo ASC")
+                                ->order("m.nomeModulo ASC");
         }
         
         
@@ -112,24 +143,27 @@ class Modulo extends Zend_Db_Table_Abstract {
         return $result;
     }
     
-    public function inserir($dados) {
-        $this->inicializar();
+    public static function inserir($dados) {
+        $modulo = new Modulo();
         
-        $this->getAdapter()->beginTransaction();
+        $modulo->inicializar();
         
-        $modulo = $this->add($dados);
-        $dados['codModulo'] = $modulo;
+        $modulo->getAdapter()->beginTransaction();
         
-        $this->_modelModuloAcao->inserir($dados);
+        $codModulo = $modulo->add($dados);
+        $dados['codModulo'] = $codModulo;
         
-        $this->getAdapter()->commit();
+        $modulo->_modelModuloAcao->inserir($dados);
+
+        $modulo->getAdapter()->commit();
         
+        return true;
     }
     
     private function add($dados) {
         $data = array(
-            'nomeModulo' => $dados['descricao'],
-            'linkModulo' => Functions::gerarLink($dados['descricao'])
+            'nomeModulo' => $dados['nomeModulo'],
+            'linkModulo' => Functions::gerarLink($dados['nomeModulo'])
         );
         
         try {

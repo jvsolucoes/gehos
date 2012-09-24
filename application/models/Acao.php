@@ -87,16 +87,16 @@ class Acao extends Zend_Db_Table_Abstract {
         return $result;
     }
     
-    public function editar($dados) {
+    public static function editar($dados) {
         $this->getAdapter()->beginTransaction();
         
         $data = array(
-            'nomeAcao' => $dados['descricao'],
-            'linkAcao' => Functions::gerarLink($dados['descricao'])
+            'nomeAcao' => $dados['nomeAcao'],
+            'linkAcao' => Functions::gerarLink($dados['nomeAcao'])
         );
         
         try {
-            $where = $this->getAdapter()->quoteInto("codAcao = ?", $dados['id']);
+            $where = $this->getAdapter()->quoteInto("codAcao = ?", $dados['codAcao']);
             $this->update($data, $where);
         } catch (Zend_Exception $e) {
             $this->getAdapter()->rollBack();
@@ -104,6 +104,23 @@ class Acao extends Zend_Db_Table_Abstract {
         }
         
         $this->getAdapter()->commit();
+    }
+    
+    public static function excluir($codAcao) {
+        $acao = new Acao();
+        $moduloAcao = new ModuloAcao();
+        $pama = new PerfilAplicacaoModuloAcao();
+        
+        $wherePama = $pama->getAdapter()->quoteInto("codAcao = ?", $codAcao);
+        $resultPama = $pama->delete($where);
+        
+        $whereMa = $moduloAcao->getAdapter()->quoteInto("codAcao = ?", $codAcao);
+        $resultMa = $moduloAcao->delete($where);
+            
+        $where = $acao->getAdapter()->quoteInto("codAcao = ?", $codAcao);
+        $result = $acao->delete($where);
+
+        return $result;
     }
     
 }

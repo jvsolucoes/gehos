@@ -40,9 +40,11 @@ class ModuloAcao extends Zend_Db_Table_Abstract {
         
     }
     
-    public function inserir($dados, $acao = NULL) {
+    public function inserir($dados) {
         
-        if ($acao == "editar") {
+        $existe = $this->fetchAll("codModulo = " . $dados['codModulo']);
+        
+        if ($existe->count() > 0) {
             $where = $this->getAdapter()->quoteInto("codModulo = ?", $dados['codModulo']);
             $this->delete($where);
         }
@@ -63,6 +65,7 @@ class ModuloAcao extends Zend_Db_Table_Abstract {
             }
         }
         
+        return true;
     }
     
 }

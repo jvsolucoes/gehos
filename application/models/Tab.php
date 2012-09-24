@@ -27,6 +27,12 @@ class Tab {
         echo $id . $tabNumber;
     }
 
+    public static function getTabId($id) {
+        $tabNumber = Form::ValueString("tab", "r". (string) rand() . (string) time());
+        
+        return $id . $tabNumber;
+    }
+    
     /**
      * Calcula e retorna o id de um componente de dentro da aba baseado no seu id normal.
      * 

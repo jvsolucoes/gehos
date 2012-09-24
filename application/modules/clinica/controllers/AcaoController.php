@@ -29,7 +29,13 @@ class Clinica_AcaoController extends Zend_Controller_Action {
     
     public function cadastrarAction() {
         $dados = $this->_request->getPost();
-        $result = $this->_modelAcao->inserir($dados);
+        
+        if (!$dados['acaoSubmit']) {
+            $result = $this->_modelAcao->inserir($dados);
+        } else {
+            $result = $this->_modelAcao->editar($dados);
+        }
+        
         
         if ($result) {
             echo "ok";
@@ -56,8 +62,13 @@ class Clinica_AcaoController extends Zend_Controller_Action {
                 
                 $html .= $r['nomeAcao'];
                 
-                $html .= "  </td>
+                $html .= "  
+                            </td>
+                            <td width='30px' id='excluir_".$input."'>
+                                <img src='" . dirname($_SERVER['PHP_SELF']) . "/img/excluir_32x32.png' alt='' width='20px' />
+                            </td>
                         </tr>";
+                $cont++;
             }
                             
             $html .= "</table>";
@@ -76,6 +87,21 @@ class Clinica_AcaoController extends Zend_Controller_Action {
         
         if ($result) {            
             echo json_encode($result, true);
+        } else {
+            echo "naopassou";
+        }
+        
+        die();
+    }
+    
+    public function excluiracaoAction() {
+        $acao = $this->_request->getPost("idAcao");
+        var_dump($acao);
+        die();
+        $result = $this->_modelAcao->excluir($acao);
+        
+        if ($result) {            
+            echo "Ação excluída com sucesso!";
         } else {
             echo "naopassou";
         }

@@ -322,3 +322,6 @@ td.noPadding {
     padding: 4px;
     font-size: 8pt;
 }
+
+.inline-block{display:inline-block;}
+.display-none{display:none;}
