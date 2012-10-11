@@ -1,0 +1,434 @@
+<?php
+$cidades = "";
+$count = 0;
+foreach ($this->cidades as $key => $cidade) {
+    $cidades .= "'" . trim($cidade->nomeCidade) . "'";
+    if ($count == count($this->cidades) - 1) {
+        $cidades .= "";
+    } else {
+        $cidades .= ", ";
+    }
+    $count++;
+}
+
+$usuario = Zend_Auth::getInstance()->getIdentity();;
+//$unidade = $usuario->findParentRow('Unidade');
+//var_dump($unidade);
+?>
+<script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery.meio.mask.js"></script>
+<script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery-ui-1.8.23.custom/js/jquery-ui-1.8.23.custom.min.js"></script>
+
+<script type="text/javascript">    
+    $(function() {
+        var cidades = [<?php echo $cidades; ?>];
+        $( "#<?php Tab::tabIdEcho('cidadeConvenio'); ?>" ).autocomplete({
+            source: cidades
+        });        
+        
+        $( "#abas_<?php Tab::tabIdEcho('tdLista'); ?>" ).tabs();
+    });
+    
+    $(document).ready(function() {
+        $("input, select, textarea").attr("autocomplete", "off");
+        
+        $('#<?php Tab::tabIdEcho('pesquisa'); ?>').focus();
+        $('input[type="text"]').setMask();
+        
+        $('#<?php Tab::tabIdEcho('pesquisa'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisa'); ?>").keyup(function(){
+            var palavra = $(this).val();
+            var input = $("#<?php Tab::tabIdEcho('listarConvenioInput'); ?>").val();
+            
+            if (palavra.length > 2) {
+                $.post(
+                "<?php echo BASE_URL . '/clinica/convenios/listar'; ?>", 
+                {convenio: palavra, input: input},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#div_<?php Tab::tabIdEcho('listarConvenioInput'); ?>").remove();
+                        $(data).appendTo("#<?php Tab::tabIdEcho('listarConvenio'); ?>");
+                    } else {
+                        $("#div_<?php Tab::tabIdEcho('listarConvenioInput'); ?>").remove();
+                        $(data).appendTo("#<?php Tab::tabIdEcho('listarConvenio'); ?>");
+                    }
+                }
+            ) 
+            }
+        })
+        
+        $("#<?php Tab::tabIdEcho('btn_gravar'); ?>").click(function(){
+             
+            $.post(
+            "<?php echo BASE_URL . '/clinica/convenios/cadastrarconvenio'; ?>", 
+            $("#<?php Tab::tabIdEcho('formConvenio'); ?>").serialize(),
+            function(data, status){
+                alert(data);
+                if(status == 'success' && $.trim(data) != 'naopassou') {
+                    def.modalBox(['OK'],'Cadastro de Convênio','Convênio cadastrado com sucesso!');
+                } else {
+
+                }
+            }
+        );
+        });
+        
+        $("#excluir_<?php Tab::tabIdEcho('listarConvenioInput'); ?>").live("click", function() {
+            var codConvenio = $(this).attr('convenio');
+            var input = $("#<?php Tab::tabIdEcho('listarConvenioInput'); ?>").val();
+            $.post(
+            "<?php echo BASE_URL . '/clinica/convenios/excluirconvenio'; ?>", 
+            {codConvenio: codConvenio},
+            function(data, status){
+                if(status == 'success' && $.trim(data) != 'naopassou') {
+                    //metodo listar
+                    $.post(
+                    "<?php echo BASE_URL . '/clinica/convenios/listar'; ?>", 
+                    {convenio: data, input: input},
+                    function(data2, status){
+                        if(status == 'success' && $.trim(data2) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarConvenioInput'); ?>").remove();
+                            $(data2).appendTo("#<?php Tab::tabIdEcho('listarConvenio'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarConvenioInput'); ?>").remove();
+                            $(data2).appendTo("#<?php Tab::tabIdEcho('listarConvenio'); ?>");
+                        }
+                    }
+                ) 
+                } else {
+                    alert("Não foi possível desativar o convenio");
+                }
+            }
+        );
+        });
+        
+        $("#ativar_<?php Tab::tabIdEcho('listarConvenioInput'); ?>").live("click", function() {
+            var codConvenio = $(this).attr('convenio');
+            var input = $("#<?php Tab::tabIdEcho('listarConvenioInput'); ?>").val();
+            $.post(
+            "<?php echo BASE_URL . '/clinica/convenios/ativarconvenio'; ?>", 
+            {codConvenio: codConvenio},
+            function(data, status){
+                if(status == 'success' && $.trim(data) != 'naopassou') {
+                    //metodo listar
+                    $.post(
+                    "<?php echo BASE_URL . '/clinica/convenio/listar'; ?>", 
+                    {convenio: data, input: input},
+                    function(convenio, status){
+
+                        if(status == 'success' && $.trim(convenio) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarConvenioInput'); ?>").remove();
+                            $(convenio).appendTo("#<?php Tab::tabIdEcho('listarConvenio'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarConvenioInput'); ?>").remove();
+                            $(convenio).appendTo("#<?php Tab::tabIdEcho('listarConvenio'); ?>");
+                        }
+                    }
+                ); 
+                } else {
+                    alert("Não foi possível ativar o convenio");
+                }
+            }
+        );
+        });
+        
+        $("#convenio_<?php Tab::tabIdEcho('listarConvenioInput'); ?>").live("click", function() {
+            var codConvenio = $(this).attr('convenio');
+            $.post(
+            "<?php echo BASE_URL . '/clinica/convenios/buscarconvenio'; ?>", 
+            {codConvenio: codConvenio},
+            function(data, status){
+                alert(data);
+                if(status == 'success' && $.trim(data) != 'naopassou') {                       
+                        
+                    $("#<?php Tab::tabIdEcho('codAnsConvenio'); ?>").val(codConvenio);
+                    $("#<?php Tab::tabIdEcho('convenioSubmit'); ?>").val("Editar");
+                    $("#<?php Tab::tabIdEcho('razaoSocialConvenio'); ?>").val(data.razaoSocialConvenio);
+                    $("#<?php Tab::tabIdEcho('cnpjConvenio'); ?>").val(data.cnpjConvenio);
+                    $("#<?php Tab::tabIdEcho('logradouroConvenio'); ?>").val(data.logradouroConvenio);
+                    $("#<?php Tab::tabIdEcho('numLogradouroConvenio'); ?>").val(data.numLogradouroConvenio);
+                    $("#<?php Tab::tabIdEcho('complementoConvenio'); ?>").val(data.complementoConvenio);
+                    $("#<?php Tab::tabIdEcho('bairroConvenio'); ?>").val(data.bairroConvenio);
+                    $("#<?php Tab::tabIdEcho('ufConvenio'); ?>").val(data.ufConvenio);
+                    $("#<?php Tab::tabIdEcho('cepConvenio'); ?>").val(data.cepConvenio);
+                } else {
+                        
+                }
+            },
+            'json'
+        )            
+        }); 
+    });
+</script> 
+
+<style type="text/css">
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+</style>
+<div id="abas_<?php Tab::tabIdEcho('tdLista'); ?>">
+    <ul>
+        <li>
+            <a href="#<?php Tab::tabIdEcho('convenios'); ?>">Conv&ecirc;nios</a>
+        </li>
+        <li>
+            <a href="#<?php Tab::tabIdEcho('planos'); ?>">Planos</a>
+        </li>
+        <li>
+            <a href="#<?php Tab::tabIdEcho('tiss'); ?>">TISS</a>
+        </li>
+    </ul>
+
+    <div id="<?php Tab::tabIdEcho('convenios'); ?>">
+        <table>
+            <tr>
+                <td class="ts">Conv&ecirc;nios Cadastrados</td>
+                <td colspan="6" class="ts">Cadastro de Conv&ecirc;nios</td>
+            </tr>
+            <!-- LISTA -->
+            <tr>
+                <td class="tdLista" id="" width="300" style="vertical-align:top; ">
+                    <!-- Lista -->
+                    <table class="lista">
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align: top;">
+                                    <input type="text" class="pesquisa" name="pesquisa" id="<?php Tab::tabIdEcho('pesquisa'); ?>" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top;">
+                                    <div id="<?php Tab::tabIdEcho('listarConvenio'); ?>">
+                                        <input type="hidden" id="<?php Tab::tabIdEcho('listarConvenioInput'); ?>" value="<?php Tab::tabIdEcho('listarConvenioInput'); ?>" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td>
+                    <!-- Campos -->
+                    <form id="<?php Tab::tabIdEcho('formConvenio'); ?>" method="post" onsubmit="return false;">
+                        <input type="hidden" name="codUsuario" id="<?php Tab::tabIdEcho('codUsuario'); ?>" value="<?php echo $usuario->codUsuario; ?>" />
+                        <input type="hidden" name="convenioSubmit" id="<?php Tab::tabIdEcho('convenioSubmit'); ?>" value="" />
+                        <input type="hidden" name="codUnidade" id="<?php Tab::tabIdEcho('codUnidade'); ?>" value="<?php echo $usuario->codUnidade; ?>"/>
+                        <input type="hidden" name="codEmpresa" id="<?php Tab::tabIdEcho('codEmpresa'); ?>" value="<?php echo $usuario->codEmpresa; ?>"/>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td class="tn">Nome Fantasia:</td>
+                                    <td colspan="3">
+                                        <input class="i3" type="text" name="nomeFantasiaConvenio" id="<?php Tab::tabIdEcho('nomeFantasiaConvenio'); ?>" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn">C&oacute;digo Hospital:</td>
+                                    <td>
+                                        <input class="i1" type="text" name="codHospConvenio" id="<?php Tab::tabIdEcho('codHospConvenio'); ?>" />
+                                    </td>
+                                    <td class="tn">Inscri&ccedil;&atilde;o Estadual:</td>
+                                    <td>
+                                        <input class="i1" type="text" name="inscricaoEstadualConvenio" id="<?php Tab::tabIdEcho('inscricaoEstadualConvenio'); ?>" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right" class="tn">Inscri&ccedil;&atilde;o Municipal:</td>
+                                    <td>
+                                        <input class="i1" type="text" name="inscricaoMunicipalConvenio" id="<?php Tab::tabIdEcho('inscricaoMunicipalConvenio'); ?>" />
+                                    </td>
+                                    <td align="right" class="tn">C&oacute;digo ANS:</td>
+                                    <td>
+                                        <input class="i1" type="text" name="codAnsConvenio" id="<?php Tab::tabIdEcho('codAnsConvenio'); ?>" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn">Contato Glosa:</td>
+                                    <td colspan="3">
+                                        <input class="i3" type="text" name="contatoGlosaConvenio" id="<?php Tab::tabIdEcho('contatoGlosaConvenio'); ?>"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right" class="tn">Fone 1 Glosa:</td>
+                                    <td align="right">
+                                        <input class="i1" type="text" name="fone1GlosaConvenio" id="<?php Tab::tabIdEcho('fone1GlosaConvenio'); ?>" />
+                                    </td>
+                                    <td align="right" class="tn">Fone 2 Glosa:</td>
+                                    <td align="right">
+                                        <input class="i1" type="text" name="fone2GlosaConvenio" id="<?php Tab::tabIdEcho('fone2GlosaConvenio'); ?>" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="rigth" class="tn">Email Glosa:</td>
+                                    <td colspan="3">
+                                        <input class="i3" type="text" name="emailGlosaConvenio" id="<?php Tab::tabIdEcho('emailGlosaConvenio'); ?>">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn"style="white-space:nowrap; text-align:right" >Máscara de matricula:</td>
+                                    <td colspan="3" align="left">
+                                        <input class="i3" type="text" name="mascaraMatriculaConvenio" id="<?php Tab::tabIdEcho('mascaraMatriculaConvenio'); ?>">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn" style="text-align:right" >Qtd dias pagamento convenio:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('qtdDiaPagamentoConvenio'); ?>" name="qtdDiaPagamentoConvenio">
+                                    </td>
+                                    <td class="tn"style="text-align:right" >Qtd dias para parcial:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('qtdDiaParcialConvenio'); ?>" name="qtdDiaParcialConvenio" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn" style="text-align:right" >Pct acr&eacute;cimo urg&ecirc;ncia:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" name="pctUrgenciaConvenio" id="<?php Tab::tabIdEcho('pctUrgenciaConvenio'); ?>" />
+                                    </td>
+                                    <td class="tn"style="text-align:right" >Dias retorno consulta:</td>
+                                    <td align="Right">
+                                        <input class="i1" type="text" name="diasRetornoConsultaConvenio" id="<?php Tab::tabIdEcho('diasRetornoConsultaConvenio'); ?>">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" class="ts">Configura&ccedil;&otilde;es da fatura</td>
+                                </tr>
+                                <tr>
+                                    <td class="tn"style="white-space:nowrap; text-align:right" >Tabela de procedimento na fatura:</td>
+                                    <td  align="left" colspan="3">
+                                        <input disabled class="i3" type="text" name="tabelaProcConvenio" id="<?php Tab::tabIdEcho('tabelaProcConvenio'); ?>">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn"style="white-space:nowrap; text-align:right" >Tabela medicamentos fatura:</td>
+                                    <td align="left">
+                                        <input class="i1" disabled type="text" id="<?php Tab::tabIdEcho('tabelaMedConvenio'); ?>" name="tabelaMedConvenio"/>
+                                    </td>
+                                    <td class="tn"style="text-align:right" >Tabela material fatura:</td>
+                                    <td align="left">
+                                        <input class="i1" disabled type="text" name="tabelaMatConvenio" id="<?php Tab::tabIdEcho('tabelaMatConvenio'); ?>">
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <td class="tn"style="text-align:right" >Qtd faturas por remessa:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" name="qtdFaturaRemessaConvenio" id="<?php Tab::tabIdEcho('qtdFaturaRemessaConvenio'); ?>">
+                                    </td>
+                                </tr>
+                                <!--
+                                <tr>
+                                        <td align="right"><input type="checkbox" name="imprimeFatAudConvenio" id="<?php Tab::tabIdEcho('imprimeFatAudConvenio'); ?>" value="S" /></td>
+                                        <td colspan="3" style="text-align:left">Imprime fatura auditada</td>
+                                </tr>
+                                <tr>
+                                        <td align="right"><input type="checkbox" name="imprProcFatUrgConvenio" id="<?php Tab::tabIdEcho('imprProcFatUrgConvenio'); ?>" value="S" /></td>
+                                        <td colspan="3" style="text-align:left">Imprime Procedimento de Urgencia na fatura</td>
+                                </tr>
+                                <tr>
+                                        <td align="right"><input  type="checkbox" name="fabOpmFaturaConvenio" id="<?php Tab::tabIdEcho('fabOpmFaturaConvenio'); ?>" value="S" /></td>
+                                        <td colspan="3" style="text-align:left">Imprime fabricante OPM na fatura</td>
+                                </tr>
+                                -->
+                                <tr>
+                                    <td colspan="6" class="ts">Configura&ccedil;&otilde;es de faixas das guias</td>
+                                </tr>
+                                <tr>
+                                    <td class="tn"style="text-align:right" >Aviso de fim de faixa:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('avisoFimFaixaConvenio'); ?>" name="avisoFimFaixaConvenio">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn">Inicio faixa guia interna&ccedil;&atilde;o:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('iniFaixaInternacaoConvenio'); ?>" name="iniFaixaInternacaoConvenio">
+                                    </td>
+                                    <td class="tn">Fim faixa guia interna&ccedil;&atilde;o:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('fimFaixaInternacaoConvenio'); ?>" name="fimFaixaInternacaoConvenio">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn">Inicio faixa guia Sp/Sadt:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('iniFaixaSpsadtConvenio'); ?>" name="iniFaixaSpsadtConvenio">
+                                    </td>
+                                    <td class="tn">Fim faixa guia Sp/Sadt:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('fimFaixaSpsadtConvenio'); ?>" name="fimFaixaSpsadtConvenio">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn">Inicio faixa guia resumo:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('iniFaixaResumoConvenio'); ?>" name="iniFaixaResumoConvenio">
+                                    </td>
+                                    <td class="tn">Fim faixa guia resumo:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('fimFaixaResumoConvenio'); ?>" name="fimFaixaResumoConvenio">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn">Inicio faixa guia honor&aacute;rio:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('iniFaixaHonorarioConvenio'); ?>" name="iniFaixaHonorarioConvenio">
+                                    </td>
+                                    <td class="tn">Fim faixa guia honor&aacute;rio:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('fimFaixaHonorarioConvenio'); ?>" name="fimFaixaHonorarioConvenio">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn">Inicio faixa guia consulta:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('iniFaixaConsultaConvenio'); ?>" name="iniFaixaConsultaConvenio" />
+                                    </td>
+                                    <td class="tn">Fim faixa guia consulta:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('fimFaixaConsultaConvenio'); ?>" name="fimFaixaConsultaConvenio" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tn">Inicio faixa guia outras desp.:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('iniFaixaOutrasDespesasConvenio'); ?>" name="iniFaixaOutrasDespesasConvenio" />
+                                    </td>
+                                    <td class="tn">Fim faixa guia outras desp.:</td>
+                                    <td align="left">
+                                        <input class="i1" type="text" id="<?php Tab::tabIdEcho('fimFaixaOutrasDespesasConvenio'); ?>" name="fimFaixaOutrasDespesasConvenio" />
+                                    </td>
+                                </tr>
+                                <!-- Configurações de faixa de guias --> 
+                                <!-- Botão do formulário -->
+                                <tr>
+                                    <td colspan="4" style="text-align: right; ">
+                                        <div class="btn_c">
+                                            <div class="btn_e">
+                                                <div class="btn_d" onmouseover="" onmouseout="" id="<?php Tab::tabIdEcho('btn_gravar'); ?>">
+                                                    Gravar
+                                                </div>      
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="inside" id="<?php Tab::tabIdEcho('planos'); ?>">
+        <?php echo $this->render("convenios/planos.phtml"); ?>
+    </div>
+    <!--    <div class="inside" id="trabalhoerendacoabitantes">
+    <?php //echo $this->render("cadastro/trabalhoerendacoabitantes.phtml"); ?>
+        </div>
+        <div class="inside" id="previdenciacoabitantes">
+    <?php //echo $this->render("cadastro/previdenciacoabitantes.phtml"); ?>
+        </div>
+        <div class="inside" id="participacaosocialcoabitantes">
+    <?php //echo $this->render("cadastro/participacaosocialcoabitantes.phtml"); ?>
+        </div>-->
+</div>

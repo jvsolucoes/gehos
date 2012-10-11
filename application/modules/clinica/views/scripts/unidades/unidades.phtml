@@ -1,0 +1,287 @@
+<?php
+$cidades = "";
+$count = 0;
+foreach ($this->cidades as $key => $cidade) {
+    $cidades .= "'".trim($cidade->nomeCidade)."'";
+    if ($count == count($this->cidades) - 1) {
+        $cidades .= "";
+    } else {
+        $cidades .= ", ";
+    }
+    $count++;
+}
+$empresas = "";
+$count = 0;
+foreach ($this->empresas as $key => $empresa) {
+    $empresas .= "'".trim($empresa->nomeFantasiaEmpresa)."'";
+    if ($count == count($this->empresas) - 1) {
+        $empresas .= "";
+    } else {
+        $empresas .= ", ";
+    }
+    $count++;
+}
+?>
+
+<script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery.meio.mask.js"></script>
+
+<script type="text/javascript">
+    $(function() {
+        var cidades = [<?php echo $cidades; ?>];
+        $( "#<?php Tab::tabIdEcho('cidadeUnidade'); ?>" ).autocomplete({
+            source: cidades
+        });
+        
+        var empresas = [<?php echo $empresas; ?>];
+        $( "#<?php Tab::tabIdEcho('nomeEmpresaUnidade'); ?>" ).autocomplete({
+            source: empresas
+        });
+        
+    });
+    
+    $(document).ready(function() {
+        $('input[type="text"]').setMask();
+        
+        $('#<?php Tab::tabIdEcho('pesquisaUnidade'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisaUnidade'); ?>").keyup(function(){
+            var palavra = $(this).val();
+            var input = $("#<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").val();
+            
+            if (palavra.length > 2) {
+                $.post(
+                    "<?php echo BASE_URL . '/clinica/unidades/listar'; ?>", 
+                    {unidade: palavra, input: input},
+                    function(data, status){
+                        if(status == 'success' && $.trim(data) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarUnidade'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarUnidade'); ?>");
+                        }
+                    }
+                ) 
+            }
+        })
+        
+        $("#<?php Tab::tabIdEcho('btn_gravarUnidade'); ?>").click(function(){
+            var nomeUnidade = $("#<?php Tab::tabIdEcho('nomeUnidade'); ?>").val();
+            var cnpjUnidade = $("#<?php Tab::tabIdEcho('cnpjUnidade'); ?>").val();
+            
+            if (nomeUnidade == "") {
+                alert("O campo nome não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('nomePessoa'); ?>").focus();
+                return false;
+            }
+            if (cnpjUnidade == ""){
+                 alert("O campo cnpj não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('cpfPessoa'); ?>").focus();
+                return false;
+            }
+             
+            $.post(
+                "<?php echo BASE_URL . '/clinica/unidades/cadastrar'; ?>", 
+                $("#<?php Tab::tabIdEcho('formUnidade'); ?>").serialize(),
+                function(data, status){
+                    alert(data);
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+
+                    } else {
+
+                    }
+                }
+            );
+        });
+        
+        $("#excluir_<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").live("click", function() {
+            var codUnidade = $(this).attr('unidade');
+            var input = $("#<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").val();
+            $.post(
+                "<?php echo BASE_URL . '/clinica/unidades/excluirunidade'; ?>", 
+                {codUnidade: codUnidade},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        //método listar
+                        $.post(
+                        "<?php echo BASE_URL . '/clinica/unidades/listar'; ?>", 
+                            {unidade: data, input: input},
+                            function(data2, status){
+                                if(status == 'success' && $.trim(data2) != 'naopassou') {
+                                    $("#div_<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarUnidade'); ?>");
+                                } else {
+                                    $("#div_<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarUnidade'); ?>");
+                                }
+                            }
+                        );//fim metodo listar
+                        $(this).parent().remove();
+                    } else {
+                        alert("Não foi possível excluir a unidade");
+                    }
+                }
+            );
+        });
+        
+        $("#ativar_<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").live("click", function() {
+            var codUnidade = $(this).attr('unidade');
+            var input = $("#<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").val();
+            $.post(
+                "<?php echo BASE_URL . '/clinica/unidades/ativarunidade'; ?>", 
+                {codUnidade: codUnidade},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        //método listar
+                        $.post(
+                        "<?php echo BASE_URL . '/clinica/unidades/listar'; ?>", 
+                            {unidade: data, input: input},
+                            function(data2, status){
+                                if(status == 'success' && $.trim(data2) != 'naopassou') {
+                                    $("#div_<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarUnidade'); ?>");
+                                } else {
+                                    $("#div_<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarUnidade'); ?>");
+                                }
+                            }
+                        );//fim metodo listar
+                        $(this).parent().remove();
+                    } else {
+                        alert("Não foi possível ativar a unidade");
+                    }
+                }
+            );
+        });
+        
+        $("#unidade_<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").live("click", function() {
+            var codUnidade = $(this).attr('unidade');
+            
+            $.post(
+                "<?php echo BASE_URL . '/clinica/unidades/buscar'; ?>", 
+                {codUnidade: codUnidade},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#<?php Tab::tabIdEcho('codUnidade'); ?>").val(codUnidade);
+                        $("#<?php Tab::tabIdEcho('unidadeSubmit'); ?>").val("Editar");
+                        
+                        $("#<?php Tab::tabIdEcho('nomeEmpresaUnidade'); ?>").val(data.codEmpresa);
+                        $("#<?php Tab::tabIdEcho('nomeUnidade'); ?>").val(data.nomeUnidade);
+                        $("#<?php Tab::tabIdEcho('cnpjUnidade'); ?>").val(data.cnpjUnidade);
+                        $("#<?php Tab::tabIdEcho('cepUnidade'); ?>").val(data.cepUnidade);
+                        $("#<?php Tab::tabIdEcho('enderecoUnidade'); ?>").val(data.enderecoUnidade);
+                        $("#<?php Tab::tabIdEcho('numeroEndUnidade'); ?>").val(data.numeroEndUnidade);
+                        $("#<?php Tab::tabIdEcho('bairroUnidade'); ?>").val(data.bairroUnidade);
+                        $("#<?php Tab::tabIdEcho('cidadeUnidade'); ?>").val(data.cidadeUnidade);
+                        $("#<?php Tab::tabIdEcho('ufUnidade'); ?>").val(data.ufUnidade);
+                        $("#<?php Tab::tabIdEcho('fone1Unidade'); ?>").val(data.fone1Unidade);
+                        $("#<?php Tab::tabIdEcho('fone2Unidade'); ?>").val(data.fone2Unidade);
+                        $("#<?php Tab::tabIdEcho('faxUnidade'); ?>").val(data.faxUnidade);
+                    } else {
+                        
+                    }
+                },
+                'json'
+            )            
+        }); 
+    });
+</script> 
+
+<style type="text/css">
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+</style>
+
+<div id="<?php Tab::tabIdEcho('Unidade_0_'); ?>">
+    <table>
+        <tr>
+            <td class="ts">Unidades Cadastradas</td>
+            <td colspan="6" class="ts">Cadastro de Unidade</td>
+        </tr>
+        <!-- LISTA -->
+        <tr>
+            <td class="tdLista" id="" width="300" style="vertical-align:top; ">
+                <!-- Lista -->
+                <table class="lista">
+                    <tbody>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <input type="text" class="pesquisa" name="pesquisaUnidade" id="<?php Tab::tabIdEcho('pesquisaUnidade'); ?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <div id="<?php Tab::tabIdEcho('listarUnidade'); ?>">
+                                    <input type="hidden" id="<?php Tab::tabIdEcho('listarUnidadeInput'); ?>" value="<?php Tab::tabIdEcho('listarUnidadeInput'); ?>" />
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>
+                <form id="<?php Tab::tabIdEcho('formUnidade'); ?>" method="post" onsubmit="return false;" action="<?php echo $this->url(array("controller" => "unidade", "action" => "cadastrar")); ?>">
+                    <input type="hidden" name="unidadeSubmit" id="<?php Tab::tabIdEcho('unidadeSubmit'); ?>" value="" />
+                    <input type="hidden" name="codUnidade" id="<?php Tab::tabIdEcho('codUnidade'); ?>" value="" />
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="tn">Empresa:</td>
+                                <td colspan="3"><input class="i3" type="text" name="nomeEmpresaUnidade" id="<?php Tab::tabIdEcho('nomeEmpresaUnidade'); ?>" /></td>				
+                            </tr>
+                            <tr>
+                                <td class="tn">nome:</td>
+                                <td colspan="3"><input class="i3" type="text" name="nomeUnidade" id="<?php Tab::tabIdEcho('nomeUnidade'); ?>" /></td>				
+                            </tr>
+                            <tr>
+                                <td class="tn">CNPJ:</td>
+                                <td><input class="i1" type="text" name="cnpjUnidade" id="<?php Tab::tabIdEcho('cnpjUnidade'); ?>" alt="cnpj" /></td>
+                                <td class="tn">CEP:</td>
+                                <td ><input class="i1" type="text" name="cepUnidade" id="<?php Tab::tabIdEcho('cepUnidade'); ?>" alt="cep" /></td>
+                            </tr>
+                            <tr>
+                                <td align="right" class="tn">Endere&ccedil;o:</td>
+                                <td colspan="3"><input class="i3" type="text" name="enderecoUnidade" id="<?php Tab::tabIdEcho('enderecoUnidade'); ?>" /></td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Bairro:</td>
+                                <td><input class="i1" type="text" name="bairroUnidade" id="<?php Tab::tabIdEcho('bairroUnidade'); ?>"/></td>
+                                <td align="right" class="tn">Cidade:</td>
+                                <td><input class="i1" type="text" name="cidadeUnidade" id="<?php Tab::tabIdEcho('cidadeUnidade'); ?>" /></td>
+                            </tr>
+                            <tr>
+                                <td align="right" class="tn">UF:</td>
+                                <td><input class="i1" type="text" name="ufUnidade" id="<?php Tab::tabIdEcho('ufUnidade'); ?>" maxlength="2" /></td>
+                                <td align="rigth" class="tn">N&uacute;mero:</td>
+                                <td><input class="i1" type="text" name="numeroEndUnidade" id="<?php Tab::tabIdEcho('numeroEndUnidade'); ?>"></td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Fone 1:</td>
+                                <td><input class="i1" type="text" name="fone1Unidade" id="<?php Tab::tabIdEcho('fone1Unidade'); ?>" alt="phone" /></td>
+                                <td class="tn">Fone 2:</td>
+                                <td><input class="i1" type="text" name="fone2Unidade" id="<?php Tab::tabIdEcho('fone2Unidade'); ?>" alt="phone"/></td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Fax:</td>
+                                <td colspan="3"><input class="i3" type="text" name="faxUnidade" id="<?php Tab::tabIdEcho('faxUnidade'); ?>" alt="phone" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" style="text-align: right; padding-top: 20px;">
+                                    <div class="btn_c">
+                                        <div class="btn_e">
+                                            <div class="btn_d" onmouseover="" onmouseout="" id="<?php Tab::tabIdEcho('btn_gravarUnidade'); ?>">
+                                                Gravar
+                                            </div>      
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>	
+                    </table>
+                </form>
+            </td>
+        </tr>	
+    </table>
+</div>

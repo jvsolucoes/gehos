@@ -17,8 +17,8 @@ table.menu {
 }
 
 .menuItem {
-    height: 35px;
     background: url('../img/bg_menu2.gif') top left repeat-x;
+    height: 34px;
     white-space: nowrap;
     font-weight: bold;
     font-size: 9pt;
@@ -42,7 +42,7 @@ table.menu td#sep {
     background: url('../img/bg_menu2.gif') top left repeat-x;
 }
 table.menu td#user {
-    height: 35px;
+    height: 34px;
     background: url('../img/bg_menu2.gif') top left repeat-x;
     white-space: nowrap;
     font-weight: bold;
@@ -50,7 +50,7 @@ table.menu td#user {
     color: #f0f0ff;
 }
 table.menu td#logo {
-    height: 35px;
+    height: 34px;
     background: url('../img/bg_menu2.gif') top left repeat-x;
 }
 table.menu td#user:hover {
@@ -217,10 +217,10 @@ td.noPadding {
     background: url('../img/aba_xs.gif') top right no-repeat;
 }
 .fmTabProg {
-    height: 100%;
+    
     width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+/*    overflow-y: auto;
+    overflow-x: auto;*/
 }
 .defModalWindow {
     width: 300px;

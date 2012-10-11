@@ -36,6 +36,22 @@ class Modulo extends Zend_Db_Table_Abstract {
         return $result;
     }
     
+    public static function listarPorAplicacao($aplicacao) {
+        $modulo = new Modulo();
+        $sql = $modulo->getAdapter()->select()
+                                ->from(array("m" => "modulo"),
+                                        array('m.*'))
+                                ->join(array('ap' => 'aplicacao_modulo'), 'm.codModulo = ap.codModulo',
+                                        array('ap.*'))
+                                ->where("ap.codAplicacao = " . $aplicacao)
+                                ->order("m.nivelModulo ASC");
+
+        $result = $modulo->getAdapter()->setFetchMode(Zend_Db::FETCH_OBJ);
+        $result = $modulo->getAdapter()->fetchAll($sql);
+        
+        return $result;
+    }
+    
     public static function listarAutocomplete($nomeModulo) {
         $modulo = new Modulo();
         
@@ -67,11 +83,11 @@ class Modulo extends Zend_Db_Table_Abstract {
         
         $sql = $modulo->getAdapter()->select()
                     ->from(array("m" => "modulo"), array("m.*"))
-                    ->join(array("ma" => "modulo_acao"), "ma.codModulo = m.codModulo",
-                            array("modulo" => "ma.codModulo", "ma.codAcao"))
-                    ->where("m.codModulo = ?", $codModulo);
+                    ->joinLeft(array("mo" => "modulo"), "m.codModuloPai = mo.codModulo",
+                            array("moduloPai" => "mo.nomeModulo"))
+                    ->where("m.codModulo = ?", $codModulo);       
         
-        $result = $modulo->getAdapter()->fetchAll($sql);
+        $result = $modulo->getAdapter()->fetchRow($sql);
 
         return $result;
     }
@@ -163,6 +179,8 @@ class Modulo extends Zend_Db_Table_Abstract {
     private function add($dados) {
         $data = array(
             'nomeModulo' => $dados['nomeModulo'],
+            'nivelModulo' => $dados['nivelModulo'],
+            'codModuloPai' => $dados['codModuloPai'],
             'linkModulo' => Functions::gerarLink($dados['nomeModulo'])
         );
         
@@ -183,17 +201,24 @@ class Modulo extends Zend_Db_Table_Abstract {
         $this->getAdapter()->beginTransaction();
         
         $this->edit($dados);
-        $acao = "editar";
-        $this->_modelModuloAcao->inserir($dados, $acao);
+        
+        $this->_modelModuloAcao->inserir($dados);
         
         $this->getAdapter()->commit();
+        
+        return true;
     }
     
     private function edit($dados) {
         $data = array(
-            'nomeModulo' => $dados['descricao'],
-            'linkModulo' => Functions::gerarLink($dados['descricao'])
+            'nomeModulo' => $dados['nomeModulo'],
+            'nivelModulo' => $dados['nivelModulo'],
+            'linkModulo' => Functions::gerarLink($dados['nomeModulo'])
         );
+        
+        if ($dados['codModuloPai'] != "") {
+            $data['codModuloPai'] = $dados['codModuloPai'];
+        }
         
         try {
             $where = $this->getAdapter()->quoteInto("codModulo = ?", $dados['codModulo']);
@@ -202,6 +227,27 @@ class Modulo extends Zend_Db_Table_Abstract {
             $this->getAdapter()->rollBack();
             throw new Zend_Exception("N&atilde;o foi possível editar os dados do módulo" . $e->getMessage());
         }
+    }
+    
+    public static function excluir($codModulo) {
+        $modulo = new Modulo();
+        $moduloAcao = new ModuloAcao();
+        $aplicacaoModulo = new AplicacaoModulo();
+        $pama = new PerfilAplicacaoModuloAcao();
+        
+        $wherePama = $pama->getAdapter()->quoteInto("codModulo = ?", $codModulo);
+        $resultPama = $pama->delete($wherePama);
+        
+        $whereAM = $aplicacaoModulo->getAdapter()->quoteInto("codModulo = ?", $codModulo);
+        $resultAM = $aplicacaoModulo->delete($whereAM);
+        
+        $whereMa = $moduloAcao->getAdapter()->quoteInto("codModulo = ?", $codModulo);
+        $resultMa = $moduloAcao->delete($whereMa);
+            
+        $where = $modulo->getAdapter()->quoteInto("codModulo = ?", $codModulo);
+        $result = $modulo->delete($where);
+
+        return $result;
     }
     
 }

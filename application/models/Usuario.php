@@ -6,20 +6,56 @@
  */
 class Usuario extends Zend_Db_Table_Abstract {
     
-    protected $_name = "usuario1";
+    protected $_name = "usuario";
     protected $_primary = array("codUsuario");
     
     protected $_referenceMap = array(
         'Perfil' => array(
             'refTableClass' => 'Perfil',
-            'refColumns' => 'id',
+            'refColumns' => 'codPerfil',
             'columns' => 'codPerfil',
+            'onDelete' => self::CASCADE
+        ),
+        'Unidade' => array(
+            'refTableClass' => 'Unidade',
+            'refColumns' => 'codUnidade',
+            'columns' => 'codUnidade',
             'onDelete' => self::CASCADE
         )
     );
     
     public static function isLogged() {
         return Zend_Auth::getInstance()->hasIdentity();
+    }
+    
+    public function listarAutocomplete($nomeUsuario) {
+        
+        $sql = $this->getAdapter()->select()
+                    ->from(array("u" => "usuario"), array("u.*"))
+                    ->where("u.nomeUsuario LIKE '%$nomeUsuario%'")
+                    ->order("u.nomeUsuario ASC");
+        
+        $result = $this->getAdapter()->fetchAll($sql);
+
+        return $result;
+    }
+    
+    public function buscar($codUsuario) {
+        $sql = $this->getAdapter()->select()
+                    ->from(array("u" => "usuario"), array("u.*"))
+//                    ->join(array("p" => "perfil"), "p.codPerfil = u.codPerfil",
+//                            array("perfil" => "p.codPerfil", "p.nomePerfil"))
+//                    ->joinLeft(array("un" => "unidade"), "u.codUnidade = un.codUnidade",
+//                            array("unidade" => "un.codUnidade", "un.nomeUnidade", "empresa" => "un.codEmpresa"))
+//                    ->join(array("e" => "empresa"), "e.codEmpresa = un.codEmpresa",
+//                            array("e.*"))
+                    ->where("u.codUsuario = ?", $codUsuario);
+//        echo $sql;
+//        die();
+//        $result = $this->getAdapter()->setFetchMode(Zend_Db::FETCH_OBJ);
+        $result = $this->getAdapter()->fetchRow($sql);
+
+        return $result;
     }
     
     public function listar() {
@@ -64,67 +100,76 @@ class Usuario extends Zend_Db_Table_Abstract {
     }
     
     public function inserir($dados) {
-        $this->inicializar();
-        
         $this->getAdapter()->beginTransaction();
+//        var_dump($dados);
+//        die();
         
-        $usuario = $this->add($dados);
-        $dados['id_usuario'] = $usuario;
-        
-//        $this->_modelPerfilAplicacaoModuloAcao->inserir($dados);
-        
-        $this->getAdapter()->commit();
-    }
-    
-    private function add($dados) {
+        $date = date("Y-m-d H:i:s");
         $data = array(
-            'email' => $dados['email'],
-            'login' => $dados['login'],
-            'senha' => sha1($dados['senha']),
-            'id_trabalhador' => $dados['trabalhador']
+            'codUsuarioCadastrou' => $dados['codUsuarioCadastrador'],
+            'codPerfil' => $dados['codPerfil'],
+            'codEmpresa' => $dados['codEmpresa'],
+            'codUnidade' => $dados['codUnidade'],
+            'nomeUsuario' => $dados['nomeUsuario'],
+            'matriculaUsuario' => $dados['matriculaUsuario'],
+            'loginUsuario' => $dados['loginUsuario'],
+            'hashSenhaUsuario' => sha1($dados['hashSenhaUsuario']),
+            'emailUsuario' => $dados['emailUsuario'],
+            'dtCadastroUsuario' => $date
         );
+//        var_dump($data);
+//        die();
+
+//        if (isset($dados['cpf'])) {
+//            $data['cpf_cnpj'] = Functions::replace($dados['cpf']);
+//        } else if (isset($dados['cnpj'])) {
+//            $data['cpf_cnpj'] = Functions::replace($dados['cnpj']);
+//        }
         
         try {
             $this->insert($data);
-            $idUsuario = $this->getAdapter()->lastInsertId();
         } catch (Zend_Exception $e) {
             $this->getAdapter()->rollBack();
             throw new Zend_Exception("N&atilde;o foi possível cadastrar o usuário" . $e->getMessage());
         }
         
-        return $idUsuario;
-    }
+        $this->getAdapter()->commit();
+        
+        return true;
+    }   
     
     public function editar($dados) {
-        $this->inicializar();
-        
         $this->getAdapter()->beginTransaction();
-        
-        $this->edit($dados);
-        $acao = "editar";
-        $this->_modelUsuarioAplicacaoModuloAcao->inserir($dados, $acao);
-        
-        $this->getAdapter()->commit();
-    }
-    
-    private function edit($dados) {
-        
+//        var_dump($dados);
+//        die();
         $data = array(
-            'email' => $dados['email'],
-            'login' => $dados['login']
+            'codUsuarioCadastrou' => $dados['codUsuarioCadastrador'],
+            'codPerfil' => $dados['codPerfil'],
+            'codUnidade' => $dados['codUnidade'],
+            'nomeUsuario' => $dados['nomeUsuario'],
+            'matriculaUsuario' => $dados['matriculaUsuario'],
+            'loginUsuario' => $dados['loginUsuario'],
+            'emailUsuario' => $dados['emailUsuario']
         );
         
         if (isset($dados['senha'])) {
-            $data['senha'] = sha1($dados['senha']);
+            $data['hashSenhaUsuario'] = sha1($dados['hashSenhaUsuario']);
         }
         
+//        var_dump($data);
+//        die();
+        
         try {
-            $where = $this->getAdapter()->quoteInto("id = ?", $dados['id_usuario']);
+            $where = $this->getAdapter()->quoteInto("codUsuario = ?", $dados['codUsuario']);
             $this->update($data, $where);
         } catch (Zend_Exception $e) {
             $this->getAdapter()->rollBack();
             throw new Zend_Exception("N&atilde;o foi possível editar os dados do usuário" . $e->getMessage());
         }
+        
+        $this->getAdapter()->commit();
+        
+        return true;
     }
     
 }

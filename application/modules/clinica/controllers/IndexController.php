@@ -41,7 +41,7 @@ class Clinica_IndexController extends Zend_Controller_Action {
         // Cria uma instancia de Zend_Auth
         $objAuth = Zend_Auth::getInstance();
 
-        $auth_adapter = new Zend_Auth_Adapter_DbTable($db_adapter, 'usuario1', 'loginUsuario', 'hashSenhaUsuario', 'sha1(?)');
+        $auth_adapter = new Zend_Auth_Adapter_DbTable($db_adapter, 'usuario', 'loginUsuario', 'hashSenhaUsuario', 'sha1(?)');
         
         // Configura as credencias informadas pelo usuário
         $auth_adapter->setIdentity($data['user']);
@@ -73,7 +73,7 @@ class Clinica_IndexController extends Zend_Controller_Action {
         }
     }
 
-    public function logoutAction() {
+    public function sairAction() {
         $this->view->aplicacao = $this->_getAllParams();
         $objAuth = Zend_Auth::getInstance();
 

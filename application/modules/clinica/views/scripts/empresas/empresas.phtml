@@ -1,0 +1,204 @@
+<script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery.meio.mask.js"></script>
+
+<script type="text/javascript">    
+    $(document).ready(function() {
+        $('input[type="text"]').setMask();
+        
+        $('#<?php Tab::tabIdEcho('pesquisa'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisa'); ?>").keyup(function(){
+            var palavra = $(this).val();
+            var input = $("#<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").val();
+            
+            if (palavra.length > 2) {
+                $.post(
+                    "<?php echo BASE_URL . '/clinica/empresas/listar'; ?>", 
+                    {empresa: palavra, input: input},
+                    function(data, status){
+                        if(status == 'success' && $.trim(data) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarEmpresa'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarEmpresa'); ?>");
+                        }
+                    }
+                ) 
+            }
+        })
+        
+        $("#<?php Tab::tabIdEcho('btn_gravarEmpresa'); ?>").click(function(){
+            var razaoSocialEmpresa = $("#<?php Tab::tabIdEcho('razaoSocialEmpresa'); ?>").val();
+            var nomeFantasiaEmpresa = $("#<?php Tab::tabIdEcho('nomeFantasiaEmpresa'); ?>").val();
+            
+            if (razaoSocialEmpresa == "") {
+                alert("O campo razão social não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('razaoSocialEmpresa'); ?>").focus();
+                return false;
+            }
+            if (nomeFantasiaEmpresa == ""){
+                 alert("O campo nome fantasia não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('nomeFantasiaEmpresa'); ?>").focus();
+                return false;
+            }
+             
+            $.post(
+                "<?php echo BASE_URL . '/clinica/empresas/cadastrar'; ?>", 
+                $("#<?php Tab::tabIdEcho('formEmpresa'); ?>").serialize(),
+                function(data, status){
+                    alert(data);
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+
+                    } else {
+
+                    }
+                }
+            );
+        });
+        
+        $("#excluir_<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").live("click", function() {
+            var codEmpresa = $(this).attr('empresa');
+            var input = $("#<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").val();
+            $.post(
+                "<?php echo BASE_URL . '/clinica/empresas/excluirempresa'; ?>", 
+                {codEmpresa: codEmpresa},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        //metodo listar
+                        $.post(
+                            "<?php echo BASE_URL . '/clinica/empresa/listar'; ?>", 
+                            {empresa: data, input: input},
+                            function(empresa, status){
+
+                                if(status == 'success' && $.trim(empresa) != 'naopassou') {
+                                    $("#div_<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").remove();
+                                    $(empresa).appendTo("#<?php Tab::tabIdEcho('listarEmpresa'); ?>");
+                                } else {
+                                    $("#div_<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").remove();
+                                    $(empresa).appendTo("#<?php Tab::tabIdEcho('listarEmpresa'); ?>");
+                                }
+                            }
+                        ) 
+                    } else {
+                        alert("Não foi possível desativar a empresa");
+                    }
+                }
+            );
+        });
+        
+        $("#ativar_<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").live("click", function() {
+            var codEmpresa = $(this).attr('empresa');
+            var input = $("#<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").val();
+            $.post(
+                "<?php echo BASE_URL . '/clinica/empresas/ativarempresa'; ?>", 
+                {codEmpresa: codEmpresa},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        //metodo listar
+                        $.post(
+                            "<?php echo BASE_URL . '/clinica/empresas/listar'; ?>", 
+                            {empresa: data, input: input},
+                            function(empresa, status){
+
+                                if(status == 'success' && $.trim(empresa) != 'naopassou') {
+                                    $("#div_<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").remove();
+                                    $(empresa).appendTo("#<?php Tab::tabIdEcho('listarEmpresa'); ?>");
+                                } else {
+                                    $("#div_<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").remove();
+                                    $(empresa).appendTo("#<?php Tab::tabIdEcho('listarEmpresa'); ?>");
+                                }
+                            }
+                        ) 
+                    } else {
+                        alert("Não foi possível ativar a empresa");
+                    }
+                }
+            );
+        });
+        
+        $("#empresa_<?php Tab::tabIdEcho('listarEmpresaInput'); ?>").live("click", function() {
+            var codEmpresa = $(this).attr('empresa');
+            $.post(
+                "<?php echo BASE_URL . '/clinica/empresas/buscarempresa'; ?>", 
+                {codEmpresa: codEmpresa},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#<?php Tab::tabIdEcho('codEmpresa'); ?>").val(codEmpresa);
+                        $("#<?php Tab::tabIdEcho('empresaSubmit'); ?>").val("Editar");
+                        $("#<?php Tab::tabIdEcho('razaoSocialEmpresa'); ?>").val(data.razaoSocialEmpresa);
+                        $("#<?php Tab::tabIdEcho('nomeFantasiaEmpresa'); ?>").val(data.nomeFantasiaEmpresa);
+                    } else {
+                        
+                    }
+                },
+                'json'
+            )            
+        }); 
+    });
+</script> 
+
+<style type="text/css">
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+</style>
+
+<div id="<?php Tab::tabIdEcho('empresa_0_'); ?>">
+    <table>
+        <tr>
+            <td class="ts">Empresas Cadastrados</td>
+            <td colspan="6" class="ts">Cadastro de Empresa</td>
+        </tr>
+        <tr>
+            <td class="tdLista" id="" width="300" style="vertical-align:top; ">
+                <!-- Lista -->
+                <table class="lista">
+                    <tbody>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <input type="text" class="pesquisa" name="pesquisa" id="<?php Tab::tabIdEcho('pesquisa'); ?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <div id="<?php Tab::tabIdEcho('listarEmpresa'); ?>">
+                                    <input type="hidden" id="<?php Tab::tabIdEcho('listarEmpresaInput'); ?>" value="<?php Tab::tabIdEcho('listarEmpresaInput'); ?>" />
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td class="tdCampos" style="vertical-align: top;">
+                <form id="<?php Tab::tabIdEcho('formEmpresa'); ?>" method="post" onsubmit="return false;" action="<?php echo $this->url(array("controller" => "empresa", "action" => "cadastrar")); ?>">
+                    <input type="hidden" name="empresaSubmit" id="<?php Tab::tabIdEcho('empresaSubmit'); ?>" value="" />
+                    <input type="hidden" name="codEmpresa" id="<?php Tab::tabIdEcho('codEmpresa'); ?>" value="" />
+                    <table>
+			<tbody>
+				<tr>
+					<td class="tn">Raz&atilde;o Social:</td>
+					<td colspan="3"><input class="i3" type="text" name="razaoSocialEmpresa" id="<?php Tab::tabIdEcho('razaoSocialEmpresa'); ?>" /></td>
+				</tr>
+				<tr>
+					<td class="tn">Nome Fantasia:</td>
+					<td colspan="3"><input class="i3" type="text" name="nomeFantasiaEmpresa" id="<?php Tab::tabIdEcho('nomeFantasiaEmpresa'); ?>" /></td>
+				</tr>
+				<tr>
+                                <td colspan="4" style="text-align: right; padding-top: 20px;">
+                                    <div class="btn_c">
+                                        <div class="btn_e">
+                                            <div class="btn_d" onmouseover="" onmouseout="" id="<?php Tab::tabIdEcho('btn_gravarEmpresa'); ?>">
+                                                Gravar
+                                            </div>      
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+			</tbody>
+		</table>
+                </form>
+            </td>
+        </tr>	
+    </table>
+</div>

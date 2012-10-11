@@ -1,0 +1,197 @@
+<link type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/cadastros.css" rel="stylesheet" rev="stylesheet"/>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#<?php Tab::tabIdEcho('pesquisaEspecialidade'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisaEspecialidade'); ?>").keyup(function(){
+            var palavra = $(this).val();
+            var input = $("#<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").val();
+            
+            if (palavra.length > 2) {
+                $.post(
+                    "<?php echo BASE_URL . '/clinica/especialidade/listar'; ?>", 
+                    {especialidade: palavra, input: input},
+                    function(data, status){
+                        if(status == 'success' && $.trim(data) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarEspecialidade'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarEspecialidade'); ?>");
+                        }
+                    }
+                ) 
+            }
+        })
+        
+        $("#<?php Tab::tabIdEcho('btn_gravarEspecialidade'); ?>").click(function(){
+            var nomeEspecialidade = $("#<?php Tab::tabIdEcho('nomeEspecialidade'); ?>").val();
+            if (nomeEspecialidade == "") {
+                alert("O campo nome não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('nomeEspecialidade'); ?>").focus();
+                return false;
+            }
+            $.post(
+                "<?php echo BASE_URL . '/clinica/especialidade/cadastrar'; ?>", 
+                $("#<?php Tab::tabIdEcho('formEspecialidade'); ?>").serialize(),
+                function(data, status){
+                    alert(data);
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        
+                    } else {
+                        
+                    }
+                }
+            )
+        })
+        
+        $("#excluir_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").live("click", function() {
+            var codEspecialidade = $("#especialidade_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").attr('especialidade');
+            var input = $("#<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").val();
+            $.post(
+                "<?php echo BASE_URL . '/clinica/especialidade/excluirespecialidade'; ?>", 
+                {codEspecialidade: codEspecialidade},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        //método listar
+                        $.post(
+                        "<?php echo BASE_URL . '/clinica/especialidade/listar'; ?>", 
+                            {especialidade: data, input: input},
+                            function(data2, status){
+                                if(status == 'success' && $.trim(data2) != 'naopassou') {
+                                    $("#div_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarEspecialidade'); ?>");
+                                } else {
+                                    $("#div_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarEspecialidade'); ?>");
+                                }
+                            }
+                        );//fim metodo listar
+                        $(this).parent().remove();
+                    } else {
+                        alert("Não foi possível desativar a especialidade");
+                    }
+                }
+            );
+        });
+        
+        $("#ativar_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").live("click", function() {
+            var codEspecialidade = $("#especialidade_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").attr('especialidade');
+            var input = $("#<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").val();
+            
+            $.post(
+                "<?php echo BASE_URL . '/clinica/especialidade/ativarespecialidade'; ?>", 
+                {codEspecialidade: codEspecialidade},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        //método listar
+                        $.post(
+                        "<?php echo BASE_URL . '/clinica/especialidade/listar'; ?>", 
+                            {especialidade: data, input: input},
+                            function(data2, status){
+                                if(status == 'success' && $.trim(data2) != 'naopassou') {
+                                    $("#div_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarEspecialidade'); ?>");
+                                } else {
+                                    $("#div_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarEspecialidade'); ?>");
+                                }
+                            }
+                        );//fim metodo listar
+                        $(this).parent().remove();
+                    } else {
+                        alert("Não foi possível ativar a especialidade");
+                    }
+                }
+            );
+        });
+        
+        $("#especialidade_<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>").live("click", function() {
+            var codEspecialidade = $(this).attr('especialidade');
+            $.post(
+                "<?php echo BASE_URL . '/clinica/especialidade/buscarespecialidade'; ?>", 
+                {codEspecialidade: codEspecialidade},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#<?php Tab::tabIdEcho('codEspecialidade'); ?>").val(codEspecialidade);
+                        $("#<?php Tab::tabIdEcho('especialidadeSubmit'); ?>").val("Editar");
+                        $("#<?php Tab::tabIdEcho('nomeEspecialidade'); ?>").val(data.nomeEspecialidade);
+                    } else {
+                        
+                    }
+                },
+                'json'
+            )
+            
+        })
+        
+        
+    })
+</script>
+
+<style type="text/css">
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+    
+    
+    
+</style>
+
+<div id="<?php Tab::tabIdEcho('Especialidade_0_'); ?>">
+    <table>
+        <tr>
+            <td class="ts">Especialidades Cadastradas</td>
+            <td colspan="6" class="ts">Cadastro de Especialidade</td>
+        </tr>
+        <!-- LISTA -->
+        <tr>
+            <td class="tdLista" id="" width="300" style="vertical-align:top; ">
+                <!-- Lista -->
+                <table class="lista">
+                    <tbody>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <input type="text" class="pesquisa" name="pesquisaEspecialidade" id="<?php Tab::tabIdEcho('pesquisaEspecialidade'); ?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <div id="<?php Tab::tabIdEcho('listarEspecialidade'); ?>">
+                                    <input type="hidden" id="<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>" value="<?php Tab::tabIdEcho('listarEspecialidadeInput'); ?>" />
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>
+                <form id="<?php Tab::tabIdEcho('formEspecialidade'); ?>" method="post" onsubmit="return false;" action="<?php echo $this->url(array("controller" => "especialidade", "action" => "cadastrar")); ?>">
+                    <input type="hidden" name="especialidadeSubmit" id="<?php Tab::tabIdEcho('especialidadeSubmit'); ?>" value="" />
+                    <input type="hidden" name="codEspecialidade" id="<?php Tab::tabIdEcho('codEspecialidade'); ?>" value="" />
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="tn">Nome:</td>
+                                <td colspan="3"><input class="i3" type="text" name="nomeEspecialidade" id="<?php Tab::tabIdEcho('nomeEspecialidade'); ?>" /></td>				
+                            </tr>
+                            <tr>
+                                <td colspan="6" style="text-align: right; padding-top: 20px;">
+                                    <div class="btn_c">
+                                        <div class="btn_e">
+                                            <div class="btn_d" onmouseover="" onmouseout="" id="<?php Tab::tabIdEcho('btn_gravarEspecialidade'); ?>">
+                                                Gravar
+                                            </div>      
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>	
+                    </table>
+                </form>
+            </td>
+        </tr>	
+    </table>
+</div>

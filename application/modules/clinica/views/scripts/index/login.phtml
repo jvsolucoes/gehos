@@ -4,7 +4,8 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-
+        $("input, select, textarea").attr("autocomplete", "off");
+        mudarFoco(0);
     });
     
     function submitenter(myfield,e){

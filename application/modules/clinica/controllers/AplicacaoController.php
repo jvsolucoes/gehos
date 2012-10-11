@@ -8,11 +8,15 @@ class Clinica_AplicacaoController extends Zend_Controller_Action {
 
     private $_usuario;
     private $_modelAplicacao;
+    private $_modelModulo;
+    private $_modelAplicacaoModulo;
     
     public function init() {
         parent::init();
         
         $this->_modelAplicacao = new Aplicacao();
+        $this->_modelModulo = new Modulo();
+        $this->_modelAplicacaoModulo = new AplicacaoModulo();
         
         if (!Usuario::isLogged()) {
             $this->_forward("index");
@@ -22,20 +26,21 @@ class Clinica_AplicacaoController extends Zend_Controller_Action {
         }
     }
 
-    public function acaoAction() {
+    public function aplicacaoAction() {
         $this->view->aplicacao = $this->_getAllParams();
         $this->_helper->layout()->disableLayout();
+        $modulos = $this->_modelModulo->fetchAll();
+        $this->view->modulos = $modulos;
     }
     
     public function cadastrarAction() {
         $dados = $this->_request->getPost();
         
-        if (!$dados['acaoSubmit']) {
+        if (!$dados['aplicacaoSubmit']) {
             $result = $this->_modelAplicacao->inserir($dados);
         } else {
             $result = $this->_modelAplicacao->editar($dados);
         }
-        
         
         if ($result) {
             echo "ok";
@@ -47,20 +52,20 @@ class Clinica_AplicacaoController extends Zend_Controller_Action {
     }
     
     public function listarAction() {
-        $acao = $this->_request->getPost("acao");
+        $aplicacao = $this->_request->getPost("aplicacao");
         $input = $this->_request->getPost("input");
         
-        $result = $this->_modelAplicacao->listarAutocomplete($acao);
+        $result = $this->_modelAplicacao->listarAutocomplete($aplicacao);
         
         if ($result) {
-            $html = "<table id='div_".$input."' style='width: 100%;' class='listagem' >";
+            $html = "<table id='div_".$input."' style='width: 100%;' class='listagem' cellpadding='0' cellspacing='0' border='0'>";
             $cont = 0;
             foreach ($result as $r) {
                 $color = ($cont % 2 == 0) ? "bgcolor='#c4c4c4'" : "" ;
                 $html .= "<tr $color style='height: 25px;'>
-                            <td id='acao_".$input."' acao='" . $r['codAcao'] . "'>";
+                            <td id='aplicacao_".$input."' aplicacao='" . $r['codAplicacao'] . "'>";
                 
-                $html .= $r['nomeAcao'];
+                $html .= $r['nomeAplicacao'];
                 
                 $html .= "  
                             </td>
@@ -81,9 +86,22 @@ class Clinica_AplicacaoController extends Zend_Controller_Action {
         die();
     }
     
-    public function buscaracaoAction() {
-        $acao = $this->_request->getPost("idAcao");
-        $result = $this->_modelAplicacao->buscar($acao);
+    public function buscarAction() {
+        $aplicacao = $this->_request->getPost("idAplicacao");
+        $result = $this->_modelAplicacao->buscar($aplicacao);
+        
+        if ($result) {            
+            echo json_encode($result, true);
+        } else {
+            echo "naopassou";
+        }
+        
+        die();
+    }
+    
+    public function buscaraplicacaomoduloAction() {
+        $aplicacao = $this->_request->getPost("idAplicacao");
+        $result = $this->_modelAplicacaoModulo->buscarAplicacao($aplicacao);
         
         if ($result) {            
             echo json_encode($result, true);
@@ -95,10 +113,9 @@ class Clinica_AplicacaoController extends Zend_Controller_Action {
     }
     
     public function excluiracaoAction() {
-        $acao = $this->_request->getPost("idAcao");
-        var_dump($acao);
-        die();
-        $result = $this->_modelAplicacao->excluir($acao);
+        $aplicacao = $this->_request->getPost("idAplicacao");
+        
+        $result = $this->_modelAplicacao->excluir($aplicacao);
         
         if ($result) {            
             echo "Ação excluída com sucesso!";

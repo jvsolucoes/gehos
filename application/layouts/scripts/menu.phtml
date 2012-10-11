@@ -9,7 +9,7 @@ if (@$usuario) {
             <td>
                 <table class="menu border"><tbody>
                         <tr>
-                            <td style="padding: 0">
+                            <td style="padding: 0;">
                                 <table class="menu">
                                     <tbody>
                                         <tr>
@@ -126,7 +126,7 @@ if (@$usuario) {
                                     <tr>
                                         <td class="noPadding rightAlign" id="user" onmouseover="fmMenuShow('user','fmMenuUser');" onmouseout="fmMenuStartTimer();"><?php echo $usuario->nomeUsuario . "@"; ?></td>
                                         <td id="logo" class="noPadding">
-                                            <img height="35" width="92" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/LOGO FINAL.png" />
+                                            <img height="33" width="90" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/LOGO FINAL.png" />
                                         </td>
                                     </tr>
                                 </table>
@@ -142,7 +142,7 @@ if (@$usuario) {
                                                 ?>
                                                     <li onmouseover="fmMenuClearTimer();" 
                                                         onmouseout="fmMenuStartTimer();" 
-                                                        onclick="<?php echo $this->url(array("controller" => "index", "action" => $mu->linkModulo)); ?>">
+                                                        onclick="window.location='<?php echo $this->url(array("controller" => "index", "action" => $mu->linkModulo)); ?>'">
                                                         <?php echo $mu->nomeModulo; ?>
                                                     </li>
                                                 <?php

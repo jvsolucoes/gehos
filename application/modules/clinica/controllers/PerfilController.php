@@ -8,11 +8,15 @@ class Clinica_PerfilController extends Zend_Controller_Action {
 
     private $_usuario;
     private $_modelAplicacao;
+    private $_modelPerfil;
+    private $_modelPerfilAplicacao;
     
     public function init() {
         parent::init();
         
         $this->_modelAplicacao = new Aplicacao();
+        $this->_modelPerfil = new Perfil();
+        $this->_modelPerfilAplicacao = new PerfilAplicacaoModuloAcao();
         
         if (!Usuario::isLogged()) {
             $this->_forward("index");
@@ -22,45 +26,46 @@ class Clinica_PerfilController extends Zend_Controller_Action {
         }
     }
 
-    public function acaoAction() {
+    public function perfilAction() {
         $this->view->aplicacao = $this->_getAllParams();
         $this->_helper->layout()->disableLayout();
+        
+        $aplicacoes = $this->_modelAplicacao->fetchAll(null, "nomeAplicacao ASC");
+        $this->view->aplicacoes = $aplicacoes;
     }
     
     public function cadastrarAction() {
         $dados = $this->_request->getPost();
         
-        if (!$dados['acaoSubmit']) {
-            $result = $this->_modelAplicacao->inserir($dados);
+        if (!$dados['perfilSubmit']) {
+            $result = $this->_modelPerfil->inserir($dados);
         } else {
-            $result = $this->_modelAplicacao->editar($dados);
+            $result = $this->_modelPerfil->editar($dados);
         }
-        
         
         if ($result) {
             echo "ok";
         } else {
             echo "naopassou";
         }
-        
         die();
     }
     
     public function listarAction() {
-        $acao = $this->_request->getPost("acao");
+        $perfil = $this->_request->getPost("perfil");
         $input = $this->_request->getPost("input");
         
-        $result = $this->_modelAplicacao->listarAutocomplete($acao);
+        $result = $this->_modelPerfil->listarAutocomplete($perfil);
         
         if ($result) {
-            $html = "<table id='div_".$input."' style='width: 100%;' class='listagem' >";
+            $html = "<table id='div_".$input."' style='width: 100%;' class='listagem' cellpadding='0' cellspacing='0' border='0'>";
             $cont = 0;
             foreach ($result as $r) {
                 $color = ($cont % 2 == 0) ? "bgcolor='#c4c4c4'" : "" ;
                 $html .= "<tr $color style='height: 25px;'>
-                            <td id='acao_".$input."' acao='" . $r['codAcao'] . "'>";
+                            <td id='perfil_".$input."' perfil='" . $r['codPerfil'] . "'>";
                 
-                $html .= $r['nomeAcao'];
+                $html .= $r['nomePerfil'];
                 
                 $html .= "  
                             </td>
@@ -81,9 +86,9 @@ class Clinica_PerfilController extends Zend_Controller_Action {
         die();
     }
     
-    public function buscaracaoAction() {
-        $acao = $this->_request->getPost("idAcao");
-        $result = $this->_modelAplicacao->buscar($acao);
+    public function buscarAction() {
+        $perfil = $this->_request->getPost("idPerfil");
+        $result = $this->_modelPerfil->buscar($perfil);
         
         if ($result) {            
             echo json_encode($result, true);
@@ -94,14 +99,25 @@ class Clinica_PerfilController extends Zend_Controller_Action {
         die();
     }
     
-    public function excluiracaoAction() {
-        $acao = $this->_request->getPost("idAcao");
-        var_dump($acao);
-        die();
-        $result = $this->_modelAplicacao->excluir($acao);
+    public function buscaraplicacaomoduloacaoAction() {
+        $perfil = $this->_request->getPost("idPerfil");
+        $result = $this->_modelPerfilAplicacao->buscarIdPerfil($perfil);
         
         if ($result) {            
-            echo "Ação excluída com sucesso!";
+            echo json_encode($result, true);
+        } else {
+            echo "naopassou";
+        }
+        
+        die();
+    }
+    
+    public function excluirAction() {
+        $perfil = $this->_request->getPost("idPerfil");
+        $result = $this->_modelPerfil->excluir($perfil);
+        
+        if ($result) {            
+            echo "Perfil excluído com sucesso!";
         } else {
             echo "naopassou";
         }

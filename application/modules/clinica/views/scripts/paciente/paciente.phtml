@@ -1,89 +1,295 @@
-<link type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/cadastros.css" rel="stylesheet" rev="stylesheet"/>
+<?php
+$sexos = "";
+$count = 0;
+foreach ($this->sexos as $key => $sexo) {
+    $sexos .= "'".trim($sexo->sexo)."'";
+    if ($count == count($this->sexos) - 1) {
+        $sexos .= "";
+    } else {
+        $sexos .= ", ";
+    }
+    $count++;
+}
+
+$estadoscivis = "";
+$count = 0;
+foreach ($this->estadoscivis as $key => $estadocivil) {
+    $estadoscivis .= "'".trim($estadocivil->estadoCivil)."'";
+    if ($count == count($this->estadoscivis) - 1) {
+        $estadoscivis .= "";
+    } else {
+        $estadoscivis .= ", ";
+    }
+    $count++;
+}
+
+$cidades = "";
+$count = 0;
+foreach ($this->cidades as $key => $cidade) {
+    $cidades .= "'".trim($cidade->nomeCidade)."'";
+    if ($count == count($this->cidades) - 1) {
+        $cidades .= "";
+    } else {
+        $cidades .= ", ";
+    }
+    $count++;
+}
+?>
+
+<script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery.meio.mask.js"></script>
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('#<?php Tab::tabIdEcho('pesquisa'); ?>').focus();
+    $(function() {
+        var sexos = [<?php echo $sexos; ?>];
+        $( "#<?php Tab::tabIdEcho('sexoPessoa'); ?>" ).autocomplete({
+            source: sexos
+        });
         
-        $("#<?php Tab::tabIdEcho('pesquisa'); ?>").keyup(function(){
+        var estadoscivis = [<?php echo $estadoscivis; ?>];
+        $( "#<?php Tab::tabIdEcho('estadoCivilPessoa'); ?>" ).autocomplete({
+            source: estadoscivis
+        });
+        
+        var cidades = [<?php echo $cidades; ?>];
+        $( "#<?php Tab::tabIdEcho('codCidade'); ?>" ).autocomplete({
+            source: cidades
+        });
+        
+    });
+    
+    $(document).ready(function() {
+        $('input[type="text"]').setMask();
+        
+        $('#<?php Tab::tabIdEcho('pesquisaPessoa'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisaPessoa'); ?>").keyup(function(){
             var palavra = $(this).val();
-            var input = $("#<?php Tab::tabIdEcho('listarModuloInput'); ?>").val();
+            var input = $("#<?php Tab::tabIdEcho('listarPessoaInput'); ?>").val();
             
             if (palavra.length > 2) {
                 $.post(
-                "<?php echo BASE_URL . '/clinica/modulo/listar'; ?>", 
-                {modulo: palavra, input: input},
-                function(data, status){
-                    if(status == 'success' && $.trim(data) != 'naopassou') {
-                        $("#div_<?php Tab::tabIdEcho('listarModuloInput'); ?>").remove();
-                        $(data).appendTo("#<?php Tab::tabIdEcho('listarModulo'); ?>");
-                    } else {
-                        $("#div_<?php Tab::tabIdEcho('listarModuloInput'); ?>").remove();
-                        $(data).appendTo("#<?php Tab::tabIdEcho('listarModulo'); ?>");
+                    "<?php echo BASE_URL . '/clinica/paciente/listar'; ?>", 
+                    {pessoa: palavra, input: input},
+                    function(data, status){
+                        
+                        if(status == 'success' && $.trim(data) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarPessoaInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarPessoa'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarPessoaInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarPessoa'); ?>");
+                        }
                     }
-                }
-            ) 
+                ) 
             }
         })
         
-        $("#<?php Tab::tabIdEcho('btn_gravar'); ?>").click(function(){
-            var nomeModulo = $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").val();
-            if (nomeModulo == "") {
+        $("#<?php Tab::tabIdEcho('btn_gravarPessoa'); ?>").click(function(){
+            var nomePessoa = $("#<?php Tab::tabIdEcho('nomePessoa'); ?>").val();
+            var cpfPessoa = $("#<?php Tab::tabIdEcho('cpfPessoa'); ?>").val();
+            var codCep = $("#<?php Tab::tabIdEcho('codCep'); ?>").val();
+            var codCidade = $("#<?php Tab::tabIdEcho('codCidade'); ?>").val();
+            var dataNascPessoa = $("#<?php Tab::tabIdEcho('dtNascPessoa'); ?>").val();
+            var rgPessoa = $("#<?php Tab::tabIdEcho('rgPessoa'); ?>").val();
+            var fone1Pessoa = $("#<?php Tab::tabIdEcho('fone1Pessoa'); ?>").val();
+            var fone2Pessoa = $("#<?php Tab::tabIdEcho('fone2Pessoa'); ?>").val();
+            
+            if (nomePessoa == "") {
                 alert("O campo nome não pode ficar vazio");
-                $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").focus();
+                $("#<?php Tab::tabIdEcho('nomePessoa'); ?>").focus();
                 return false;
             }
-            $.post(
-            "<?php echo BASE_URL . '/clinica/modulo/cadastrar'; ?>", 
-            $("#<?php Tab::tabIdEcho('formModulo'); ?>").serialize(),
-            function(data, status){
-                alert(data);
-                if(status == 'success' && $.trim(data) != 'naopassou') {
-                        
-                } else {
-                        
-                }
+            if (cpfPessoa == ""){
+                 alert("O campo cpf não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('cpfPessoa'); ?>").focus();
+                return false;
             }
-        )
-        })
-        
-        $("#excluir_<?php Tab::tabIdEcho('listarModuloInput'); ?>").live("click", function() {
-            var idModulo = $("#modulo_<?php Tab::tabIdEcho('listarModuloInput'); ?>").attr('modulo');
-            
+            if (codCep == ""){
+                 alert("O campo cep não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('codCep'); ?>").focus();
+                return false;
+            }
+            if (codCidade == ""){
+                 alert("O campo cidade não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('codCidade'); ?>").focus();
+                return false;
+            }
+            if (dataNascPessoa == ""){
+                 alert("O campo data de nascimento não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('dataNascPessoa'); ?>").focus();
+                return false;
+            }
+            if (rgPessoa == ""){
+                 alert("O campo rg não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('rgPessoa'); ?>").focus();
+                return false;
+            }
+            if (fone1Pessoa == ""){
+                 alert("O campo telefone não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('fone1Pessoa'); ?>").focus();
+                return false;
+            }
+            if (fone2Pessoa == ""){
+                 alert("O campo celular não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('fone2Pessoa'); ?>").focus();
+                return false;
+            }
+             
             $.post(
-            "<?php echo BASE_URL . '/clinica/modulo/excluirmodulo'; ?>", 
-            {idModulo: idModulo},
-            function(data, status){
-                if(status == 'success' && $.trim(data) != 'naopassou') {
-                    $(this).parent().remove();
+                "<?php echo BASE_URL . '/clinica/paciente/cadastrar'; ?>", 
+                $("#<?php Tab::tabIdEcho('formPaciente'); ?>").serialize(),
+                function(data, status){
                     alert(data);
-                } else {
-                        
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+
+                    } else {
+
+                    }
                 }
-            }
-        )
-        })
+            );
+        });
         
-        $("#modulo_<?php Tab::tabIdEcho('listarModuloInput'); ?>").live("click", function() {
-            var idModulo = $(this).attr('modulo');
+        $("#excluir_<?php Tab::tabIdEcho('listarPessoaInput'); ?>").live("click", function() {
+            var codPessoa = $(this).attr('pessoa');
+            var input = $("#<?php Tab::tabIdEcho('listarPacienteInput'); ?>").val();
             $.post(
-            "<?php echo BASE_URL . '/clinica/modulo/buscar'; ?>", 
-            {idModulo: idModulo},
-            function(data, status){
-                if(status == 'success' && $.trim(data) != 'naopassou') {
-                    $("#<?php Tab::tabIdEcho('codModulo'); ?>").val(idModulo);
-                    $("#<?php Tab::tabIdEcho('moduloSubmit'); ?>").val("Editar");
-                    $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").val(data.nomeModulo);
-                } else {
-                        
+                "<?php echo BASE_URL . '/clinica/paciente/excluirpessoa'; ?>", 
+                {codPessoa: codPessoa},
+                function(data, status){
+                    alert(data);
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        //metodo listar
+                        $.post(
+                            "<?php echo BASE_URL . '/clinica/paciente/listar'; ?>", 
+                            {pessoa: data, input: input},
+                            function(paciente, status){
+
+                                if(status == 'success' && $.trim(paciente) != 'naopassou') {
+                                    $("#div_<?php Tab::tabIdEcho('listarPessoaInput'); ?>").remove();
+                                    $(paciente).appendTo("#<?php Tab::tabIdEcho('listarPessoa'); ?>");
+                                } else {
+                                    $("#div_<?php Tab::tabIdEcho('listarPessoaInput'); ?>").remove();
+                                    $(paciente).appendTo("#<?php Tab::tabIdEcho('listarPessoa'); ?>");
+                                }
+                            }
+                        ) 
+                    } else {
+                        alert("Não foi possível desativar o paciente");
+                    }
                 }
-            },
-            'json'
-        )
-            
-        })
+            );
+        });
         
+        $("#ativar_<?php Tab::tabIdEcho('listarPessoaInput'); ?>").live("click", function() {
+            var codPessoa = $(this).attr('pessoa');
+            var input = $("#<?php Tab::tabIdEcho('listarUnidadeInput'); ?>").val();
+            $.post(
+                "<?php echo BASE_URL . '/clinica/paciente/ativarpessoa'; ?>", 
+                {codPessoa: codPessoa},
+                function(data, status){
+                    alert(data);
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        //metodo listar
+                        $.post(
+                            "<?php echo BASE_URL . '/clinica/paciente/listar'; ?>", 
+                            {pessoa: data, input: input},
+                            function(paciente, status){
+
+                                if(status == 'success' && $.trim(paciente) != 'naopassou') {
+                                    $("#div_<?php Tab::tabIdEcho('listarPessoaInput'); ?>").remove();
+                                    $(paciente).appendTo("#<?php Tab::tabIdEcho('listarPessoa'); ?>");
+                                } else {
+                                    $("#div_<?php Tab::tabIdEcho('listarPessoaInput'); ?>").remove();
+                                    $(paciente).appendTo("#<?php Tab::tabIdEcho('listarPessoa'); ?>");
+                                }
+                            }
+                        ) 
+                    } else {
+                        alert("Não foi possível ativar o paciente");
+                    }
+                }
+            );
+        });
         
-    })
+        $("#pessoa_<?php Tab::tabIdEcho('listarPessoaInput'); ?>").live("click", function() {
+            var codPessoa = $(this).attr('pessoa');
+            $.post(
+                "<?php echo BASE_URL . '/clinica/paciente/buscarpessoa'; ?>", 
+                {codPessoa: codPessoa},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#<?php Tab::tabIdEcho('codPessoa'); ?>").val(codPessoa);
+                        $("#<?php Tab::tabIdEcho('pessoaSubmit'); ?>").val("Editar");
+                        
+                        var dataNasc = data.dtNascPessoa.substr(8, 2) + '/' +
+                            data.dtNascPessoa.substr(5, 2) + '/' + 
+                            data.dtNascPessoa.substr(0, 4);
+                        
+                        var sexoPessoa, estadoCivil;
+                        switch (data.sexoPessoa) {
+                            case 'I':
+                                sexoPessoa = 'Indefinido';
+                                break;
+                            case 'F':
+                                sexoPessoa = 'Feminino';
+                                break;
+                            case 'M':
+                                sexoPessoa = 'Masculino';
+                                break;
+                            default:
+                                sexoPessoa = '';
+                                break;
+                        }
+                        
+                        switch (data.estadoCivilPessoa) {
+                            case 'C':
+                                estadoCilvilPessoa = 'Casado';
+                                break;
+                            case 'D':
+                                estadoCilvilPessoa = 'Divorciado';
+                                break;
+                            case 'S':
+                                estadoCilvilPessoa = 'Solteiro';
+                                break;
+                            case 'V':
+                                estadoCilvilPessoa = 'Viúvo';
+                                break;
+                            default:
+                                estadoCilvilPessoa = '';
+                                break;
+                        }                        
+                        
+                        $("#<?php Tab::tabIdEcho('codCep'); ?>").val(data.codCep);
+                        $("#<?php Tab::tabIdEcho('codCidade'); ?>").val(data.codCidade);
+                        $("#<?php Tab::tabIdEcho('tipoPessoa'); ?>").val(data.tipoPessoa);
+                        $("#<?php Tab::tabIdEcho('nomePessoa'); ?>").val(data.nomePessoa);
+                        $("#<?php Tab::tabIdEcho('sexoPessoa'); ?>").val(sexoPessoa);
+                        $("#<?php Tab::tabIdEcho('dtNascPessoa'); ?>").val(dataNasc);
+                        $("#<?php Tab::tabIdEcho('cpfPessoa'); ?>").val(data.cpfPessoa);
+                        $("#<?php Tab::tabIdEcho('rgPessoa'); ?>").val(data.rgPessoa);
+                        $("#<?php Tab::tabIdEcho('fone1Pessoa'); ?>").val(data.fone1Pessoa);
+                        $("#<?php Tab::tabIdEcho('fone2Pessoa'); ?>").val(data.fone2Pessoa);
+                        $("#<?php Tab::tabIdEcho('emailPessoa'); ?>").val(data.emailPessoa);
+                        $("#<?php Tab::tabIdEcho('endPessoa'); ?>").val(data.endPessoa);
+                        $("#<?php Tab::tabIdEcho('numEndPessoa'); ?>").val(data.numEndPessoa);
+                        $("#<?php Tab::tabIdEcho('complEndPessoa'); ?>").val(data.complEndPessoa);
+                        $("#<?php Tab::tabIdEcho('bairroPessoa'); ?>").val(data.bairroPessoa);
+                        $("#<?php Tab::tabIdEcho('codUf'); ?>").val(data.ufEndPessoa);
+                        $("#<?php Tab::tabIdEcho('nacionalidadePessoa'); ?>").val(data.nacionalidadePessoa);
+                        $("#<?php Tab::tabIdEcho('naturalidadePessoa'); ?>").val(data.naturalidadePessoa);
+                        $("#<?php Tab::tabIdEcho('estadoCivilPessoa'); ?>").val(estadoCivilPessoa);
+                        $("#<?php Tab::tabIdEcho('profissaoPessoa'); ?>").val(data.profissaoPessoa);
+                        $("#<?php Tab::tabIdEcho('nomePaiPessoa'); ?>").val(data.nomePaiPessoa);
+                        $("#<?php Tab::tabIdEcho('nomeMaePessoa'); ?>").val(data.nomeMaePessoa);
+                        $("#<?php Tab::tabIdEcho('quemIndicouPessoa'); ?>").val(data.quemIndicouPessoa);
+                    } else {
+                        
+                    }
+                },
+                'json'
+            )            
+        }); 
+    });
 </script> 
 
 <style type="text/css">
@@ -93,39 +299,47 @@
     } 
 </style>
 
-<div id="<?php Tab::tabIdEcho('acao_0_'); ?>">
+<div id="<?php Tab::tabIdEcho('paciente_0_'); ?>">
     <table>
         <tr>
             <td class="ts">Pacientes Cadastrados</td>
             <td colspan="6" class="ts">Dados Pessoais</td>
         </tr>
         <tr>
-            <td class="tdLista" id="<?php //tabIdEcho('tdLista'); ?>" width="300" style="vertical-align:top; ">
+            <td class="tdLista" id="" width="300" style="vertical-align:top; ">
                 <!-- Lista -->
                 <table class="lista">
                     <tbody>
                         <tr>
                             <td style="vertical-align: top;">
-                                <input type="text" <?php //tabIdEcho('pesquisa'); ?> class="pesquisa" name="pesquisa" />
+                                <input type="text" class="pesquisa" name="pesquisaPessoa" id="<?php Tab::tabIdEcho('pesquisaPessoa'); ?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <div id="<?php Tab::tabIdEcho('listarPessoa'); ?>">
+                                    <input type="hidden" id="<?php Tab::tabIdEcho('listarPessoaInput'); ?>" value="<?php Tab::tabIdEcho('listarPessoaInput'); ?>" />
+                                </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </td>
             <td class="tdCampos">
-                <form method="post" onsubmit="return false;">
-                    <input type="hidden" name="codPessoa" id="<?php //tabIdEcho('codPessoaPaciente'); ?>" value="" />
-                    <input type="hidden" name="tipoPessoa" id="<?php //tabIdEcho('tipoPessoa'); ?>" value="P" />
+                <form id="<?php Tab::tabIdEcho('formPaciente'); ?>" method="post" onsubmit="return false;" action="<?php echo $this->url(array("controller" => "paciente", "action" => "cadastrar")); ?>">
+                    <input type="hidden" name="pessoaSubmit" id="<?php Tab::tabIdEcho('pessoaSubmit'); ?>" value="" />
+                    <input type="hidden" name="codPessoa" id="<?php Tab::tabIdEcho('codPessoa'); ?>" value="" />
+                    <input type="hidden" name="tipoPessoa" id="<?php Tab::tabIdEcho('tipoPessoa'); ?>" value="P" />
                     <table>
                         <tbody>
                             <tr>
                                 <td class="tn">Nome:</td>
-                                <td colspan="3"><input class="i3" name="nomePessoa" type="text" id="<?php //tabIdEcho('nome'); ?>"/></td>
+                                <td colspan="3"><input class="i3" name="nomePessoa" type="text" id="<?php Tab::tabIdEcho('nomePessoa'); ?>"/></td>
                                 <td colspan="2" rowspan="5">
                                     <table height="100%" width="100%"><tbody>
                                             <tr>
-                                                <td width="125"><div style="height: 140px; background: #f7f7f7;"><img src="i/sem_foto.gif" width="125" height="140" border="0" /></div> </td>
-                                                <td width="125"><div style="height: 140px; background: #f7f7f7;"><img src="i/sem_digital.gif" width="125" height="140" border="0" /></div> </td>
+                                                <td width="125"><div style="height: 140px; background: #f7f7f7;"><img src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/sem_foto.gif" width="125" height="140" border="0" /></div> </td>
+                                                <td width="125"><div style="height: 140px; background: #f7f7f7;"><img src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/img/sem_digital.gif" width="125" height="140" border="0" /></div> </td>
                                             </tr>
                                             <tr class="dica">
                                                 <td align="center">Foto do Usu&aacute;rio</td>
@@ -136,50 +350,53 @@
                             </tr>
                             <tr>
                                 <td class="tn">Nascimento:</td>
-                                <td><input class="i1" type="text" name="dtNascPessoa" id="<?php //tabIdEcho('nascimento'); ?>" /></td>
+                                <td><input class="i1" type="text" name="dtNascPessoa" id="<?php Tab::tabIdEcho('dtNascPessoa'); ?>" alt="date" /></td>
                                 <td class="tn">Sexo:</td>
-                                <td><input class="i1" type="text" name="sexoPessoa" id="<?php //tabIdEcho('sexo'); ?>" /></td>
+                                <td>
+                                    <input class="i1" type="text" name="inputSexoPessoa" id="<?php Tab::tabIdEcho('inputSexoPessoa'); ?>" />
+                                    <input class="i1" type="hidden" name="sexoPessoa" id="<?php Tab::tabIdEcho('sexoPessoa'); ?>" />
+                                </td>
                             </tr>
                             <tr>			
                                 <td class="tn">CPF:</td>
-                                <td><input class="i1" type="text" name="cpfPessoa" id="<?php //tabIdEcho('cpf'); ?>" /></td>
+                                <td><input class="i1" type="text" name="cpfPessoa" id="<?php Tab::tabIdEcho('cpfPessoa'); ?>" alt="cpf" /></td>
                                 <td class="tn">RG:</td>
-                                <td><input class="i1" type="text" name="rgPessoa" id="<?php //tabIdEcho('rg'); ?>" /></td>
+                                <td><input class="i1" type="text" name="rgPessoa" id="<?php Tab::tabIdEcho('rgPessoa'); ?>" /></td>
                             </tr>	                   
                             <tr>
                                 <td class="tn">Telefone:</td>
-                                <td><input class="i1" type="text" name="fone1Pessoa" id="<?php //tabIdEcho('fone1'); ?>" /></td>
+                                <td><input class="i1" type="text" name="fone1Pessoa" id="<?php Tab::tabIdEcho('fone1Pessoa'); ?>" alt="phone" /></td>
                                 <td class="tn">Celular:</td>
-                                <td><input class="i1" type="text" name="fone2Pessoa" id="<?php //tabIdEcho('fone2'); ?>" /></td>
+                                <td><input class="i1" type="text" name="fone2Pessoa" id="<?php Tab::tabIdEcho('fone2Pessoa'); ?>" alt="phone" /></td>
                             </tr>
                             <tr>
                                 <td class="tn">E-Mail:</td>
-                                <td colspan="3"><input class="i3" type="text" name="emailPessoa" id="<?php //tabIdEcho('email'); ?>" /></td>
+                                <td colspan="3"><input class="i3" type="text" name="emailPessoa" id="<?php Tab::tabIdEcho('emailPessoa'); ?>" /></td>
                             </tr>
                             <tr>
                                 <td class="tn">Estado Civil:</td>
-                                <td><input class="i1" type="text" name="estadoCivilPessoa" id="<?php //tabIdEcho('estadoCivil'); ?>" /></td>
+                                <td><input class="i1" type="text" name="estadoCivilPessoa" id="<?php Tab::tabIdEcho('estadoCivilPessoa'); ?>" /></td>
                                 <td class="tn">Nacionalidade:</td>
-                                <td><input class="i1" type="text" name="nacionalidadePessoa" id="<?php //tabIdEcho('nacionalidade'); ?>" /></td>
+                                <td><input class="i1" type="text" name="nacionalidadePessoa" id="<?php Tab::tabIdEcho('nacionalidadePessoa'); ?>" /></td>
                                 <td class="tn">Naturalidade:</td>
-                                <td><input class="i1" type="text" name="naturalidadePessoa" id="<?php //tabIdEcho('naturalidade'); ?>" /></td>
+                                <td><input class="i1" type="text" name="naturalidadePessoa" id="<?php Tab::tabIdEcho('naturalidadePessoa'); ?>" /></td>
                             </tr>
                             <tr>
                                 <td class="tn">Profiss&atilde;o:</td>
-                                <td><input class="i1" type="text" name="profissaoPessoa" id="<?php //tabIdEcho('profissao'); ?>" /></td>
+                                <td><input class="i1" type="text" name="profissaoPessoa" id="<?php Tab::tabIdEcho('profissaoPessoa'); ?>" /></td>
                                 <td class="tn">Indicado Por:</td>
-                                <td><input class="i1" type="text" name="quemIndicouPessoa" id="<?php //tabIdEcho('indicadoPor'); ?>" /></td>
+                                <td><input class="i1" type="text" name="quemIndicouPessoa" id="<?php Tab::tabIdEcho('quemIndicouPessoa'); ?>" /></td>
                                 <td></td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <td class="tn">Nome do Pai:</td>
-                                <td colspan="5"><input class="i5" type="text" name="nomePaiPessoa" id="<?php //tabIdEcho('nomePai'); ?>" /></td>                      
+                                <td colspan="5"><input class="i5" type="text" name="nomePaiPessoa" id="<?php Tab::tabIdEcho('nomePaiPessoa'); ?>" /></td>                      
                             </tr>
                             <tr>
                                 <td class="tn">Nome da m&atilde;e:</td>
                                 <td colspan="5">
-                                    <input class="i5" type="text" name="nomeMaePessoa" id="<?php //tabIdEcho('nomeMae'); ?>" />
+                                    <input class="i5" type="text" name="nomeMaePessoa" id="<?php Tab::tabIdEcho('nomeMaePessoa'); ?>" />
                                 </td>
                             </tr>
                             <tr>
@@ -187,27 +404,33 @@
                             </tr>
                             <tr>
                                 <td class="tn">CEP:</td>
-                                <td><input class="i1" type="text" name="codCep" id="<?php //tabIdEcho('cep'); ?>" /></td>
+                                <td><input class="i1" type="text" name="codCep" id="<?php Tab::tabIdEcho('codCep'); ?>" alt="cep" /></td>
                                 <td class="tn">Endere&ccedil;o:</td>
-                                <td colspan="3"><input class="i3" type="text" name="endPessoa" id="<?php //tabIdEcho('endereco'); ?>" /></td>
+                                <td colspan="3"><input class="i3" type="text" name="endPessoa" id="<?php Tab::tabIdEcho('endPessoa');?>" /></td>
                             </tr>
                             <tr>
                                 <td class="tn">Bairro:</td>
-                                <td><input class="i1" type="text" name="bairroPessoa" id="<?php //tabIdEcho('bairro'); ?>" /></td>
+                                <td><input class="i1" type="text" name="bairroPessoa" id="<?php Tab::tabIdEcho('bairroPessoa'); ?>" /></td>
                                 <td class="tn">Cidade:</td>
-                                <td><input class="i1" type="text" name="codCidade" id="<?php //tabIdEcho('cidade'); ?>" /></td>
+                                <td><input class="i1" type="text" name="codCidade" id="<?php Tab::tabIdEcho('codCidade'); ?>" /></td>
                                 <td class="tn">UF:</td>
-                                <td><input class="i1" type="text" name="codUf" id="<?php //tabIdEcho('uf'); ?>" /></td>
+                                <td><input class="i1" type="text" name="codUf" id="<?php Tab::tabIdEcho('codUf'); ?>" maxlength="2" /></td>
                             </tr>
                             <tr>
                                 <td class="tn">N&uacute;mero:</td>
-                                <td><input class="i1" type="text" name="numEndPessoa" id="<?php //tabIdEcho('numero'); ?>" /></td>
+                                <td><input class="i1" type="text" name="numEndPessoa" id="<?php Tab::tabIdEcho('numEndPessoa'); ?>" /></td>
                                 <td class="tn">Complemento:</td>
-                                <td colspan="3"><input class="i3" type="text" name="complEndPessoa" id="<?php //tabIdEcho('complemento'); ?>" /></td>
+                                <td colspan="3"><input class="i3" type="text" name="complEndPessoa" id="<?php Tab::tabIdEcho('complEndPessoa'); ?>" /></td>
                             </tr>
                             <tr>
                                 <td colspan="6" style="text-align: right; padding-top: 20px;">
-                                    <?php DefButton("Gravar", tabId("cadastro") . ".insert", null); ?>
+                                    <div class="btn_c">
+                                        <div class="btn_e">
+                                            <div class="btn_d" onmouseover="" onmouseout="" id="<?php Tab::tabIdEcho('btn_gravarPessoa'); ?>">
+                                                Gravar
+                                            </div>      
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -216,52 +439,4 @@
             </td>
         </tr>	
     </table>
-    <script>
-        /**
-         *	Autocomplete 
-         **/
-        new fmAutocomplete({
-            field: document.getElementById('<?php //tabIdEcho('sexo'); ?>'), 
-            url: '../ac/acSexo.php', 
-            minChars: 0});
-		
-        new fmAutocomplete({
-            field: document.getElementById("<?php //tabIdEcho('cidade'); ?>"), 
-            url: 'ac/acCidade.php', 
-            minChars: 3, selectFn: function (real, vals, cols) { 
-                $('#<?php //tabIdEcho('uf'); ?>').val(cols[1]);
-            }, 
-            pos: 'top'});
-		
-        new fmAutocomplete({
-            field: document.getElementById("<?php //tabIdEcho('estadoCivil'); ?>"), 
-            url: 'ac/acEstadoCivil.php', 
-            minChars: 0});
-		
-        /** Iniciar NavegaÃ§Ã£o de campos da tela de dados do paciente */
-        def.fieldNav(<?php echo tabNumber(); ?>,['<?php //tabIdEcho("nome"); ?>','<?php //tabIdEcho("nascimento"); ?>','<?php //tabIdEcho("sexo"); ?>','<?php //tabIdEcho("cpf"); ?>','<?php //tabIdEcho("rg"); ?>','<?php //tabIdEcho("fone1"); ?>','<?php //tabIdEcho("fone2"); ?>','<?php //tabIdEcho("email"); ?>','<?php //tabIdEcho("estadoCivil"); ?>','<?php //tabIdEcho("nacionalidade"); ?>','<?php //tabIdEcho("naturalidade"); ?>','<?php //tabIdEcho("profissao"); ?>','<?php //tabIdEcho("indicadoPor"); ?>','<?php //tabIdEcho("nomePai"); ?>','<?php //tabIdEcho("nomeMae"); ?>','<?php //tabIdEcho("cep"); ?>','@<?php //tabIdEcho("consultaCepPaciente"); ?>();','<?php //tabIdEcho("endereco"); ?>','<?php //tabIdEcho("bairro"); ?>','<?php //tabIdEcho("cidade"); ?>','<?php //tabIdEcho("uf"); ?>','<?php //tabIdEcho("numero"); ?>','<?php //tabIdEcho("complemento"); ?>','@<?php //tabIdEcho('cadastro'); ?>.insert()']);
-        /**
-         *	FunÃ§Ã£o consulta cep do paciente
-         */
-        function <?php //tabIdEcho("consultaCepPaciente"); ?>() {
-            var cep = $('#<?php //tabIdEcho('cep'); ?>').val();
-            if (cep.length == 8) {
-                fmAjax("ajax/consultaCep.php",{q: cep},<?php //tabIdEcho("resultadoCepPaciente"); ?>);
-                return false;
-            }
-            return true;
-        }
-        /**
-         *	Resultado cep  
-         */
-        function <?php //tabIdEcho("resultadoCepPaciente"); ?>(data) {
-            var cep = JSON.parse(data);
-            $('#<?php //tabIdEcho('endereco'); ?>').val(cep.endCep);
-            $('#<?php //tabIdEcho('bairro'); ?>').val(cep.nomeBairro);
-            $('#<?php //tabIdEcho('cidade'); ?>').val(cep.codCidade);
-            $('#<?php //tabIdEcho('uf'); ?>').val(cep.codUf);
-            $('#<?php //tabIdEcho('numero'); ?>').focus();
-        }		
-
-    </script>	
 </div>

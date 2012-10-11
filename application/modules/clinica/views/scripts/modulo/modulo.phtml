@@ -1,10 +1,48 @@
 <?php
 $acoes = $this->acoes;
+
+$modulos = "";
+$count = 0;
+foreach ($this->modulos as $key => $modulo) {
+    $modulos .= "'".trim($modulo->nomeModulo)."'";
+    if ($count == count($this->modulos) - 1) {
+        $modulos .= "";
+    } else {
+        $modulos .= ", ";
+    }
+    $count++;
+}
 ?>
-<link type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/cadastros.css" rel="stylesheet" rev="stylesheet"/>
+<style>
+    .ui-combobox {
+        position: relative;
+        display: inline-block;
+    }
+    .ui-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* adjust styles for IE 6/7 */
+        height: 1.7em;
+        top: 0.1em;
+    }
+    .ui-combobox-input {
+        margin: 0;
+/*        padding: 0.3em;*/
+    }
+</style>
+
+<script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery.meio.mask.js"></script>
 
 <script type="text/javascript">
+    
     $(document).ready(function() {
+        $('input[type="text"]').setMask();
+        $("input, select, textarea").attr("autocomplete", "off");
+        mudarFoco(0);
+        
         $('#<?php Tab::tabIdEcho('pesquisa'); ?>').focus();
         
         $("#<?php Tab::tabIdEcho('pesquisa'); ?>").keyup(function(){
@@ -40,10 +78,8 @@ $acoes = $this->acoes;
                 "<?php echo BASE_URL . '/clinica/modulo/cadastrar'; ?>", 
                 $("#<?php Tab::tabIdEcho('formModulo'); ?>").serialize(),
                 function(data, status){
-                    alert(data);
-                    alert(data);
                     if(status == 'success' && $.trim(data) != 'naopassou') {
-                        
+                        alert("Módulo atualizado com sucesso!");
                     } else {
                         
                     }
@@ -77,13 +113,36 @@ $acoes = $this->acoes;
                 function(data, status){
                     
                     if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $(".<?php Tab::tabIdEcho('acao'); ?>").attr("checked", false);
                         $("#<?php Tab::tabIdEcho('codModulo'); ?>").val(idModulo);
                         $("#<?php Tab::tabIdEcho('moduloSubmit'); ?>").val("Editar");
-                        $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").val(data[0].nomeModulo);
-                        <?php $getId = Tab::getTabId('acaoModulo'); ?>
-                        for (i = 0; i < data.length; i++) {
-                            $("#<?php echo $getId; ?>_" + data[i].codAcao).attr("checked", true);
-                        }
+                        $("#<?php Tab::tabIdEcho('nomeModulo'); ?>").val(data.nomeModulo);
+                        $("#<?php Tab::tabIdEcho('nivelModulo'); ?>").val(data.nivelModulo);
+                        $("#<?php Tab::tabIdEcho('moduloPai'); ?>").val(data.moduloPai);
+                        
+                        $("#<?php Tab::tabIdEcho('codModuloPai'); ?> option").each(function(){
+                            if ($(this).val() == data.codModuloPai) {
+                                $(this).attr("selected", true);
+                            }
+                        })
+                        
+                        $.post(
+                            "<?php echo BASE_URL . '/clinica/modulo/buscarmoduloacao'; ?>", 
+                            {idModulo: idModulo},
+                            function(data, status){
+
+                                if(status == 'success' && $.trim(data) != 'naopassou') {
+                                    <?php $getId = Tab::getTabId('acaoModulo'); ?>
+                                    for (i = 0; i < data.length; i++) {
+                                        $("#<?php echo $getId; ?>_" + data[i].codAcao).attr("checked", true);
+                                    }
+
+                                } else {
+                                    $(".<?php Tab::tabIdEcho('acao'); ?>").attr("checked", false);
+                                }
+                            },
+                            'json'
+                        )
                         
                     } else {
                         
@@ -94,13 +153,8 @@ $acoes = $this->acoes;
             
         })
         
-        
     })
     
-    new fmAutocomplete({
-        field: document.getElementById('<?php Tab::tabIdEcho('codModuloPai'); ?>'), 
-        url: '<?php echo BASE_URL . '/clinica/modulo/apmodulo'; ?>', 
-        minChars: 0});
 </script>
 
 <style type="text/css">
@@ -138,20 +192,20 @@ $acoes = $this->acoes;
                 </table>
             </td>
             <td style="vertical-align: top;">
-                <form id="<?php Tab::tabIdEcho('formModulo'); ?>" method="post" onsubmit="return false;" action="<?php echo $this->url(array("controller" => "modulo", "action" => "modulo")); ?>">
+                <form id="<?php Tab::tabIdEcho('formModulo'); ?>" method="post" onsubmit="return false;" >
                     <input type="hidden" name="codModulo" id="<?php Tab::tabIdEcho('codModulo'); ?>" value="" />
                     <input type="hidden" name="moduloSubmit" id="<?php Tab::tabIdEcho('moduloSubmit'); ?>" value="" />
                     <table>
                         <tbody>
                             <tr>
                                 <td class="tn">Nome:</td>
-                                <td>
+                                <td colspan="3">
                                     <input class="i3" type="text" name="nomeModulo" id="<?php Tab::tabIdEcho('nomeModulo'); ?>" value="" />
                                 </td>
                             </tr>
                             <tr>
                                 <td class="tn" style="vertical-align: top;">Ações:</td>
-                                <td>
+                                <td colspan="3">
                                     <?php
                                     $cont = 0;
                                     foreach ($acoes as $acao) {
@@ -160,7 +214,7 @@ $acoes = $this->acoes;
                                         ?>
                                         <div <?php echo $display; ?>>
                                             <div class="inline-block" style="height: 20px;">
-                                                <input type="checkbox" name="acao[]"
+                                                <input type="checkbox" name="acao[]" class="<?php Tab::tabIdEcho('acao'); ?>"
                                                        id="<?php echo $id . "_" . $acao->codAcao; ?>"
                                                        value="<?php echo $acao->codAcao; ?>" />
                                             </div>
@@ -173,12 +227,30 @@ $acoes = $this->acoes;
                                 </td>
                             </tr>
                             <tr>
-                                <td class="tn" style="vertical-align: top;">Módulo Pai:</td>
+                                <td class="tn">Módulo Pai:</td>
                                 <td>
-                                    <input class="i1" type="text" name="codModuloPai" id="<?php Tab::tabIdEcho('codModuloPai'); ?>" value="" />
+<!--                                    <input class="i1" type="text" name="moduloPai" id="<?php Tab::tabIdEcho('moduloPai'); ?>" value="" />-->
+                                    <div>
+                                        <div class="ui-widget">
+                                            <select name="codModuloPai" id="<?php Tab::tabIdEcho('codModuloPai'); ?>">
+                                                <option value="" >Select one...</option>
+                                                <?php
+                                                foreach ($this->modulos as $modulo) {
+                                                ?>
+                                                    <option value="<?php echo $modulo->codModulo; ?>"><?php echo $modulo->nomeModulo; ?></option>
+                                                <?php
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </td>
+                                <td class="tn">Nível no Menu:</td>
+                                <td>
+                                    <input class="i1" type="text" name="nivelModulo" id="<?php Tab::tabIdEcho('nivelModulo'); ?>" value="" />
                                 </td>
                             </tr>
-                                
                             <!-- Botão do formulário -->
                             <tr>
                                 <td colspan="4" style="text-align: right; padding-top: 20px;">
@@ -198,3 +270,118 @@ $acoes = $this->acoes;
         </tr>
     </table>
 </div>
+<script type="text/javascript">
+    (function($) {
+        $.widget( "ui.combobox", {
+            _create: function() {
+                var input,
+                    self = this,
+                    select = this.element.hide(),
+                    selected = select.children( ":selected" ),
+                    value = selected.val() ? selected.text() : "",
+                    wrapper = this.wrapper = $( "<span>" )
+                            .addClass( "ui-combobox" )
+                            .insertAfter( select );
+
+                input = $("<input id='<?php Tab::tabIdEcho('moduloPai'); ?>'>")
+                    .appendTo(wrapper)
+                    .val(value)
+                    .addClass( "ui-state-default ui-combobox-input" )
+                    .autocomplete({
+                            delay: 0,
+                            minLength: 0,
+                            source: function( request, response ) {
+                                    var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+                                    response( select.children( "option" ).map(function() {
+                                        var text = $( this ).text();
+                                        if ( this.value && ( !request.term || matcher.test(text) ) )
+                                            return {
+                                                label: text.replace(
+                                                    new RegExp(
+                                                        "(?![^&;]+;)(?!<[^<>]*)(" +
+                                                        $.ui.autocomplete.escapeRegex(request.term) +
+                                                        ")(?![^<>]*>)(?![^&;]+;)", "gi"
+                                                    ), "<strong>$1</strong>" ),
+                                                value: text,
+                                                option: this
+                                            };
+                                    }) );
+                            },
+                            select: function( event, ui ) {
+                                    ui.item.option.selected = true;
+                                    self._trigger( "selected", event, {
+                                        item: ui.item.option
+                                    });
+                            },
+                            change: function( event, ui ) {
+                                    if ( !ui.item ) {
+                                            var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" ),
+                                                    valid = false;
+                                            select.children( "option" ).each(function() {
+                                                    if ( $( this ).text().match( matcher ) ) {
+                                                            this.selected = valid = true;
+                                                            return false;
+                                                    }
+                                            });
+                                            if ( !valid ) {
+                                                    // remove invalid value, as it didn't match anything
+                                                    $( this ).val( "" );
+                                                    select.val( "" );
+                                                    input.data( "autocomplete" ).term = "";
+                                                    return false;
+                                            }
+                                    }
+                            }
+                    })
+                    .addClass( "ui-widget ui-widget-content ui-corner-left" );
+
+                input.data( "autocomplete" )._renderItem = function( ul, item ) {
+                    return $( "<li></li>" )
+                            .data( "item.autocomplete", item )
+                            .append( "<a>" + item.label + "</a>" )
+                            .appendTo( ul );
+                };
+
+                $("<a>")
+                    .attr( "tabIndex", -1 )
+                    .attr( "title", "Show All Items" )
+                    .appendTo( wrapper )
+//                        .button({
+//                                icons: {
+//                                        primary: "ui-icon-triangle-1-s"
+//                                },
+//                                text: false
+//                        })
+                    .removeClass( "ui-corner-all" )
+                    .addClass( "ui-corner-right ui-combobox-toggle" )
+                    .click(function() {
+                        // close if already visible
+                        if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
+                            input.autocomplete( "close" );
+                            return;
+                        }
+
+                        // work around a bug (likely same cause as #5265)
+                        $( this ).blur();
+
+                        // pass empty string as value to search for, displaying all results
+                        input.autocomplete( "search", "" );
+                        input.focus();
+                    });
+            },
+
+            destroy: function() {
+                this.wrapper.remove();
+                this.element.show();
+                $.Widget.prototype.destroy.call( this );
+            }
+        });
+    })(jQuery);
+    
+    $(function() {
+        $( "#<?php Tab::tabIdEcho('codModuloPai'); ?>" ).combobox();
+        $( "#toggle" ).click(function() {
+            $( "#<?php Tab::tabIdEcho('codModuloPai'); ?>" ).toggle();
+        });
+    });
+</script>

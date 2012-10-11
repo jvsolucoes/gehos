@@ -1,0 +1,235 @@
+<?php
+//$cidades = "";
+//$count = 0;
+//foreach ($this->cidades as $key => $cidade) {
+//    $cidades .= "'" . trim($cidade->nomeCidade) . "'";
+//    if ($count == count($this->cidades) - 1) {
+//        $cidades .= "";
+//    } else {
+//        $cidades .= ", ";
+//    }
+//    $count++;
+//}
+//
+//$usuario = Zend_Auth::getInstance()->getIdentity();;
+//$unidade = $usuario->findParentRow('Unidade');
+//$unidade = Unidade::buscarId($usuario->codUnidade);
+//var_dump($unidade);
+?>
+<script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery.meio.mask.js"></script>
+
+<script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery-ui-1.8.23.custom/js/jquery-ui-1.8.23.custom.min.js"></script>
+
+<script type="text/javascript">    
+    $(function() {        
+        $( "#abas_<?php Tab::tabIdEcho('tdLista'); ?>" ).tabs();
+    });
+    
+    $(document).ready(function() {
+        $("input, select, textarea").attr("autocomplete", "off");
+        
+        $('#<?php Tab::tabIdEcho('pesquisaTiposProfissionais'); ?>').focus();
+        $('input[type="text"]').setMask();
+        
+        $('#<?php Tab::tabIdEcho('pesquisaTiposProfissionais'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisaTiposProfissionais'); ?>").keyup(function(){
+            var palavra = $(this).val();
+            var input = $("#<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").val();
+            
+            if (palavra.length > 2) {
+                $.post(
+                "<?php echo BASE_URL . '/clinica/tiposprofissionais/listartiposprofissionais'; ?>", 
+                {tipoprofissional: palavra, input: input},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#div_<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").remove();
+                        $(data).appendTo("#<?php Tab::tabIdEcho('listarTiposProfissionais'); ?>");
+                    } else {
+                        $("#div_<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").remove();
+                        $(data).appendTo("#<?php Tab::tabIdEcho('listarTiposProfissionais'); ?>");
+                    }
+                }
+            ) 
+            }
+        })
+        
+        $("#<?php Tab::tabIdEcho('btn_gravarTiposProfissionais'); ?>").click(function(){
+            var nomeTipoProfissional = $("#<?php Tab::tabIdEcho('nomeTipoProfissional'); ?>").val();
+            
+            if (nomeTipoProfissional == "") {
+                alert("O campo nome não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('nomeTipoProfissional'); ?>").focus();
+                return false;
+            }
+             
+            $.post(
+            "<?php echo BASE_URL . '/clinica/tiposprofissionais/cadastrartiposprofissionais'; ?>", 
+            $("#<?php Tab::tabIdEcho('formTiposProfissionais'); ?>").serialize(),
+            function(data, status){
+                alert(data);
+                if(status == 'success' && $.trim(data) != 'naopassou') {
+
+                } else {
+
+                }
+            }
+        );
+        });
+        
+        $("#excluir_<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").live("click", function() {
+            var codTipoProfissional = $(this).attr('tipoProfissional');
+            var input = $("#<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").val();
+            $.post(
+            "<?php echo BASE_URL . '/clinica/tiposprofissionais/excluirtiposprofissionais'; ?>", 
+            {codTipoProfissional: codTipoProfissional},
+            function(data, status){
+                if(status == 'success' && $.trim(data) != 'naopassou') {
+                    //metodo listar
+                    $.post(
+                    "<?php echo BASE_URL . '/clinica/tiposprofissionais/listartiposprofissionais'; ?>", 
+                    {tipoProfissional: data, input: input},
+                    function(data2, status){
+                        if(status == 'success' && $.trim(data2) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").remove();
+                            $(data2).appendTo("#<?php Tab::tabIdEcho('listarTiposProfissionais'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").remove();
+                            $(data2).appendTo("#<?php Tab::tabIdEcho('listarTiposProfissionais'); ?>");
+                        }
+                    }
+                ) 
+                } else {
+                    alert("Não foi possível desativar o convenio");
+                }
+            }
+        );
+        });
+        
+        $("#ativar_<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").live("click", function() {
+            var codTipoProfissional = $(this).attr('tipoProfissional');
+            var input = $("#<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").val();
+            $.post(
+            "<?php echo BASE_URL . '/clinica/tiposprofissionais/ativartiposprofissionais'; ?>", 
+            {codTipoProfissional: codTipoProfissional},
+            function(data, status){
+                if(status == 'success' && $.trim(data) != 'naopassou') {
+                    //metodo listar
+                    $.post(
+                    "<?php echo BASE_URL . '/clinica/tiposprofissionais/listartiposprofissionais'; ?>", 
+                    {tipoProfissioanl: data, input: input},
+                    function(tipoProfissional, status){
+
+                        if(status == 'success' && $.trim(convenio) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").remove();
+                            $(tipoProfissional).appendTo("#<?php Tab::tabIdEcho('listarTiposProfissionais'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").remove();
+                            $(tipoProfissional).appendTo("#<?php Tab::tabIdEcho('listarTiposProfissionais'); ?>");
+                        }
+                    }
+                ); 
+                } else {
+                    alert("Não foi possível ativar o tipo profissional");
+                }
+            }
+        );
+        });
+        
+        $("#tiposProfissionais_<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>").live("click", function() {
+            var codTipoProfissional = $(this).attr('tipoProfissional');
+            $.post(
+            "<?php echo BASE_URL . '/clinica/tiposprofissionais/buscartiposprofissionais'; ?>", 
+            {codTipoProfissional: codTipoProfissional},
+            function(data, status){
+                alert(data);
+                if(status == 'success' && $.trim(data) != 'naopassou') {                       
+                        
+                    $("#<?php Tab::tabIdEcho('codTipoProfissional'); ?>").val(codConvenio);
+                    $("#<?php Tab::tabIdEcho('tipoProfissionalSubmit'); ?>").val("Editar");
+                    $("#<?php Tab::tabIdEcho('nomeTipoProfissional'); ?>").val(data.nomeTipoProfissional);
+                } else {
+                        
+                }
+            },
+            'json'
+        )            
+        }); 
+    });
+</script> 
+
+<style type="text/css">
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+</style>
+<div id="abas_<?php Tab::tabIdEcho('tdLista'); ?>">
+    <ul>
+        <li>
+            <a href="#tiposprofissionais">Tipos Profissionais</a>
+        </li>
+        <li>
+            <a href="#planos">Subtipos Profissionais</a>
+        </li>
+    </ul>
+
+    <div id="tiposprofissionais">
+        <table>
+            <tr>
+                <td class="ts">Tipos Profissionais Cadastrados</td>
+                <td colspan="6" class="ts">Cadastro de Tipos Profissionais</td>
+            </tr>
+            <!-- LISTA -->
+            <tr>
+                <td class="tdLista" id="" width="300" style="vertical-align:top; ">
+                    <!-- Lista -->
+                    <table class="lista">
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align: top;">
+                                    <input type="text" class="pesquisa" name="pesquisaTiposProfissionais" id="<?php Tab::tabIdEcho('pesquisaTiposProfissionais'); ?>" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top;">
+                                    <div id="<?php Tab::tabIdEcho('listarTiposProfissionais'); ?>">
+                                        <input type="hidden" id="<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>" value="<?php Tab::tabIdEcho('listarTiposProfissionaisInput'); ?>" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td>
+                    <!-- Campos -->
+                    <form method="post" onsubmit="return false;">
+                        <input type="hidden" name="codTipoProfissional" id="<?php Tab::tabIdEcho('codTipoProfissional'); ?>" value="<?php echo $session->unidade; ?>"/>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td class="tn">Nome</td>
+                                    <td colspan="3">
+                                        <input class="i3" type="text" name="nomeTipoProfissional" id="<?php Tab::tabIdEcho('nomeFantasiaConvenioUnidade'); ?>" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="inside" id="subtipos">
+        <?php //echo $this->render("convenios/planos.phtml"); ?>
+    </div>
+    <!--    <div class="inside" id="trabalhoerendacoabitantes">
+    <?php //echo $this->render("cadastro/trabalhoerendacoabitantes.phtml"); ?>
+        </div>
+        <div class="inside" id="previdenciacoabitantes">
+    <?php //echo $this->render("cadastro/previdenciacoabitantes.phtml"); ?>
+        </div>
+        <div class="inside" id="participacaosocialcoabitantes">
+    <?php //echo $this->render("cadastro/participacaosocialcoabitantes.phtml"); ?>
+        </div>-->
+</div>

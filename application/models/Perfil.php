@@ -18,6 +18,44 @@ class Perfil extends Zend_Db_Table_Abstract {
         $this->_modelUsuario = new Usuario();
     }
     
+    public static function listarAutocomplete($nomePerfil) {
+        $perfil = new Perfil();
+        
+        $sql = $perfil->getAdapter()->select()
+                    ->from(array("p" => "perfil"), array("p.*"))
+                    ->where("p.nomePerfil LIKE '%$nomePerfil%'")
+                    ->order("p.nomePerfil ASC");
+        
+        $result = $perfil->getAdapter()->fetchAll($sql);
+
+        return $result;
+    }
+    
+    public static function buscar($codPerfil) {
+        $perfil = new Perfil();
+        
+        $sql = $perfil->getAdapter()->select()
+                    ->from(array("p" => "perfil"), array("p.*"))
+                    ->where("p.codPerfil = ?", $codPerfil);
+        
+        $result = $perfil->getAdapter()->fetchRow($sql);
+
+        return $result;
+    }
+    
+    public static function buscarIdPerfil($id) {
+        $pa = new PerfilAplicacaoModuloAcao();
+        $sql = $pa->getAdapter()->select()
+                                ->from(array("perfil_aplicacao"),
+                                        array("*"))
+                                ->where("codPerfil = ?", $id);
+
+        $result = $pa->getAdapter()->setFetchMode(Zend_Db::FETCH_OBJ);
+        $result = $pa->getAdapter()->fetchAll($sql);
+
+        return $result;
+    }
+    
     public function listar() {
         $sql = $this->getAdapter()->select()
                     ->from(array("perfil"), array("*"))
@@ -66,30 +104,29 @@ class Perfil extends Zend_Db_Table_Abstract {
         $this->getAdapter()->beginTransaction();
         
         $usuario = $this->add($dados);
-        $dados['id_usuario'] = $usuario;
+        $dados['codPerfil'] = $usuario;
         
         $this->_modelPerfilAplicacaoModuloAcao->inserir($dados);
         
         $this->getAdapter()->commit();
+        
+        return true;
     }
     
     private function add($dados) {
         $data = array(
-            'email' => $dados['email'],
-            'login' => $dados['login'],
-            'senha' => sha1($dados['senha']),
-            'id_trabalhador' => $dados['trabalhador']
+            'nomePerfil' => $dados['nomePerfil']
         );
         
         try {
             $this->insert($data);
-            $idUsuario = $this->getAdapter()->lastInsertId();
+            $idPerfil = $this->getAdapter()->lastInsertId();
         } catch (Zend_Exception $e) {
             $this->getAdapter()->rollBack();
-            throw new Zend_Exception("N&atilde;o foi possível cadastrar o usuário" . $e->getMessage());
+            throw new Zend_Exception("N&atilde;o foi possível cadastrar o perfil" . $e->getMessage());
         }
         
-        return $idUsuario;
+        return $idPerfil;
     }
     
     public function editar($dados) {
@@ -98,29 +135,25 @@ class Perfil extends Zend_Db_Table_Abstract {
         $this->getAdapter()->beginTransaction();
         
         $this->edit($dados);
-        $acao = "editar";
-        $this->_modelUsuarioAplicacaoModuloAcao->inserir($dados, $acao);
+        $this->_modelPerfilAplicacaoModuloAcao->inserir($dados);
         
         $this->getAdapter()->commit();
+        
+        return true;
     }
     
     private function edit($dados) {
         
         $data = array(
-            'email' => $dados['email'],
-            'login' => $dados['login']
+            'nomePerfil' => $dados['nomePerfil']
         );
         
-        if (isset($dados['senha'])) {
-            $data['senha'] = sha1($dados['senha']);
-        }
-        
         try {
-            $where = $this->getAdapter()->quoteInto("id = ?", $dados['id_usuario']);
+            $where = $this->getAdapter()->quoteInto("codPerfil = ?", $dados['codPerfil']);
             $this->update($data, $where);
         } catch (Zend_Exception $e) {
             $this->getAdapter()->rollBack();
-            throw new Zend_Exception("N&atilde;o foi possível editar os dados do usuário" . $e->getMessage());
+            throw new Zend_Exception("N&atilde;o foi possível editar os dados do perfil" . $e->getMessage());
         }
     }
     

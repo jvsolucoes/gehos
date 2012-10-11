@@ -9,12 +9,14 @@ class Clinica_ModuloController extends Zend_Controller_Action {
     private $_usuario;
     private $_modelModulo;
     private $_modelAcao;
+    private $_modelModuloAcao;
     
     public function init() {
         parent::init();
         
         $this->_modelModulo = new Modulo();
         $this->_modelAcao = new Acao();
+        $this->_modelModuloAcao = new ModuloAcao();
         
         if (!Usuario::isLogged()) {
             $this->_forward("index");
@@ -29,6 +31,8 @@ class Clinica_ModuloController extends Zend_Controller_Action {
         $this->_helper->layout()->disableLayout();
         $acoes = $this->_modelAcao->fetchAll(null, "nomeAcao ASC");
         $this->view->acoes = $acoes;
+        $modulos = $this->_modelModulo->fetchAll(null, "nomeModulo ASC");
+        $this->view->modulos = $modulos;
     }
     
     public function cadastrarAction() {
@@ -55,7 +59,7 @@ class Clinica_ModuloController extends Zend_Controller_Action {
         $result = $this->_modelModulo->listarAutocomplete($modulo);
         
         if ($result) {
-            $html = "<table id='div_".$input."' style='width: 100%;' class='listagem' >";
+            $html = "<table id='div_".$input."' style='width: 100%;' class='listagem' cellpadding='0' cellspacing='0' border='0'>";
             $cont = 0;
             foreach ($result as $r) {
                 $color = ($cont % 2 == 0) ? "bgcolor='#c4c4c4'" : "" ;
@@ -66,7 +70,7 @@ class Clinica_ModuloController extends Zend_Controller_Action {
                 
                 $html .= "  
                             </td>
-                            <td width='30px' id='excluir_".$input."'>
+                            <td width='30px' id='excluir_".$input."' modulo='" . $r['codModulo'] . "'>
                                 <img src='" . dirname($_SERVER['PHP_SELF']) . "/img/excluir_32x32.png' alt='' width='20px' />
                             </td>
                         </tr>";
@@ -96,6 +100,19 @@ class Clinica_ModuloController extends Zend_Controller_Action {
         die();
     }
     
+    public function buscarmoduloacaoAction() {
+        $modulo = $this->_request->getPost("idModulo");
+        $result = $this->_modelModuloAcao->buscarModulo($modulo);
+        
+        if ($result) {            
+            echo json_encode($result, true);
+        } else {
+            echo "naopassou";
+        }
+        
+        die();
+    }
+    
     public function excluirAction() {
         $modulo = $this->_request->getPost("idModulo");
         $result = $this->_modelModulo->excluir($modulo);
@@ -107,10 +124,6 @@ class Clinica_ModuloController extends Zend_Controller_Action {
         }
         
         die();
-    }
-    
-    public function apmoduloAction() {
-        
     }
     
 }

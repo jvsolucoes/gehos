@@ -1,0 +1,251 @@
+<?php
+$convenios = "";
+$count = 0;
+foreach ($this->convenios as $key => $convenio) {
+    $convenios .= "'".trim($convenio->codAnsConvenio)."'";
+    if ($count == count($this->convenios) - 1) {
+        $convenios .= "";
+    } else {
+        $convenios .= ", ";
+    }
+    $count++;
+}
+
+$unidades = "";
+$count = 0;
+foreach ($this->unidades as $key => $unidade) {
+    $unidades .= "'".trim($unidade->codUnidade)."'";
+    if ($count == count($this->unidades) - 1) {
+        $unidades .= "";
+    } else {
+        $unidades .= ", ";
+    }
+    $count++;
+}
+?>
+
+<script type="text/javascript" src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/js/jquery.meio.mask.js"></script>
+
+<script type="text/javascript">
+    $(function() {
+        var convenios = [<?php echo $convenios; ?>];
+        $( "#<?php Tab::tabIdEcho('codAnsConvenio'); ?>" ).autocomplete({
+            source: convenios
+        });
+        
+        var unidades = [<?php echo $unidades; ?>];
+        $( "#<?php Tab::tabIdEcho('codUnidade'); ?>" ).autocomplete({
+            source: unidades
+        });
+    });
+    
+    $(document).ready(function() {
+        $('input[type="text"]').setMask();
+        
+        $('#<?php Tab::tabIdEcho('pesquisaPlano'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisaPlano'); ?>").keyup(function(){
+            var palavra = $(this).val();
+            var input = $("#<?php Tab::tabIdEcho('listarPlanoInput'); ?>").val();
+            
+            if (palavra.length > 2) {
+                $.post(
+                    "<?php echo BASE_URL . '/clinica/plano/listar'; ?>", 
+                    {plano: palavra, input: input},
+                    function(data, status){
+                        if(status == 'success' && $.trim(data) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarPlanoInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarPlano'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarPlanoInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarPlano'); ?>");
+                        }
+                    }
+                ) 
+            }
+        })
+        
+        $("#<?php Tab::tabIdEcho('btn_gravarPlano'); ?>").click(function(){
+            var codAnsConvenio = $("#<?php Tab::tabIdEcho('codAnsConvenio'); ?>").val();
+            var codUnidade = $("#<?php Tab::tabIdEcho('codUnidade'); ?>").val();
+            
+            if (codAnsConvenio == "") {
+                alert("O campo código do convênio não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('codAnsConvenio'); ?>").focus();
+                return false;
+            }
+            if (codUnidade == ""){
+                 alert("O campo código da unidade não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('codUnidade'); ?>").focus();
+                return false;
+            }
+             
+            $.post(
+                "<?php echo BASE_URL . '/clinica/plano/cadastrar'; ?>", 
+                $("#<?php Tab::tabIdEcho('formPlano'); ?>").serialize(),
+                function(data, status){
+                    alert(data);
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+
+                    } else {
+
+                    }
+                }
+            );
+        });
+        
+        $("#excluir_<?php Tab::tabIdEcho('listarPlanoInput'); ?>").live("click", function() {
+            var codPlano = $(this).attr('plano');
+            var input = $("#<?php Tab::tabIdEcho('listarPlanoInput'); ?>").val();
+            $.post(
+                "<?php echo BASE_URL . '/clinica/plano/excluirplano'; ?>", 
+                {codPlano: codPlano},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        //método listar
+                        $.post(
+                        "<?php echo BASE_URL . '/clinica/plano/listar'; ?>", 
+                            {plano: data, input: input},
+                            function(data2, status){
+                                if(status == 'success' && $.trim(data2) != 'naopassou') {
+                                    $("#div_<?php Tab::tabIdEcho('listarPlanoInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarPlano'); ?>");
+                                } else {
+                                    $("#div_<?php Tab::tabIdEcho('listarPlanoInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarPlano'); ?>");
+                                }
+                            }
+                        );//fim metodo listar
+                        $(this).parent().remove();
+                    } else {
+                        alert("Não foi possível desativar o plano");
+                    }
+                }
+            );
+        });
+        
+        $("#ativar_<?php Tab::tabIdEcho('listarPlanoInput'); ?>").live("click", function() {
+            var codPlano = $(this).attr('plano');
+            var input = $("#<?php Tab::tabIdEcho('listarPlanoInput'); ?>").val();
+            $.post(
+                "<?php echo BASE_URL . '/clinica/plano/ativarplano'; ?>", 
+                {codPlano: codPlano},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        //método listar
+                        $.post(
+                        "<?php echo BASE_URL . '/clinica/plano/listar'; ?>", 
+                            {plano: data, input: input},
+                            function(data2, status){
+                                if(status == 'success' && $.trim(data2) != 'naopassou') {
+                                    $("#div_<?php Tab::tabIdEcho('listarPlanoInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarPlano'); ?>");
+                                } else {
+                                    $("#div_<?php Tab::tabIdEcho('listarPlanoInput'); ?>").remove();
+                                    $(data2).appendTo("#<?php Tab::tabIdEcho('listarPlano'); ?>");
+                                }
+                            }
+                        );//fim metodo listar
+                        $(this).parent().remove();
+                    } else {
+                        alert("Não foi possível ativar o plano");
+                    }
+                }
+            );
+        });
+        
+        $("#plano_<?php Tab::tabIdEcho('listarPlanoInput'); ?>").live("click", function() {
+            var codPlano = $(this).attr('plano');
+            $.post(
+                "<?php echo BASE_URL . '/clinica/plano/buscarplano'; ?>", 
+                {codPlano: codPlano},
+                function(data, status){
+                    alert(data);
+                    if(status == 'success' && $.trim(data) != 'naopassou') {                       
+                        
+                        $("#<?php Tab::tabIdEcho('codPlano'); ?>").val(codPlano);
+                        $("#<?php Tab::tabIdEcho('convenioSubmit'); ?>").val("Editar");
+                        $("#<?php Tab::tabIdEcho('codAnsConvenio'); ?>").val(data.codAnsConvenio);
+                        $("#<?php Tab::tabIdEcho('codUnidade'); ?>").val(data.codUnidade);
+                        $("#<?php Tab::tabIdEcho('nomePlano'); ?>").val(data.nomePlano);
+                    } else {
+                        
+                    }
+                },
+                'json'
+            );            
+        }); 
+    });
+</script> 
+
+<style type="text/css">
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+</style>
+
+<div id="<?php Tab::tabIdEcho('Plano_0_'); ?>">
+    <table>
+        <tr>
+            <td class="ts">Planos Cadastradas</td>
+            <td colspan="6" class="ts">Cadastro de Plano</td>
+        </tr>
+        <!-- LISTA -->
+        <tr>
+            <td class="tdLista" id="" width="300" style="vertical-align:top; ">
+                <!-- Lista -->
+                <table class="lista">
+                    <tbody>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <input type="text" class="pesquisa" name="pesquisaPlano" id="<?php Tab::tabIdEcho('pesquisaPlano'); ?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <div id="<?php Tab::tabIdEcho('listarPlano'); ?>">
+                                    <input type="hidden" id="<?php Tab::tabIdEcho('listarPlanoInput'); ?>" value="<?php Tab::tabIdEcho('listarPlanoInput'); ?>" />
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>
+                <form id="<?php Tab::tabIdEcho('formPlano'); ?>" method="post" onsubmit="return false;" action="<?php echo $this->url(array("controller" => "plano", "action" => "cadastrar")); ?>">
+                    <input type="hidden" name="planoSubmit" id="<?php Tab::tabIdEcho('planoSubmit'); ?>" value="" />
+                    <input type="hidden" name="codPlano" id="<?php Tab::tabIdEcho('codPlano'); ?>" value="" />
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="tn">Nome:</td>
+                                <td colspan="3"><input class="i3" type="text" name="nomePlano" id="<?php Tab::tabIdEcho('nomePlano'); ?>" /></td>				
+                            </tr>
+                            <tr>
+                                
+                            </tr>
+                            <tr>
+                                <td class="tn">Código Ans do Convênio:</td>
+                                <td><input class="i1" type="text" name="codAnsConvenio" id="<?php Tab::tabIdEcho('codAnsConvenio'); ?>"/></td>
+                                <td align="right" class="tn">Código da Unidade:</td>
+                                <td><input class="i1" type="text" name="codUnidade" id="<?php Tab::tabIdEcho('codUnidade'); ?>" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" style="text-align: right; padding-top: 20px;">
+                                    <div class="btn_c">
+                                        <div class="btn_e">
+                                            <div class="btn_d" onmouseover="" onmouseout="" id="<?php Tab::tabIdEcho('btn_gravarPlano'); ?>">
+                                                Gravar
+                                            </div>      
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>	
+                    </table>
+                </form>
+            </td>
+        </tr>	
+    </table>
+</div>

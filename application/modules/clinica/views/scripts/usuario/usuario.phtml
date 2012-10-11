@@ -1,24 +1,53 @@
+<?php
+$usuario = Zend_Auth::getInstance()->getIdentity();
+$perfis = $this->perfis;
+$empresas = $this->empresas;
+?>
 <link type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/cadastros.css" rel="stylesheet" rev="stylesheet"/>
+
+<style>
+    .ui-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* adjust styles for IE 6/7 */
+        height: 1.7em;
+        top: 0.1em;
+    }
+    .ui-combobox-input {
+        margin: 0;
+    }
+    
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+</style>
 
 <script type="text/javascript">
     $(document).ready(function() {
+        $(".<?php Tab::tabIdEcho('desativar'); ?>").hide();
+        $(".<?php Tab::tabIdEcho('motBloqueio'); ?>").hide();
+        
         $('#<?php Tab::tabIdEcho('pesquisa'); ?>').focus();
         
         $("#<?php Tab::tabIdEcho('pesquisa'); ?>").keyup(function(){
             var palavra = $(this).val();
-            var input = $("#<?php Tab::tabIdEcho('listarAcaoInput'); ?>").val();
+            var input = $("#<?php Tab::tabIdEcho('listarUsuarioInput'); ?>").val();
             
             if (palavra.length > 2) {
                 $.post(
-                    "<?php echo BASE_URL . '/clinica/acao/listar'; ?>", 
-                    {acao: palavra, input: input},
+                    "<?php echo BASE_URL . '/clinica/usuario/listar'; ?>", 
+                    {usuario: palavra, input: input},
                     function(data, status){
                         if(status == 'success' && $.trim(data) != 'naopassou') {
-                            $("#div_<?php Tab::tabIdEcho('listarAcaoInput'); ?>").remove();
-                            $(data).appendTo("#<?php Tab::tabIdEcho('listarAcao'); ?>");
+                            $("#div_<?php Tab::tabIdEcho('listarUsuarioInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarUsuario'); ?>");
                         } else {
-                            $("#div_<?php Tab::tabIdEcho('listarAcaoInput'); ?>").remove();
-                            $(data).appendTo("#<?php Tab::tabIdEcho('listarAcao'); ?>");
+                            $("#div_<?php Tab::tabIdEcho('listarUsuarioInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarUsuario'); ?>");
                         }
                     }
                 ) 
@@ -26,19 +55,19 @@
         })
         
         $("#<?php Tab::tabIdEcho('btn_gravar'); ?>").click(function(){
-            var nomeAcao = $("#<?php Tab::tabIdEcho('nomeAcao'); ?>").val();
-            if (nomeAcao == "") {
+            var nomeUsuario = $("#<?php Tab::tabIdEcho('nomeUsuario'); ?>").val();
+            if (nomeUsuario == "") {
                 alert("O campo nome não pode ficar vazio");
-                $("#<?php Tab::tabIdEcho('nomeAcao'); ?>").focus();
+                $("#<?php Tab::tabIdEcho('nomeUsuario'); ?>").focus();
                 return false;
             }
             $.post(
-                "<?php echo BASE_URL . '/clinica/acao/cadastrar'; ?>", 
-                $("#<?php Tab::tabIdEcho('formAcao'); ?>").serialize(),
+                "<?php echo BASE_URL . '/clinica/usuario/cadastrar'; ?>", 
+                $("#<?php Tab::tabIdEcho('formUsuario'); ?>").serialize(),
                 function(data, status){
                     alert(data);
                     if(status == 'success' && $.trim(data) != 'naopassou') {
-                        
+                        alert("Usuário cadastrado com sucesso!");
                     } else {
                         
                     }
@@ -46,35 +75,48 @@
             )
         })
         
-        $("#excluir_<?php Tab::tabIdEcho('listarAcaoInput'); ?>").live("click", function() {
-            var idAcao = $("#acao_<?php Tab::tabIdEcho('listarAcaoInput'); ?>").attr('acao');
-            
+        $("#usuario_<?php Tab::tabIdEcho('listarUsuarioInput'); ?>").live("click", function() {
+            var idUsuario = $(this).attr('usuario');
             $.post(
-                "<?php echo BASE_URL . '/clinica/acao/excluiracao'; ?>", 
-                {idAcao: idAcao},
+                "<?php echo BASE_URL . '/clinica/usuario/buscar'; ?>", 
+                {idUsuario: idUsuario},
                 function(data, status){
-                    alert(data);
+//                    alert(data);
                     if(status == 'success' && $.trim(data) != 'naopassou') {
-                        $(this).parent().remove();
-                        alert(data);
-                    } else {
+                        $(".<?php Tab::tabIdEcho('desativar'); ?>").show();
+                        $("#<?php Tab::tabIdEcho('codUsuario'); ?>").val(idUsuario);
+                        $("#<?php Tab::tabIdEcho('usuarioSubmit'); ?>").val("Editar");
+                        $("#<?php Tab::tabIdEcho('nomeUsuario'); ?>").val(data.nomeUsuario);
+                        $("#<?php Tab::tabIdEcho('emailUsuario'); ?>").val(data.emailUsuario);
+                        $("#<?php Tab::tabIdEcho('matriculaUsuario'); ?>").val(data.matriculaUsuario);
+                        $("#<?php Tab::tabIdEcho('loginUsuario'); ?>").val(data.loginUsuario);
+                        $("#<?php Tab::tabIdEcho('codUsuarioCadastrador'); ?>").val(data.codUsuarioCadastrou);
+                        $("#<?php Tab::tabIdEcho('empresa'); ?>").val(data.empresa);
+                        $("#<?php Tab::tabIdEcho('unidade'); ?>").val(data.nomeUnidade);
+                        $("#<?php Tab::tabIdEcho('perfil'); ?>").val(data.nomePerfil);
                         
-                    }
-                }
-            )
-        })
-        
-        $("#acao_<?php Tab::tabIdEcho('listarAcaoInput'); ?>").live("click", function() {
-            var idAcao = $(this).attr('acao');
-            $.post(
-                "<?php echo BASE_URL . '/clinica/acao/buscaracao'; ?>", 
-                {idAcao: idAcao},
-                function(data, status){
-                    
-                    if(status == 'success' && $.trim(data) != 'naopassou') {
-                        $("#<?php Tab::tabIdEcho('codAcao'); ?>").val(idAcao);
-                        $("#<?php Tab::tabIdEcho('acaoSubmit'); ?>").val("Editar");
-                        $("#<?php Tab::tabIdEcho('nomeAcao'); ?>").val(data.nomeAcao);
+                        if (data.dtBloqueioUsuario != null) {
+                            $("#<?php Tab::tabIdEcho('desativar'); ?>").attr("checked", true);
+                        }
+                        
+                        $("#<?php Tab::tabIdEcho('codEmpresa'); ?> option").each(function(){
+                            if ($(this).val() == data.codEmpresa) {
+                                $(this).attr("selected", true);
+                            }
+                        })
+                        
+                        $("#<?php Tab::tabIdEcho('codUnidade'); ?> option").each(function(){
+                            if ($(this).val() == data.codUnidade) {
+                                $(this).attr("selected", true);
+                            }
+                        })
+                        
+                        $("#<?php Tab::tabIdEcho('codPerfil'); ?> option").each(function(){
+                            if ($(this).val() == data.codPerfil) {
+                                $(this).attr("selected", true);
+                            }
+                        })
+                        
                     } else {
                         
                     }
@@ -84,25 +126,49 @@
             
         })
         
+        $("#<?php Tab::tabIdEcho('desativar'); ?>").live("click", function(){
+            if ($(this).attr('checked')) {
+                $(".<?php Tab::tabIdEcho('motBloqueio'); ?>").show();
+            } else {
+                $(".<?php Tab::tabIdEcho('motBloqueio'); ?>").hide();
+            }
+        });
+        
+        $("#<?php Tab::tabIdEcho('empresa'); ?>").live("blur", function() {
+            var codEmpresa = $("#<?php Tab::tabIdEcho('codEmpresa'); ?>").val();
+            var input = $("#<?php Tab::tabIdEcho('idUnidade'); ?>").val();
+            var id = <?php Tab::getTabId('unidade') ?>;
+            $.post(
+                "<?php echo BASE_URL . '/clinica/usuario/listarunidade'; ?>",
+                {codEmpresa: codEmpresa, input: input},
+                function(data, status){
+//                    alert(data);
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#<?php Tab::tabIdEcho('codUnidade'); ?>").remove();
+                        $(data).appendTo("#<?php Tab::tabIdEcho('divUnidade'); ?>");
+                        combo(id);
+                        $("#<?php Tab::tabIdEcho('unidade'); ?>").focus();
+
+                    } else {
+                        $("#<?php Tab::tabIdEcho('codUnidade'); ?>").remove();
+                        $('<select name="codUnidade" id="<?php Tab::tabIdEcho('codUnidade'); ?>">\n\
+                            <option value="">Selecione...</option>\n\
+                        </select>').appendTo("#<?php Tab::tabIdEcho('divUnidade'); ?>");
+                        combo(input);
+                        $("#<?php Tab::tabIdEcho('unidade'); ?>").focus();
+                    }
+                }
+            )
+        })
         
     })
 </script>
 
-<style type="text/css">
-    .listagem tr:hover {
-        background:#b5dbf8;
-        cursor: pointer;
-    } 
-    
-    
-    
-</style>
-
-<div id="<?php Tab::tabIdEcho('acao_0_'); ?>">
+<div id="<?php Tab::tabIdEcho('usuario_0_'); ?>">
     <table>
         <tr>
-            <td class="ts">Ações Cadastrados</td>
-            <td colspan="6" class="ts">Cadastro de Ações</td>
+            <td class="ts">Usuários Cadastrados</td>
+            <td colspan="6" class="ts">Cadastro de Usuários</td>
         </tr>
         <!-- LISTA -->
         <tr>
@@ -117,8 +183,8 @@
                         </tr>
                         <tr>
                             <td style="vertical-align: top;">
-                                <div id="<?php Tab::tabIdEcho('listarAcao'); ?>">
-                                    <input type="hidden" id="<?php Tab::tabIdEcho('listarAcaoInput'); ?>" value="<?php Tab::tabIdEcho('listarAcaoInput'); ?>" />
+                                <div id="<?php Tab::tabIdEcho('listarUsuario'); ?>">
+                                    <input type="hidden" id="<?php Tab::tabIdEcho('listarUsuarioInput'); ?>" value="<?php Tab::tabIdEcho('listarUsuarioInput'); ?>" />
                                 </div>
                             </td>
                         </tr>
@@ -126,15 +192,108 @@
                 </table>
             </td>
             <td style="vertical-align: top;">
-                <form id="<?php Tab::tabIdEcho('formAcao'); ?>" method="post" onsubmit="return false;" action="<?php echo $this->url(array("controller" => "acao", "action" => "acao")); ?>">
-                    <input type="hidden" name="codAcao" id="<?php Tab::tabIdEcho('codAcao'); ?>" value="" />
-                    <input type="hidden" name="acaoSubmit" id="<?php Tab::tabIdEcho('acaoSubmit'); ?>" value="" />
+                <form id="<?php Tab::tabIdEcho('formUsuario'); ?>" method="post" onsubmit="return false;">
+                    <input type="hidden" name="codUsuario" id="<?php Tab::tabIdEcho('codUsuario'); ?>" value="" />
+                    <input type="hidden" name="usuarioSubmit" id="<?php Tab::tabIdEcho('usuarioSubmit'); ?>" value="" />
+                    <input type="hidden" name="codUsuarioCadastrador" 
+                           id="<?php Tab::tabIdEcho('codUsuarioCadastrador'); ?>" 
+                           value="<?php echo $usuario->codUsuario;  ?>" />
                     <table>
                         <tbody>
                             <tr>
-                                <td class="tn">Nome:</td>
+                                <td class="tn">Login:</td>
+                                <td colspan="3">
+                                    <input class="i3" type="text" name="loginUsuario" id="<?php Tab::tabIdEcho('loginUsuario'); ?>" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Senha:</td>
                                 <td>
-                                    <input class="i3" type="text" name="nomeAcao" id="<?php Tab::tabIdEcho('nomeAcao'); ?>" value="" />
+                                    <input class="i1" type="password" name="hashSenhaUsuario" id="<?php Tab::tabIdEcho('hashSenhaUsuario'); ?>"/>
+                                </td>
+                                <td align="right" class="tn">Confirme senha:</td>
+                                <td align="right">
+                                    <input class="i1" type="password" name="confirmeSenha" id="<?php Tab::tabIdEcho('confirmeSenha'); ?>" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Nome:</td>
+                                <td colspan="3">
+                                    <input class="i3" type="text" name="nomeUsuario" id="<?php Tab::tabIdEcho('nomeUsuario'); ?>" value="" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Email:</td>
+                                <td colspan="3">
+                                    <input class="i3" type="text" name="emailUsuario" id="<?php Tab::tabIdEcho('emailUsuario'); ?>" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Empresa:</td>
+                                <td>
+                                    <div>
+                                        <div class="ui-widget">
+                                            <select name="codEmpresa" id="<?php Tab::tabIdEcho('codEmpresa'); ?>">
+                                                <option value="" >Selecione...</option>
+                                                <?php
+                                                foreach ($empresas as $empresa) {
+                                                ?>
+                                                    <option value="<?php echo $empresa->codEmpresa; ?>"><?php echo $empresa->nomeFantasiaEmpresa; ?></option>
+                                                <?php
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td align="right" class="tn">Unidade:</td>
+                                <td align="right">
+                                    <div>
+                                        <div class="ui-widget" id="<?php Tab::tabIdEcho('divUnidade'); ?>">
+                                            <input type="hidden" name="idUnidade" 
+                                                   id="<?php Tab::tabIdEcho('idUnidade'); ?>" 
+                                                   value="<?php Tab::tabIdEcho('codUnidade'); ?>" />
+                                            
+                                            <select name="codUnidade" id="<?php Tab::tabIdEcho('codUnidade'); ?>">
+                                                <option value="" >Selecione...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tn">Matricula:</td>
+                                <td>
+                                    <input class="i1" type="text" name="matriculaUsuario" id="<?php Tab::tabIdEcho('matriculaUsuario'); ?>" />
+                                </td>
+                                <td class="tn">Perfil:</td>
+                                <td>
+                                    <div>
+                                        <div class="ui-widget">
+                                            <select name="codPerfil" id="<?php Tab::tabIdEcho('codPerfil'); ?>">
+                                                <option value="" >Selecione...</option>
+                                                <?php
+                                                foreach ($perfis as $perfil) {
+                                                ?>
+                                                    <option value="<?php echo $perfil->codPerfil; ?>"><?php echo $perfil->nomePerfil; ?></option>
+                                                <?php
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tn <?php Tab::tabIdEcho('desativar'); ?>">Desativar:</td>
+                                <td class="<?php Tab::tabIdEcho('desativar'); ?>" colspan="3">
+                                    <input type="checkbox" name="desativar" id="<?php Tab::tabIdEcho('desativar'); ?>" value="1" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tn <?php Tab::tabIdEcho('motBloqueio'); ?>">Motivo do Bloqueio:</td>
+                                <td class="<?php Tab::tabIdEcho('motBloqueio'); ?>" colspan="3">
+                                    <input class="i3" type="text" name="motBloqueioUsuario" id="<?php Tab::tabIdEcho('motBloqueioUsuario'); ?>" value="" />
                                 </td>
                             </tr>
 
@@ -157,3 +316,464 @@
         </tr>
     </table>
 </div>
+
+<script type="text/javascript">
+    (function($) {
+        $.widget( "ui.combobox", {
+            _create: function() {
+                var input,
+                    self = this,
+                    select = this.element.hide(),
+                    selected = select.children( ":selected" ),
+                    value = selected.val() ? selected.text() : "",
+                    wrapper = this.wrapper = $( "<span>" )
+                            .addClass( "ui-combobox" )
+                            .insertAfter( select );
+
+                input = $("<input id='<?php Tab::tabIdEcho('perfil'); ?>' class='i1'>")
+                    .appendTo(wrapper)
+                    .val(value)
+                    .addClass( "ui-state-default ui-combobox-input" )
+                    .autocomplete({
+                            delay: 0,
+                            minLength: 0,
+                            source: function( request, response ) {
+                                    var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+                                    response( select.children( "option" ).map(function() {
+                                        var text = $( this ).text();
+                                        if ( this.value && ( !request.term || matcher.test(text) ) )
+                                            return {
+                                                label: text.replace(
+                                                    new RegExp(
+                                                        "(?![^&;]+;)(?!<[^<>]*)(" +
+                                                        $.ui.autocomplete.escapeRegex(request.term) +
+                                                        ")(?![^<>]*>)(?![^&;]+;)", "gi"
+                                                    ), "<strong>$1</strong>" ),
+                                                value: text,
+                                                option: this
+                                            };
+                                    }) );
+                            },
+                            select: function( event, ui ) {
+                                    ui.item.option.selected = true;
+                                    self._trigger( "selected", event, {
+                                        item: ui.item.option
+                                    });
+                            },
+                            change: function( event, ui ) {
+                                    if ( !ui.item ) {
+                                            var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" ),
+                                                    valid = false;
+                                            select.children( "option" ).each(function() {
+                                                    if ( $( this ).text().match( matcher ) ) {
+                                                            this.selected = valid = true;
+                                                            return false;
+                                                    }
+                                            });
+                                            if ( !valid ) {
+                                                    // remove invalid value, as it didn't match anything
+                                                    $( this ).val( "" );
+                                                    select.val( "" );
+                                                    input.data( "autocomplete" ).term = "";
+                                                    return false;
+                                            }
+                                    }
+                            }
+                    })
+                    .addClass( "ui-widget ui-widget-content ui-corner-left" );
+
+                input.data( "autocomplete" )._renderItem = function( ul, item ) {
+                    return $( "<li></li>" )
+                            .data( "item.autocomplete", item )
+                            .append( "<a>" + item.label + "</a>" )
+                            .appendTo( ul );
+                };
+
+                $("<a>")
+                    .attr( "tabIndex", -1 )
+                    .attr( "title", "Show All Items" )
+                    .appendTo( wrapper )
+//                        .button({
+//                                icons: {
+//                                        primary: "ui-icon-triangle-1-s"
+//                                },
+//                                text: false
+//                        })
+                    .removeClass( "ui-corner-all" )
+                    .addClass( "ui-corner-right ui-combobox-toggle" )
+                    .click(function() {
+                        // close if already visible
+                        if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
+                            input.autocomplete( "close" );
+                            return;
+                        }
+
+                        // work around a bug (likely same cause as #5265)
+                        $( this ).blur();
+
+                        // pass empty string as value to search for, displaying all results
+                        input.autocomplete( "search", "" );
+                        input.focus();
+                    });
+            },
+
+            destroy: function() {
+                this.wrapper.remove();
+                this.element.show();
+                $.Widget.prototype.destroy.call( this );
+            }
+        });
+    })(jQuery);
+    
+    $(function() {
+        $( "#<?php Tab::tabIdEcho('codPerfil'); ?>" ).combobox();
+        $( "#toggle" ).click(function() {
+            $( "#<?php Tab::tabIdEcho('codPerfil'); ?>" ).toggle();
+        });
+    });
+    
+    (function($) {
+        $.widget( "ui.combobox", {
+            _create: function() {
+                var input,
+                    self = this,
+                    select = this.element.hide(),
+                    selected = select.children( ":selected" ),
+                    value = selected.val() ? selected.text() : "",
+                    wrapper = this.wrapper = $( "<span>" )
+                            .addClass( "ui-combobox" )
+                            .insertAfter( select );
+
+                input = $("<input id='<?php Tab::tabIdEcho('empresa'); ?>' class='i1'>")
+                    .appendTo(wrapper)
+                    .val(value)
+                    .addClass( "ui-state-default ui-combobox-input" )
+                    .autocomplete({
+                            delay: 0,
+                            minLength: 0,
+                            source: function( request, response ) {
+                                    var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+                                    response( select.children( "option" ).map(function() {
+                                        var text = $( this ).text();
+                                        if ( this.value && ( !request.term || matcher.test(text) ) )
+                                            return {
+                                                label: text.replace(
+                                                    new RegExp(
+                                                        "(?![^&;]+;)(?!<[^<>]*)(" +
+                                                        $.ui.autocomplete.escapeRegex(request.term) +
+                                                        ")(?![^<>]*>)(?![^&;]+;)", "gi"
+                                                    ), "<strong>$1</strong>" ),
+                                                value: text,
+                                                option: this
+                                            };
+                                    }) );
+                            },
+                            select: function( event, ui ) {
+                                    ui.item.option.selected = true;
+                                    self._trigger( "selected", event, {
+                                        item: ui.item.option
+                                    });
+                            },
+                            change: function( event, ui ) {
+                                    if ( !ui.item ) {
+                                            var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" ),
+                                                    valid = false;
+                                            select.children( "option" ).each(function() {
+                                                    if ( $( this ).text().match( matcher ) ) {
+                                                            this.selected = valid = true;
+                                                            return false;
+                                                    }
+                                            });
+                                            if ( !valid ) {
+                                                    // remove invalid value, as it didn't match anything
+                                                    $( this ).val( "" );
+                                                    select.val( "" );
+                                                    input.data( "autocomplete" ).term = "";
+                                                    return false;
+                                            }
+                                    }
+                            }
+                    })
+                    .addClass( "ui-widget ui-widget-content ui-corner-left" );
+
+                input.data( "autocomplete" )._renderItem = function( ul, item ) {
+                    return $( "<li></li>" )
+                            .data( "item.autocomplete", item )
+                            .append( "<a>" + item.label + "</a>" )
+                            .appendTo( ul );
+                };
+
+                $("<a>")
+                    .attr( "tabIndex", -1 )
+                    .attr( "title", "Show All Items" )
+                    .appendTo( wrapper )
+//                        .button({
+//                                icons: {
+//                                        primary: "ui-icon-triangle-1-s"
+//                                },
+//                                text: false
+//                        })
+                    .removeClass( "ui-corner-all" )
+                    .addClass( "ui-corner-right ui-combobox-toggle" )
+                    .click(function() {
+                        // close if already visible
+                        if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
+                            input.autocomplete( "close" );
+                            return;
+                        }
+
+                        // work around a bug (likely same cause as #5265)
+                        $( this ).blur();
+
+                        // pass empty string as value to search for, displaying all results
+                        input.autocomplete( "search", "" );
+                        input.focus();
+                    });
+            },
+
+            destroy: function() {
+                this.wrapper.remove();
+                this.element.show();
+                $.Widget.prototype.destroy.call( this );
+            }
+        });
+    })(jQuery);
+    
+    $(function() {
+        $( "#<?php Tab::tabIdEcho('codEmpresa'); ?>" ).combobox();
+        $( "#toggle" ).click(function() {
+            $( "#<?php Tab::tabIdEcho('codEmpresa'); ?>" ).toggle();
+        });
+    });
+    
+    (function($) {
+        $.widget( "ui.combobox", {
+            _create: function() {
+                var input,
+                    self = this,
+                    select = this.element.hide(),
+                    selected = select.children( ":selected" ),
+                    value = selected.val() ? selected.text() : "",
+                    wrapper = this.wrapper = $( "<span>" )
+                            .addClass( "ui-combobox" )
+                            .insertAfter( select );
+
+                input = $("<input id='<?php Tab::tabIdEcho('unidade'); ?>' class='i1'>")
+                    .appendTo(wrapper)
+                    .val(value)
+                    .addClass( "ui-state-default ui-combobox-input" )
+                    .autocomplete({
+                            delay: 0,
+                            minLength: 0,
+                            source: function( request, response ) {
+                                    var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+                                    response( select.children( "option" ).map(function() {
+                                        var text = $( this ).text();
+                                        if ( this.value && ( !request.term || matcher.test(text) ) )
+                                            return {
+                                                label: text.replace(
+                                                    new RegExp(
+                                                        "(?![^&;]+;)(?!<[^<>]*)(" +
+                                                        $.ui.autocomplete.escapeRegex(request.term) +
+                                                        ")(?![^<>]*>)(?![^&;]+;)", "gi"
+                                                    ), "<strong>$1</strong>" ),
+                                                value: text,
+                                                option: this
+                                            };
+                                    }) );
+                            },
+                            select: function( event, ui ) {
+                                    ui.item.option.selected = true;
+                                    self._trigger( "selected", event, {
+                                        item: ui.item.option
+                                    });
+                            },
+                            change: function( event, ui ) {
+                                    if ( !ui.item ) {
+                                            var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" ),
+                                                    valid = false;
+                                            select.children( "option" ).each(function() {
+                                                    if ( $( this ).text().match( matcher ) ) {
+                                                            this.selected = valid = true;
+                                                            return false;
+                                                    }
+                                            });
+                                            if ( !valid ) {
+                                                    // remove invalid value, as it didn't match anything
+                                                    $( this ).val( "" );
+                                                    select.val( "" );
+                                                    input.data( "autocomplete" ).term = "";
+                                                    return false;
+                                            }
+                                    }
+                            }
+                    })
+                    .addClass( "ui-widget ui-widget-content ui-corner-left" );
+
+                input.data( "autocomplete" )._renderItem = function( ul, item ) {
+                    return $( "<li></li>" )
+                            .data( "item.autocomplete", item )
+                            .append( "<a>" + item.label + "</a>" )
+                            .appendTo( ul );
+                };
+
+                $("<a>")
+                    .attr( "tabIndex", -1 )
+                    .attr( "title", "Show All Items" )
+                    .appendTo( wrapper )
+//                        .button({
+//                                icons: {
+//                                        primary: "ui-icon-triangle-1-s"
+//                                },
+//                                text: false
+//                        })
+                    .removeClass( "ui-corner-all" )
+                    .addClass( "ui-corner-right ui-combobox-toggle" )
+                    .click(function() {
+                        // close if already visible
+                        if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
+                            input.autocomplete( "close" );
+                            return;
+                        }
+
+                        // work around a bug (likely same cause as #5265)
+                        $( this ).blur();
+
+                        // pass empty string as value to search for, displaying all results
+                        input.autocomplete( "search", "" );
+                        input.focus();
+                    });
+            },
+
+            destroy: function() {
+                this.wrapper.remove();
+                this.element.show();
+                $.Widget.prototype.destroy.call( this );
+            }
+        });
+    })(jQuery);
+
+    $(function() {
+        $("#<?php Tab::tabIdEcho('codUnidade'); ?>").combobox();
+        $("#toggle" ).live("click", function() {
+            $("#<?php Tab::tabIdEcho('codUnidade'); ?>").toggle();
+        });
+    });
+    
+    function combo(id) {
+        (function($) {
+            $.widget( "ui.combobox", {
+                _create: function() {
+                    var input,
+                        self = this,
+                        select = this.element.hide(),
+                        selected = select.children( ":selected" ),
+                        value = selected.val() ? selected.text() : "",
+                        wrapper = this.wrapper = $( "<span>" )
+                                .addClass( "ui-combobox" )
+                                .insertAfter( select );
+
+                    input = $("<input id='<?php Tab::tabIdEcho('unidade'); ?>' class='i1'>")
+                        .appendTo(wrapper)
+                        .val(value)
+                        .addClass( "ui-state-default ui-combobox-input" )
+                        .autocomplete({
+                                delay: 0,
+                                minLength: 0,
+                                source: function( request, response ) {
+                                        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+                                        response( select.children( "option" ).map(function() {
+                                            var text = $( this ).text();
+                                            if ( this.value && ( !request.term || matcher.test(text) ) )
+                                                return {
+                                                    label: text.replace(
+                                                        new RegExp(
+                                                            "(?![^&;]+;)(?!<[^<>]*)(" +
+                                                            $.ui.autocomplete.escapeRegex(request.term) +
+                                                            ")(?![^<>]*>)(?![^&;]+;)", "gi"
+                                                        ), "<strong>$1</strong>" ),
+                                                    value: text,
+                                                    option: this
+                                                };
+                                        }) );
+                                },
+                                select: function( event, ui ) {
+                                        ui.item.option.selected = true;
+                                        self._trigger( "selected", event, {
+                                            item: ui.item.option
+                                        });
+                                },
+                                change: function( event, ui ) {
+                                        if ( !ui.item ) {
+                                                var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" ),
+                                                        valid = false;
+                                                select.children( "option" ).each(function() {
+                                                        if ( $( this ).text().match( matcher ) ) {
+                                                                this.selected = valid = true;
+                                                                return false;
+                                                        }
+                                                });
+                                                if ( !valid ) {
+                                                        // remove invalid value, as it didn't match anything
+                                                        $( this ).val( "" );
+                                                        select.val( "" );
+                                                        input.data( "autocomplete" ).term = "";
+                                                        return false;
+                                                }
+                                        }
+                                }
+                        })
+                        .addClass( "ui-widget ui-widget-content ui-corner-left" );
+
+                    input.data( "autocomplete" )._renderItem = function( ul, item ) {
+                        return $( "<li></li>" )
+                                .data( "item.autocomplete", item )
+                                .append( "<a>" + item.label + "</a>" )
+                                .appendTo( ul );
+                    };
+
+                    $("<a>")
+                        .attr( "tabIndex", -1 )
+                        .attr( "title", "Show All Items" )
+                        .appendTo( wrapper )
+    //                        .button({
+    //                                icons: {
+    //                                        primary: "ui-icon-triangle-1-s"
+    //                                },
+    //                                text: false
+    //                        })
+                        .removeClass( "ui-corner-all" )
+                        .addClass( "ui-corner-right ui-combobox-toggle" )
+                        .click(function() {
+                            // close if already visible
+                            if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
+                                input.autocomplete( "close" );
+                                return;
+                            }
+
+                            // work around a bug (likely same cause as #5265)
+                            $( this ).blur();
+
+                            // pass empty string as value to search for, displaying all results
+                            input.autocomplete( "search", "" );
+                            input.focus();
+                        });
+                },
+
+                destroy: function() {
+                    this.wrapper.remove();
+                    this.element.show();
+                    $.Widget.prototype.destroy.call( this );
+                }
+            });
+        })(jQuery);
+
+        $(function() {
+            $("#<?php Tab::tabIdEcho('codUnidade'); ?>").combobox();
+            $("#toggle" ).live("click", function() {
+                $("#<?php Tab::tabIdEcho('codUnidade'); ?>").toggle();
+            });
+        });
+    }
+    
+</script>

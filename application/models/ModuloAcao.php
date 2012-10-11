@@ -40,6 +40,20 @@ class ModuloAcao extends Zend_Db_Table_Abstract {
         
     }
     
+    public static function buscarModulo($modulo) {
+        $ma = new ModuloAcao();
+        
+        $sql = $ma->getAdapter()->select()
+                                ->from(array("modulo_acao"),
+                                        array('*'))
+                                ->where("codModulo = ? ", $modulo);
+
+        $result = $ma->getAdapter()->fetchAll($sql);
+
+        return $result;
+        
+    }
+    
     public function inserir($dados) {
         
         $existe = $this->fetchAll("codModulo = " . $dados['codModulo']);

@@ -53,7 +53,7 @@ class Clinica_AcaoController extends Zend_Controller_Action {
         $result = $this->_modelAcao->listarAutocomplete($acao);
         
         if ($result) {
-            $html = "<table id='div_".$input."' style='width: 100%;' class='listagem' >";
+            $html = "<table id='div_".$input."' style='width: 100%;' class='listagem' cellpadding='0' cellspacing='0' border='0'>";
             $cont = 0;
             foreach ($result as $r) {
                 $color = ($cont % 2 == 0) ? "bgcolor='#c4c4c4'" : "" ;
@@ -96,8 +96,7 @@ class Clinica_AcaoController extends Zend_Controller_Action {
     
     public function excluiracaoAction() {
         $acao = $this->_request->getPost("idAcao");
-        var_dump($acao);
-        die();
+        
         $result = $this->_modelAcao->excluir($acao);
         
         if ($result) {            

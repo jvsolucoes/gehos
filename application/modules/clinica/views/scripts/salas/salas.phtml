@@ -1,0 +1,160 @@
+<?php
+$usuario = Zend_Auth::getInstance()->getIdentity();
+?>
+<link type="text/css" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/css/cadastros.css" rel="stylesheet" rev="stylesheet"/>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("input, select, textarea").attr("autocomplete", "off");
+        
+        $('#<?php Tab::tabIdEcho('pesquisa'); ?>').focus();
+        
+        $("#<?php Tab::tabIdEcho('pesquisa'); ?>").keyup(function(){
+            var palavra = $(this).val();
+            var input = $("#<?php Tab::tabIdEcho('listarSalaInput'); ?>").val();
+            
+            if (palavra.length > 2) {
+                $.post(
+                    "<?php echo BASE_URL . '/clinica/salas/listar'; ?>", 
+                    {unidade: <?php echo $usuario->codUnidade ?>, sala: palavra, input: input},
+                    function(data, status){
+                        if(status == 'success' && $.trim(data) != 'naopassou') {
+                            $("#div_<?php Tab::tabIdEcho('listarSalaInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarSala'); ?>");
+                        } else {
+                            $("#div_<?php Tab::tabIdEcho('listarSalaInput'); ?>").remove();
+                            $(data).appendTo("#<?php Tab::tabIdEcho('listarSala'); ?>");
+                        }
+                    }
+                ) 
+            }
+        })
+        
+        $("#<?php Tab::tabIdEcho('btn_gravar'); ?>").click(function(){
+            var nomeSala = $("#<?php Tab::tabIdEcho('nomeSala'); ?>").val();
+            if (nomeSala == "") {
+                alert("O campo nome não pode ficar vazio");
+                $("#<?php Tab::tabIdEcho('nomeSala'); ?>").focus();
+                return false;
+            }
+            $.post(
+                "<?php echo BASE_URL . '/clinica/salas/cadastrar'; ?>", 
+                $("#<?php Tab::tabIdEcho('formSala'); ?>").serialize(),
+                function(data, status){
+                    alert(data);
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        alert("Sala registrada com sucesso!");
+                    } else {
+                        
+                    }
+                }
+            )
+        })
+        
+        $("#excluir_<?php Tab::tabIdEcho('listarSalaInput'); ?>").live("click", function() {
+            var sala = $("#acao_<?php Tab::tabIdEcho('listarSalaInput'); ?>").attr('sala');
+            
+            $.post(
+                "<?php echo BASE_URL . '/clinica/salas/excluir'; ?>", 
+                {sala: sala},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $(this).parent().remove();
+                        alert(data);
+                    } else {
+                        
+                    }
+                }
+            )
+        })
+        
+        $("#sala_<?php Tab::tabIdEcho('listarSalaInput'); ?>").live("click", function() {
+            var sala = $(this).attr('sala');
+            $.post(
+                "<?php echo BASE_URL . '/clinica/salas/buscar'; ?>", 
+                {sala: sala},
+                function(data, status){
+                    if(status == 'success' && $.trim(data) != 'naopassou') {
+                        $("#<?php Tab::tabIdEcho('codUnidadeSala'); ?>").val(sala);
+                        $("#<?php Tab::tabIdEcho('salaSubmit'); ?>").val("Editar");
+                        $("#<?php Tab::tabIdEcho('nomeSala'); ?>").val(data.nomeSala);
+                    } else {
+                        
+                    }
+                },
+                'json'
+            )
+            
+        })
+        
+        
+    })
+</script>
+
+<style type="text/css">
+    .listagem tr:hover {
+        background:#b5dbf8;
+        cursor: pointer;
+    } 
+</style>
+
+<div id="<?php Tab::tabIdEcho('sala_0_'); ?>">
+    <table>
+        <tr>
+            <td class="ts">Salas Cadastrados</td>
+            <td colspan="6" class="ts">Cadastro de Salas</td>
+        </tr>
+        <!-- LISTA -->
+        <tr>
+            <td class="tdLista" id="" width="300" style="vertical-align:top; ">
+                <!-- Lista -->
+                <table class="lista">
+                    <tbody>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <input type="text" class="pesquisa" name="pesquisa" id="<?php Tab::tabIdEcho('pesquisa'); ?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <div id="<?php Tab::tabIdEcho('listarSala'); ?>">
+                                    <input type="hidden" id="<?php Tab::tabIdEcho('listarSalaInput'); ?>" value="<?php Tab::tabIdEcho('listarSalaInput'); ?>" />
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td style="vertical-align: top;">
+                <form id="<?php Tab::tabIdEcho('formSala'); ?>" method="post" onsubmit="return false;">
+                    <input type="hidden" name="codUnidadeSala" id="<?php Tab::tabIdEcho('codUnidadeSala'); ?>" value="" />
+                    <input type="hidden" name="codUnidade" id="<?php Tab::tabIdEcho('codUnidade'); ?>" value="<?php echo $usuario->codUnidade;?>" />
+                    <input type="hidden" name="salaSubmit" id="<?php Tab::tabIdEcho('salaSubmit'); ?>" value="" />
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="tn">Nome:</td>
+                                <td>
+                                    <input class="i3" type="text" name="nomeSala" id="<?php Tab::tabIdEcho('nomeSala'); ?>" value="" />
+                                </td>
+                            </tr>
+
+                            <!-- Botão do formulário -->
+                            <tr>
+                                <td colspan="4" style="text-align: right; padding-top: 20px;">
+                                    <div class="btn_c">
+                                        <div class="btn_e">
+                                            <div class="btn_d" onmouseover="" onmouseout="" id="<?php Tab::tabIdEcho('btn_gravar'); ?>">
+                                                Gravar
+                                            </div>      
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>

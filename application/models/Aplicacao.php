@@ -16,6 +16,19 @@ class Aplicacao extends Zend_Db_Table_Abstract {
         $this->_modelAplicacaoModulo = new AplicacaoModulo();
     }
     
+    public static function listarAutocomplete($nomeAplicacao) {
+        $aplicacao = new Aplicacao();
+        
+        $sql = $aplicacao->getAdapter()->select()
+                    ->from(array("a" => "aplicacao"), array("a.*"))
+                    ->where("a.nomeAplicacao LIKE '%$nomeAplicacao%'")
+                    ->order("a.nomeAplicacao ASC");        
+        
+        $result = $aplicacao->getAdapter()->fetchAll($sql);
+
+        return $result;
+    }
+    
     public static function listar() {
 
         $aplicacao = new Aplicacao();
@@ -45,6 +58,18 @@ class Aplicacao extends Zend_Db_Table_Abstract {
 
         return $result;
     }
+    
+    public static function buscar($codAplicacao) {
+        $aplicacao = new Aplicacao();
+        
+        $sql = $aplicacao->getAdapter()->select()
+                    ->from(array("a" => "aplicacao"), array("a.*"))
+                    ->where("a.codAplicacao = ?", $codAplicacao);
+        
+        $result = $aplicacao->getAdapter()->fetchRow($sql);
+
+        return $result;
+    }    
 
     public static function buscarId($id) {
         $aplicacao = new Aplicacao();
@@ -60,7 +85,7 @@ class Aplicacao extends Zend_Db_Table_Abstract {
         return $result;
     }
     
-    public function inserir($dados) {
+    public static function inserir($dados) {
         $this->inicializar();
         
         $this->getAdapter()->beginTransaction();
@@ -72,12 +97,13 @@ class Aplicacao extends Zend_Db_Table_Abstract {
         
         $this->getAdapter()->commit();
         
+        return true;
     }
     
     private function add($dados) {
         $data = array(
-            'nomeAplicacao' => $dados['descricao'],
-            'linkAplicacao' => Functions::gerarLink($dados['descricao'])
+            'nomeAplicacao' => $dados['nomeAplicacao'],
+            'linkAplicacao' => Functions::gerarLink($dados['nomeAplicacao'])
         );
         
         try {
@@ -97,16 +123,17 @@ class Aplicacao extends Zend_Db_Table_Abstract {
         $this->getAdapter()->beginTransaction();
         
         $this->edit($dados);
-        $acao = "editar";
-        $this->_modelAplicacaoModulo->inserir($dados, $acao);
+        $this->_modelAplicacaoModulo->inserir($dados);
         
         $this->getAdapter()->commit();
+        
+        return true;
     }
     
     private function edit($dados) {
         $data = array(
-            'nomeAplicacao' => $dados['descricao'],
-            'linkAplicacao' => Functions::gerarLink($dados['descricao'])
+            'nomeAplicacao' => $dados['nomeAplicacao'],
+            'linkAplicacao' => Functions::gerarLink($dados['nomeAplicacao'])
         );
         
         try {

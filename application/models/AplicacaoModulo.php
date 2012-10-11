@@ -12,18 +12,31 @@ class AplicacaoModulo extends Zend_Db_Table_Abstract {
     protected $_referenceMap = array(
         'Aplicacao' => array(
             'refTableClass' => 'Aplicacao',
-            'refColumns' => 'id',
+            'refColumns' => 'codAplicacao',
             'columns' => 'codAplicacao',
             'onDelete' => self::CASCADE
         ),
         'Modulo' => array(
             'refTableClass' => 'Modulo',
-            'refColumns' => 'id',
+            'refColumns' => 'codModulo',
             'columns' => 'codModulo',
             'onDelete' => self::CASCADE
         )
     );
     
+    public static function buscarAplicacao($codAplicacao) {
+        $am = new AplicacaoModulo();
+        
+        $sql = $am->getAdapter()->select()
+                                ->from(array("aplicacao_modulo"),
+                                        array('*'))
+                                ->where("codAplicacao = ? ", $codAplicacao);
+
+        $result = $am->getAdapter()->fetchAll($sql);
+
+        return $result;
+        
+    }
     
     public static function listarCategoria($aplicacao) {
         
@@ -72,9 +85,11 @@ class AplicacaoModulo extends Zend_Db_Table_Abstract {
         
     }
     
-    public function inserir($dados, $acao = NULL) {
+    public function inserir($dados) {
         
-        if ($acao == "editar") {
+        $existe = $this->fetchAll("codAplicacao = " . $dados['codAplicacao']);
+        
+        if ($existe->count() > 0) {
             $where = $this->getAdapter()->quoteInto("codAplicacao = ?", $dados['codAplicacao']);
             $this->delete($where);
         }

@@ -88,7 +88,8 @@ class Acao extends Zend_Db_Table_Abstract {
     }
     
     public static function editar($dados) {
-        $this->getAdapter()->beginTransaction();
+        $acao = new Acao();
+        $acao->getAdapter()->beginTransaction();
         
         $data = array(
             'nomeAcao' => $dados['nomeAcao'],
@@ -96,14 +97,16 @@ class Acao extends Zend_Db_Table_Abstract {
         );
         
         try {
-            $where = $this->getAdapter()->quoteInto("codAcao = ?", $dados['codAcao']);
-            $this->update($data, $where);
+            $where = $acao->getAdapter()->quoteInto("codAcao = ?", $dados['codAcao']);
+            $acao->update($data, $where);
+            $result = true;
         } catch (Zend_Exception $e) {
-            $this->getAdapter()->rollBack();
+            $acao->getAdapter()->rollBack();
             throw new Zend_Exception("N&atilde;o foi possível editar os dados da ação" . $e->getMessage());
         }
         
-        $this->getAdapter()->commit();
+        $acao->getAdapter()->commit();
+        return $result;
     }
     
     public static function excluir($codAcao) {
@@ -112,10 +115,10 @@ class Acao extends Zend_Db_Table_Abstract {
         $pama = new PerfilAplicacaoModuloAcao();
         
         $wherePama = $pama->getAdapter()->quoteInto("codAcao = ?", $codAcao);
-        $resultPama = $pama->delete($where);
+        $resultPama = $pama->delete($wherePama);
         
         $whereMa = $moduloAcao->getAdapter()->quoteInto("codAcao = ?", $codAcao);
-        $resultMa = $moduloAcao->delete($where);
+        $resultMa = $moduloAcao->delete($whereMa);
             
         $where = $acao->getAdapter()->quoteInto("codAcao = ?", $codAcao);
         $result = $acao->delete($where);
